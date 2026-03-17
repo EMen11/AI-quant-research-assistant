@@ -14,6 +14,14 @@ class MarketAnalystAgent(BaseAgent):
         tickers = extract_tickers(query)
         print(f"\n📊 Agent 1 — Tickers détectés : {tickers}")
 
+        if tickers is None:
+            return {
+                "agent": self.name,
+                "tickers": [],
+                "metrics": {},
+                "analysis": "No specific financial assets were detected in your query. Please specify the stocks, indices, or assets you'd like to analyze (e.g. Apple, S&P500, gold, Tesla)."
+            }
+
         # 2. Fetch les données
         market_data = fetch_market_data(tickers, period=period)
         metrics = calculate_metrics(market_data)

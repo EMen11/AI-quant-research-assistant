@@ -59,21 +59,24 @@ def extract_tickers(text: str) -> list:
         "apple": "AAPL", "microsoft": "MSFT", "google": "GOOGL",
         "amazon": "AMZN", "tesla": "TSLA", "nvidia": "NVDA",
         "sp500": "^GSPC", "nasdaq": "^IXIC", "gold": "GC=F",
-        "bitcoin": "BTC-USD", "swiss": "^SSMI"
+        "bitcoin": "BTC-USD", "swiss": "^SSMI",
+        "oil": "CL=F", "energy": "XLE", "defense": "ITA", "bonds": "TLT"
     }
-    
+
+    blacklist = {"I", "AI", "OR", "AND", "THE", "USA", "US", "UN", "NATO", "GDP", "IRAN", "ISRAEL"}
+
     text_lower = text.lower()
     found = []
-    
+
     for keyword, ticker in known_tickers.items():
         if keyword in text_lower and ticker not in found:
             found.append(ticker)
-    
+
     # Détecte aussi les tickers directs en majuscules (ex: AAPL, MSFT)
     import re
     direct = re.findall(r'\b[A-Z]{2,5}\b', text)
     for t in direct:
-        if t not in found and t not in ["I", "AI", "OR", "AND", "THE"]:
+        if t not in found and t not in blacklist:
             found.append(t)
-    
-    return found if found else ["^GSPC"]  # S&P500 par défaut
+
+    return found if found else None

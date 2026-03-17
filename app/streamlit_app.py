@@ -70,6 +70,16 @@ if run_btn and query:
             status.empty()
 
             st.success("✅ Analysis complete")
+
+            if not result.get("tickers"):
+                st.warning(
+                    "No specific assets were identified in your question. "
+                    "Please mention stocks, indices, or assets you'd like to analyze. "
+                    "Examples: *Apple*, *S&P500*, *gold*, *Tesla*, *Nvidia*, *bonds*, *oil*."
+                )
+                st.markdown(result.get("market_analysis", ""))
+                st.stop()
+
             st.divider()
 
             # Metrics row
