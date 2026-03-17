@@ -32,7 +32,9 @@ class PortfolioStrategistAgent(BaseAgent):
           - sum(weights) = 1
           - weights >= 0 (long-only)
         """
-        if returns_df.empty or returns_df.shape[1] == 1:
+        if returns_df.empty:
+            return {}
+        if returns_df.shape[1] == 1:
             # Un seul actif — pas d'optimisation possible
             ticker = returns_df.columns[0]
             return {ticker: 1.0}

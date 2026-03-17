@@ -20,6 +20,8 @@ class BaseAgent:
                 {"role": "user", "content": prompt}
             ]
         )
+        if not message.content:
+            return ""
         return message.content[0].text
     
     def run(self, **kwargs):

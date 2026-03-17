@@ -11,7 +11,7 @@ def generate_pdf_report(result: dict, output_dir: str = "reports/generated") -> 
     os.makedirs(output_dir, exist_ok=True)
     
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    tickers = "_".join(result["tickers"][:2])
+    tickers = "_".join(result["tickers"][:2]) if result.get("tickers") else "no_assets"
     filename = f"{output_dir}/report_{tickers}_{timestamp}.pdf"
     
     doc = SimpleDocTemplate(filename, pagesize=A4,

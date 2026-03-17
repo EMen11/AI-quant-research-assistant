@@ -30,12 +30,14 @@ def calculate_metrics(data: dict) -> dict:
     metrics = {}
     
     for ticker, hist in data.items():
+        if len(hist) < 2:
+            continue
         returns = hist["Close"].pct_change().dropna()
-        
+
         metrics[ticker] = {
             "current_price": round(hist["Close"].iloc[-1], 2),
             "return_1y": round((hist["Close"].iloc[-1] / hist["Close"].iloc[0] - 1) * 100, 2),
-            "volatility_annualized": round(returns.std() * np.sqrt(252) * 100, 2),
+            "volatility_annualized": round(returns.std() * np.sqrt(252) * 100, 2) if not returns.empty else 0.0,
             "max_drawdown": round(calculate_max_drawdown(hist["Close"]) * 100, 2),
             "avg_volume": int(hist["Volume"].mean()),
         }

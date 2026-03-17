@@ -65,6 +65,23 @@ class MultiAgentOrchestrator:
 
         # Chaîne des agents
         r1 = self.agent1.run(query, period=period)
+
+        if not r1["tickers"]:
+            return {
+                "query": query,
+                "tickers": [],
+                "market_analysis": r1["analysis"],
+                "risk_assessment": "",
+                "portfolio_strategy": "",
+                "executive_summary": "",
+                "weights": {},
+                "expected_return": 0,
+                "expected_volatility": 0,
+                "expected_sharpe": 0,
+                "risk_metrics": {},
+                "market_metrics": {}
+            }
+
         r2 = self.agent2.run(query, r1)
         r3 = self.agent3.run(query, r1, r2)
         r4 = self.agent4.run(query, r1, r2, r3)
