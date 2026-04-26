@@ -40,6 +40,9 @@ with st.sidebar:
     else:
         st.caption("No analyses yet.")
 
+st.caption("Market data source: Yahoo Finance via yfinance.")
+st.caption("This tool is for research and educational purposes only and does not constitute financial advice.")
+
 # Main input
 query = st.text_area(
     "💬 Your investment question",

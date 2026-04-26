@@ -24,7 +24,7 @@ PORTFOLIO STRATEGY (Agent 3):
 {agent3_output['analysis'][:600]}
 
 Key metrics:
-- Recommended weights: {agent3_output['weights']}
+- Suggested weights: {agent3_output['weights']}
 - Expected return: {agent3_output['expected_return']}%
 - Expected volatility: {agent3_output['expected_volatility']}%
 - Expected Sharpe: {agent3_output['expected_sharpe']}
@@ -39,8 +39,8 @@ KEY FINDINGS
 2. [Finding with specific number]
 3. [Finding with specific number]
 
-RECOMMENDATION
-[One clear action: BUY/SELL/HOLD/REBALANCE + allocation + timeline]
+RESEARCH VIEW
+[One clear analytical view: BUY/SELL/HOLD/REBALANCE + allocation + timeline]
 
 RISKS TO MONITOR
 - [Risk 1]

@@ -1,12 +1,13 @@
-#  AI Quant Research Assistant
+# AI Quant Research Assistant — Controlled AI Financial Research Workflow
 
-> Multi-agent AI system that replicates an  investment research team — powered by Claude API.
+> A Python workflow combining deterministic risk analytics with LLM-based interpretation for structured financial research memos.
 
 ![Python](https://img.shields.io/badge/Python-3.10+-blue)
 ![Anthropic](https://img.shields.io/badge/Anthropic-Claude%20Sonnet-orange)
 ![Streamlit](https://img.shields.io/badge/Streamlit-1.32+-red)
 ![scipy](https://img.shields.io/badge/Markowitz-scipy.optimize-green)
 ![License](https://img.shields.io/badge/License-MIT-lightgrey)
+![Not Financial Advice](https://img.shields.io/badge/Not%20Financial%20Advice-research%20only-red)
 
 ---
 
@@ -28,6 +29,36 @@ The system replicates a real buy-side research workflow:
 - **LLMs used for reasoning, not computation** — Claude interprets and communicates results, never calculates them
 - **Transparent assumptions** — risk-free rate, constraints, and annualization factors are explicit and documented
 - **Reproducible outputs** — same query on same data always produces same quantitative metrics
+
+---
+
+## Why this is not just a chatbot
+
+This project separates quantitative computation from LLM-based interpretation. Market data, returns, VaR, drawdown, Sharpe ratio and portfolio weights are computed deterministically using Python, NumPy, pandas and scipy. The LLM is used only to interpret results, structure the analysis and generate an executive-style research memo. It cannot modify or override the underlying metrics.
+
+---
+
+## Controls & Guardrails
+
+The following controls are actually implemented in the codebase:
+
+- **Ticker validation** — keyword-based extraction with an explicit blacklist (generic terms such as USA, US, NATO, GDP are rejected). When no relevant financial instrument is identified, the pipeline returns early with a message asking the user to specify assets rather than defaulting to an arbitrary index.
+- **Missing data guards** — `fetch_market_data` skips tickers that return empty histories from yfinance. `calculate_metrics` skips any series with fewer than two data points. `portfolio_strategist` guards against empty returns DataFrames before attempting Markowitz optimisation.
+- **Error handling** — `try/except` blocks around all yfinance calls; the Streamlit interface catches and displays exceptions without crashing.
+- **API key handling** — the Anthropic API key is loaded exclusively from a `.env` file via `python-dotenv`. It is not hardcoded anywhere in the source.
+- **Output persistence** — every completed analysis is saved to SQLite with a timestamp, the original query, tickers, and key metrics.
+- **Deterministic metric separation** — VaR (parametric, numpy), max drawdown, Sharpe ratio, and Markowitz portfolio weights are all computed in Python before the LLM receives any data. The LLM only receives pre-computed numbers; it does not perform calculations.
+- **UI disclaimer** — a visible research-purposes-only disclaimer is displayed in the Streamlit interface above the input area.
+- **Data source transparency** — the Streamlit interface displays the market data source (Yahoo Finance via yfinance) above the input area.
+
+### Future controls to add
+
+The following controls are **not yet implemented** and are listed here for transparency:
+
+- Retrieval timestamp displayed alongside market data in the UI
+- Automated metric consistency check (verifying that LLM prose does not contradict computed numbers)
+- Input rate limiting and API quota management
+
 ---
 
 ##  Demo
@@ -54,7 +85,7 @@ KEY FINDINGS
 3. 100% Swiss allocation violates institutional diversification standards
    and creates unacceptable regulatory dependency risk
 
-RECOMMENDATION
+RESEARCH VIEW
 REBALANCE: Reduce Swiss pharma exposure to 40% within 30 days.
 Diversify remaining 60% across developed markets.
 
@@ -206,7 +237,7 @@ Being transparent about what this system does and does not do:
 | **Parametric VaR** | Assumes normal distribution of returns. Understates tail risk in fat-tailed markets. Historical simulation would be more robust. |
 | **No transaction costs** | Optimization ignores bid-ask spreads, commissions, and market impact. Real execution costs would reduce expected returns. |
 | **yfinance data quality** | Free API with potential latency and survivorship bias. Not suitable for production trading without a premium data source. |
-| **LLM hallucination risk** | Claude agents interpret quantitative metrics — qualitative commentary may not always align perfectly with the numbers. Always verify recommendations. |
+| **LLM hallucination risk** | Claude agents interpret quantitative metrics — qualitative commentary may not always align perfectly with the numbers. Always verify analytical outputs against the raw metrics. |
 | **Single-period optimization** | Markowitz is solved on a static 1-year window. No rolling reoptimization or regime detection. |
 | **Limited universe** | Ticker extraction covers major US and Swiss equities. Emerging markets, fixed income, and alternatives are not supported. |
 

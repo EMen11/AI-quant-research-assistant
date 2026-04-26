@@ -133,7 +133,7 @@ Risk assessment:
 {risk_analysis[:500]}...
 
 Provide:
-1. Clear BUY / HOLD / SELL / REBALANCE recommendation
+1. Clear BUY / HOLD / SELL / REBALANCE research view
 2. Allocation rationale (why these weights)
 3. Entry strategy (timing, phasing)
 4. Expected risk/return vs benchmark

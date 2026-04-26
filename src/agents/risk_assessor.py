@@ -48,7 +48,7 @@ Provide:
 2. VaR interpretation for each asset
 3. Key risk factors specific to the user's question
 4. 2-3 stress test scenarios with estimated impact
-5. Risk mitigation recommendations
+5. Risk mitigation suggestions
 
 Be specific with numbers and actionable."""
 
