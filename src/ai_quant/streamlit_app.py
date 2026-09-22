@@ -17,6 +17,7 @@ from ai_quant.market_data import (
     SnapshotRun,
 )
 from ai_quant.quant import QuantAnalysis, analyze_portfolio, demo_portfolio, demo_risk_free_rate
+from ai_quant.trust import WorkflowResult, build_demo_trust_scenarios
 
 
 @dataclass(frozen=True, slots=True)
@@ -26,6 +27,7 @@ class DemoViewModel:
     summary: str
     market_series: tuple[MarketSeries, ...]
     quant_analysis: QuantAnalysis
+    trust_scenarios: tuple[WorkflowResult, WorkflowResult]
 
 
 def build_demo_view(
@@ -50,10 +52,12 @@ def build_demo_view(
         SnapshotRun(snapshot_provider or FrozenSnapshotProvider.demo()),
         demo_risk_free_rate(),
     )
+    trust_scenarios = build_demo_trust_scenarios(quant_analysis)
     return DemoViewModel(
         summary=response.text,
         market_series=series,
         quant_analysis=quant_analysis,
+        trust_scenarios=trust_scenarios,
     )
 
 
@@ -207,3 +211,101 @@ def main() -> None:
     st.subheader("Assumptions")
     for assumption in analysis.assumptions:
         st.markdown(f"- {assumption}")
+
+    st.divider()
+    st.header("Trust boundaries")
+    st.caption(
+        "Generation proposes structure; deterministic Python owns records, validation and value "
+        "injection; only a person can create a HumanReview."
+    )
+    valid_tab, blocked_tab = st.tabs(("Valid scenario", "Blocked scenario"))
+    for tab, scenario in zip((valid_tab, blocked_tab), view.trust_scenarios, strict=True):
+        with tab:
+            _render_trust_scenario(scenario)
+
+
+def _render_trust_scenario(result: WorkflowResult) -> None:
+    """Render generation, validation and human-review layers as distinct sections."""
+
+    st.subheader("Run state and automated assessment")
+    st.table(
+        [
+            {
+                "Run": result.run_id,
+                "State": result.state,
+                "Assessment": result.assessment.status,
+                "Generation calls": result.generation_calls,
+                "Human review": "not created",
+            }
+        ]
+    )
+    st.caption("Automated assessment is routing metadata, never an approval.")
+
+    st.subheader("Generated draft · untrusted proposal")
+    st.write(result.draft.summary)
+    st.table(
+        [
+            {
+                "Claim": claim.claim_id,
+                "Type": claim.claim_type,
+                "Template": claim.text_template,
+                "Metric IDs": ", ".join(claim.metric_ids) or "—",
+                "Evidence IDs": ", ".join(claim.evidence_ids) or "—",
+                "Uncertainty": claim.uncertainty or "—",
+            }
+            for claim in result.draft.claims
+        ]
+    )
+
+    st.subheader("Python validation report")
+    if result.validation_report.issues:
+        st.table(
+            [
+                {
+                    "Severity": issue.severity,
+                    "Code": issue.code,
+                    "Claim": issue.claim_id or "run",
+                    "Message": issue.message,
+                }
+                for issue in result.validation_report.issues
+            ]
+        )
+    else:
+        st.success("No blocking validation issue.")
+
+    st.subheader("Trusted records and Python-injected output")
+    st.table(
+        [
+            {
+                "Metric ID": metric.metric_id,
+                "Value": metric.value,
+                "Unit": metric.unit,
+                "Snapshot": metric.snapshot_id,
+            }
+            for metric in result.metric_records
+        ]
+    )
+    st.table(
+        [
+            {
+                "Evidence ID": evidence.evidence_id,
+                "Status": evidence.status,
+                "Excerpt": evidence.excerpt,
+            }
+            for evidence in result.evidence_records
+        ]
+    )
+    if result.rendered_draft.reliable:
+        st.success("Validated output is eligible for human review — it is not approved.")
+        for claim in result.rendered_draft.claims:
+            st.write(claim.text)
+            for reference in claim.metric_references:
+                st.caption(
+                    f"{reference.metric_id} → {reference.rendered_value} "
+                    f"({reference.transformation})"
+                )
+    else:
+        st.error("No reliable final text emitted: deterministic validation blocked the draft.")
+
+    st.subheader("Human review")
+    st.info("Pending explicit human action; no HumanReview or approval has been created.")

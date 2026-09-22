@@ -1,0 +1,25 @@
+{
+  "summary": "A synthetic offline draft grounded only in the listed metric and evidence identifiers.",
+  "claims": [
+    {
+      "text_template": "The frozen equal-weight portfolio cumulative return is {{metric:metric-run-demo-valid-cumulative-return}} and its maximum drawdown is {{metric:metric-run-demo-valid-maximum-drawdown}}.",
+      "claim_type": "quantitative",
+      "metric_ids": [
+        "metric-run-demo-valid-cumulative-return",
+        "metric-run-demo-valid-maximum-drawdown"
+      ],
+      "evidence_ids": [],
+      "uncertainty": "Historical fixture metrics are descriptive and are not forecasts."
+    },
+    {
+      "text_template": "The lineage note is {{evidence:evidence-run-demo-valid-methodology}}.",
+      "claim_type": "evidence",
+      "metric_ids": [],
+      "evidence_ids": ["evidence-run-demo-valid-methodology"],
+      "uncertainty": "The cited evidence is synthetic and exists only for the offline demonstration."
+    }
+  ],
+  "limitations": [
+    "No live market data, external retrieval or investment recommendation is included."
+  ]
+}

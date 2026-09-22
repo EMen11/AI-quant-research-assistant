@@ -1,0 +1,22 @@
+{
+  "summary": "An intentionally invalid synthetic draft used to demonstrate deterministic blocking.",
+  "claims": [
+    {
+      "text_template": "The portfolio return is 99.9% and is supported by {{metric:metric-run-foreign-cumulative-return}}.",
+      "claim_type": "quantitative",
+      "metric_ids": ["metric-run-foreign-cumulative-return"],
+      "evidence_ids": [],
+      "uncertainty": "This deliberately malformed fixture must not produce reliable output."
+    },
+    {
+      "text_template": "The unsupported lineage note is {{evidence:evidence-run-foreign-methodology}}.",
+      "claim_type": "evidence",
+      "metric_ids": [],
+      "evidence_ids": ["evidence-run-foreign-methodology"],
+      "uncertainty": "This identifier is intentionally outside the current run."
+    }
+  ],
+  "limitations": [
+    "This fixture is expected to fail trusted-reference validation."
+  ]
+}
