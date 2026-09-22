@@ -1,6 +1,8 @@
-from src.agents.base_agent import BaseAgent
-from src.data_fetcher import fetch_market_data, calculate_metrics, extract_tickers
 import json
+
+from src.agents.base_agent import BaseAgent
+from src.data_fetcher import calculate_metrics, extract_tickers, fetch_market_data
+
 
 class MarketAnalystAgent(BaseAgent):
     def __init__(self):

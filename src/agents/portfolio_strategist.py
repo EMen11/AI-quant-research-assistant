@@ -1,8 +1,11 @@
-from src.agents.base_agent import BaseAgent
-import numpy as np
 import json
-from scipy.optimize import minimize
+
+import numpy as np
 import yfinance as yf
+from scipy.optimize import minimize
+
+from src.agents.base_agent import BaseAgent
+
 
 class PortfolioStrategistAgent(BaseAgent):
     def __init__(self):
@@ -99,7 +102,7 @@ class PortfolioStrategistAgent(BaseAgent):
         }
 
     def run(self, query: str, agent1_output: dict, agent2_output: dict) -> dict:
-        print(f"\n📈 Agent 3 — Markowitz optimization en cours...")
+        print("\n📈 Agent 3 — Markowitz optimization en cours...")
 
         tickers = agent1_output["tickers"]
         

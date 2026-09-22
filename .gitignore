@@ -1,7 +1,29 @@
+# Local configuration and secrets
 .env
+.env.*
+!.env.example
+.streamlit/secrets.toml
+
+# Python environments and caches
+.venv
 venv/
 __pycache__/
-*.pyc
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Packaging outputs
+build/
+dist/
+*.egg-info/
+
+# Runtime-generated data and reports
 data/
-reports/generated/
+reports/generated/*
+
+# Editor and operating-system files
 .DS_Store
+.idea/
+.vscode/

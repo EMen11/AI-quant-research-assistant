@@ -1,5 +1,6 @@
 from src.agents.base_agent import BaseAgent
 
+
 class ExecutiveSynthesizerAgent(BaseAgent):
     def __init__(self):
         super().__init__(
@@ -8,7 +9,7 @@ class ExecutiveSynthesizerAgent(BaseAgent):
         )
 
     def run(self, query: str, agent1_output: dict, agent2_output: dict, agent3_output: dict) -> dict:
-        print(f"\n📝 Agent 4 — Executive synthesis en cours...")
+        print("\n📝 Agent 4 — Executive synthesis en cours...")
 
         prompt = f"""You are a Chief Investment Officer writing a concise executive memo.
 

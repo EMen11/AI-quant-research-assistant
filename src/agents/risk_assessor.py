@@ -1,6 +1,9 @@
-from src.agents.base_agent import BaseAgent
-import numpy as np
 import json
+
+import numpy as np
+
+from src.agents.base_agent import BaseAgent
+
 
 class RiskAssessorAgent(BaseAgent):
     def __init__(self):
@@ -14,7 +17,7 @@ class RiskAssessorAgent(BaseAgent):
         return round(float(np.percentile(returns, (1 - confidence) * 100)), 4)
 
     def run(self, query: str, agent1_output: dict) -> dict:
-        print(f"\n⚠️  Agent 2 — Risk assessment en cours...")
+        print("\n⚠️  Agent 2 — Risk assessment en cours...")
 
         # Calcul VaR depuis les métriques Agent 1
         risk_metrics = {}

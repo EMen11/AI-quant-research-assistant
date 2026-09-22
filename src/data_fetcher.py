@@ -1,7 +1,8 @@
-import yfinance as yf
-import pandas as pd
+
 import numpy as np
-from datetime import datetime, timedelta
+import pandas as pd
+import yfinance as yf
+
 
 def fetch_market_data(tickers: list, period: str = "1y") -> dict:
     """Télécharge les données de prix pour une liste de tickers."""

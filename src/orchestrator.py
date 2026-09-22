@@ -1,11 +1,13 @@
-import sqlite3
 import json
 import os
+import sqlite3
 from datetime import datetime
-from src.agents.market_analyst import MarketAnalystAgent
-from src.agents.risk_assessor import RiskAssessorAgent
-from src.agents.portfolio_strategist import PortfolioStrategistAgent
+
 from src.agents.executive_synthesizer import ExecutiveSynthesizerAgent
+from src.agents.market_analyst import MarketAnalystAgent
+from src.agents.portfolio_strategist import PortfolioStrategistAgent
+from src.agents.risk_assessor import RiskAssessorAgent
+
 
 class MultiAgentOrchestrator:
     def __init__(self, db_path: str = "data/conversations.db"):
@@ -103,7 +105,7 @@ class MultiAgentOrchestrator:
 
         # Sauvegarde en base
         self._save_to_db(query, result)
-        print(f"\n✅ Analyse complète sauvegardée en base.")
+        print("\n✅ Analyse complète sauvegardée en base.")
 
         return result
 

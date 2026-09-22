@@ -1,10 +1,12 @@
-from reportlab.lib.pagesizes import A4
-from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-from reportlab.lib.colors import HexColor, black, white
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
-from reportlab.lib.units import cm
-from datetime import datetime
 import os
+from datetime import datetime
+
+from reportlab.lib.colors import HexColor, white
+from reportlab.lib.pagesizes import A4
+from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
+from reportlab.lib.units import cm
+from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle
+
 
 def generate_pdf_report(result: dict, output_dir: str = "reports/generated") -> str:
     """Génère un rapport PDF institutionnel."""

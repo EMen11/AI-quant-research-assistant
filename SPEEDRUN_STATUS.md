@@ -2,14 +2,14 @@
 
 - Dernière mise à jour : 2026-09-22
 - Branche courante : `speedrun/application-ready`
-- Commit de référence du baseline : `0d58a238026744c729343f588eb3cdcd313d23fd`
+- Commit du Bloc 0 : `30c9db62b17685c5a0ed350c9780b08196b21f15`
 
 Statuts autorisés : `TODO`, `DOING`, `DONE`. Un bloc n'est `DONE` que lorsque ses contrôles sont passés et documentés. Les commandes des blocs futurs sont les gates prévues ; elles ne sont pas encore disponibles dans le dépôt actuel.
 
 | Bloc | Objet | Statut | Branche | Commit de référence | Commandes de contrôle |
 |---:|---|---|---|---|---|
-| 0 | Audit reproductible du dépôt | DONE | `speedrun/application-ready` | `0d58a238026744c729343f588eb3cdcd313d23fd` | `git diff --check`<br>`test -s docs/audit_baseline.md`<br>`test -s SPEEDRUN_STATUS.md`<br>`git status --short --branch` |
-| 1 | Socle reproductible, CI et premier déploiement | TODO | À créer | — | `uv sync --frozen --all-groups`<br>`uv run ruff check .`<br>`uv run pytest -q`<br>`APP_MODE=demo uv run streamlit run app.py` |
+| 0 | Audit reproductible du dépôt | DONE | `speedrun/application-ready` | `30c9db62b17685c5a0ed350c9780b08196b21f15` | `git diff --check`<br>`test -s docs/audit_baseline.md`<br>`test -s SPEEDRUN_STATUS.md`<br>`git status --short --branch` |
+| 1 | Socle reproductible, CI et premier déploiement | DONE | `speedrun/application-ready` | modifications locales non commitées sur `30c9db6` | `uv lock --check`<br>`uv sync --frozen --all-groups`<br>`uv run ruff check .`<br>`APP_MODE=demo uv run pytest -q`<br>`APP_MODE=demo uv run streamlit run app.py`<br>healthcheck et contrôle navigateur locaux |
 | 2 | Noyau quantitatif fiable | TODO | À créer | — | `uv run ruff check .`<br>`uv run pytest -q tests/unit`<br>`uv run pytest -q` |
 | 3 | Contrats de confiance et tranche verticale | TODO | À créer | — | `APP_MODE=demo uv run pytest -q tests/unit tests/integration`<br>`APP_MODE=demo uv run streamlit run app.py` |
 | 4 | Corpus sustainable finance traçable | TODO | À créer | — | `uv run pytest -q -k "corpus or evidence or cutoff"`<br>contrôle manuel du manifeste, des hashes, pages et 12 annotations |
@@ -25,5 +25,17 @@ Statuts autorisés : `TODO`, `DOING`, `DONE`. Un bloc n'est `DONE` que lorsque s
 - Livrables : `docs/audit_baseline.md` et `SPEEDRUN_STATUS.md`.
 - Aucun code de production corrigé ou refactorisé.
 - `assets/Edited.png` reste non suivi et hors périmètre.
-- Les plans préexistants sous `docs/plans/` restent non suivis et inchangés.
-- Aucun push, déploiement, commit ou ajout à l'index effectué.
+- Les plans préexistants sous `docs/plans/` ont été inclus sans modification métier dans le commit du Bloc 0.
+- Commit du Bloc 0 : `30c9db62b17685c5a0ed350c9780b08196b21f15` ; aucun push ou déploiement effectué par le Bloc 1.
+
+## État du Bloc 1
+
+- Python 3.12 explicite, package `ai_quant` importable, configuration typée et validée au démarrage.
+- Reproductibilité locale revérifiée avec uv Homebrew 0.12.17 et le Python uv permanent 3.12.14 ; le contournement macOS durable du drapeau `UF_HIDDEN` est documenté dans le README.
+- Dépendances centralisées dans `pyproject.toml` et résolution verrouillée dans `uv.lock`.
+- Mode demo hors ligne avec `FakeLLM`, `FrozenMarketDataProvider` et point d'entrée `app.py`.
+- 15 tests unitaires et d'intégration passent sous Python 3.12.14.
+- Ruff passe sur l'ensemble du dépôt et la CI GitHub Actions reproduit installation, lint et tests.
+- Le serveur Streamlit local répond `ok` sur `/_stcore/health`; le contrôle navigateur confirme une page non vide, sans overlay ni erreur console.
+- Aucun déploiement, push, commit ou ajout à l'index n'a été effectué, conformément à la demande.
+- `assets/Edited.png` reste non suivi, non modifié et hors périmètre.

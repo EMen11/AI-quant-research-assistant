@@ -2,7 +2,7 @@
 
 > A Python workflow combining deterministic risk analytics with LLM-based interpretation for structured financial research memos.
 
-![Python](https://img.shields.io/badge/Python-3.10+-blue)
+![Python](https://img.shields.io/badge/Python-3.12-blue)
 ![Anthropic](https://img.shields.io/badge/Anthropic-Claude%20Sonnet-orange)
 ![Streamlit](https://img.shields.io/badge/Streamlit-1.32+-red)
 ![scipy](https://img.shields.io/badge/Markowitz-scipy.optimize-green)
@@ -11,7 +11,65 @@
 
 ---
 
-##  Overview
+## Reproducible Block 1 foundation
+
+The default application is now a small, frozen public demo. With `APP_MODE=demo` (the
+default), startup uses `FakeLLM` and `FrozenMarketDataProvider`: it requires no API key,
+market download, database, or paid network call. The historical prototype modules remain in
+the repository for later migration, but the public entry point does not import or execute them.
+
+### Install, run, test, and verify
+
+Prerequisites: Python 3.12 and [uv](https://docs.astral.sh/uv/).
+
+```bash
+# Reproduce the complete development environment from uv.lock
+uv sync --frozen --all-groups
+
+# Start the offline Streamlit demo
+APP_MODE=demo uv run streamlit run app.py
+
+# Run tests
+uv run pytest -q
+
+# Run the same local quality gates as CI
+uv run ruff check .
+uv run pytest -q
+```
+
+The package is installed by `uv sync` and can be imported without changing `sys.path`:
+
+```bash
+uv run python -c "import ai_quant; print(ai_quant.__version__)"
+```
+
+On affected macOS filesystems, Python 3.12 can ignore editable `.pth` files below `.venv`
+when Finder reapplies the `UF_HIDDEN` flag. Use a visible environment behind the conventional
+`.venv` path instead; `uv run` and editors continue to discover it normally:
+
+```bash
+uv venv --python 3.12 venv
+ln -s venv .venv
+uv sync --frozen --all-groups
+```
+
+Both paths are ignored by Git. This avoids `PYTHONPATH`, source-path injection, and a temporary
+`chflags` workaround.
+
+For Streamlit Community Cloud, use `app.py` as the entry point, select Python 3.12, and
+leave the Secrets field empty for demo mode. Community Cloud reads the committed `uv.lock`.
+The historical live prototype remains available at `app/streamlit_app.py`; it is not the
+Community Cloud demo entry point and may perform live market and Anthropic calls.
+
+Copy `.env.example` to `.env` only for local configuration. A real Anthropic key is required
+only when explicitly selecting `APP_MODE=live`; live wiring is outside Block 1.
+
+---
+
+## Historical prototype overview
+
+The following sections describe the preserved pre-migration workflow. They are not executed by
+the default Block 1 demo and will be migrated behind the new interfaces in later blocks.
 
 Ask any investment question in plain English. Four specialized Claude agents work in sequence to deliver institutional-style analysis in under 60 seconds.
 
@@ -246,8 +304,8 @@ Being transparent about what this system does and does not do:
 ##  Quick Start
 
 ### Prerequisites
-- Python 3.10+
-- Anthropic API key → [console.anthropic.com](https://console.anthropic.com)
+- Python 3.12
+- `uv`
 
 ### Installation
 
@@ -256,28 +314,12 @@ Being transparent about what this system does and does not do:
 git clone https://github.com/EMen11/AI-quant-research-assistant.git
 cd AI-quant-research-assistant
 
-# 2. Virtual environment
-python3 -m venv venv
-source venv/bin/activate
+# 2. Locked dependencies and importable package
+uv sync --frozen --all-groups
 
-# 3. Dependencies
-pip install -r requirements.txt
-
-# 4. API key
-cp .env.example .env
-# Edit .env → add your ANTHROPIC_API_KEY
-
-# 5. Launch
-streamlit run app/streamlit_app.py
+# 3. Launch the offline demo (APP_MODE=demo is also the default)
+APP_MODE=demo uv run streamlit run app.py
 ```
-
-### CLI mode
-
-```bash
-python3 main.py
-```
-
----
 
 ## 🛠️ Tech Stack
 
@@ -289,8 +331,8 @@ python3 main.py
 | Data Processing | pandas, numpy | Metrics calculation, covariance matrix |
 | Interface | Streamlit | Web application |
 | PDF Reports | ReportLab | Institutional report generation |
-| Storage | SQLite + SQLAlchemy | Conversation history |
-| Config | python-dotenv, PyYAML | Environment management |
+| Storage | SQLite standard library (historical prototype) | Conversation history |
+| Config | typed environment settings; python-dotenv in legacy code | Environment management |
 
 ---
 
@@ -299,6 +341,10 @@ python3 main.py
 ```
 ai-quant-research-assistant/
 ├── src/
+│   ├── ai_quant/                       # installable Block 1 package
+│   │   ├── config.py                   # typed startup configuration
+│   │   ├── llm/                        # LLMClient + FakeLLM
+│   │   └── market_data/                # provider interface + frozen provider
 │   ├── agents/
 │   │   ├── base_agent.py              # Claude API client + base class
 │   │   ├── market_analyst.py          # Agent 1: live data + trends
@@ -309,12 +355,15 @@ ai-quant-research-assistant/
 │   ├── data_fetcher.py                # yfinance wrapper + metric calculations
 │   └── report_generator.py           # PDF generation (ReportLab)
 ├── app/
-│   └── streamlit_app.py              # Streamlit web interface
+│   └── streamlit_app.py              # preserved historical live prototype
 ├── assets/                           # Screenshots for documentation
 ├── data/                             # SQLite conversation history
 ├── reports/generated/                # PDF outputs
-├── requirements.txt
-├── .env.example
+├── tests/                             # unit, integration, evaluation
+├── pyproject.toml                    # dependencies and tool configuration
+├── uv.lock                           # reproducible dependency resolution
+├── app.py                            # offline Community Cloud entry point
+├── .env.example                     # placeholders only
 └── main.py                           # CLI entry point
 ```
 
