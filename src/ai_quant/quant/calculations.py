@@ -307,4 +307,3 @@ def _validate_annualization_factor(annualization_factor: int) -> None:
 def _require_observations(actual: int, required: int) -> None:
     if actual < required:
         raise QuantValidationError(f"At least {required} return observations are required.")
-

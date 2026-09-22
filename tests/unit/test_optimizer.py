@@ -89,4 +89,3 @@ def test_zero_variance_asset_is_listed_as_excluded() -> None:
     assert result.diagnostics.excluded_assets == ("B",)
     assert result.diagnostics.converged
     assert dict(result.weights)["B"] == 0.0
-
