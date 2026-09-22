@@ -10,7 +10,7 @@ Statuts autorisés : `TODO`, `DOING`, `DONE`. Un bloc n'est `DONE` que lorsque s
 |---:|---|---|---|---|---|
 | 0 | Audit reproductible du dépôt | DONE | `speedrun/application-ready` | `30c9db62b17685c5a0ed350c9780b08196b21f15` | `git diff --check`<br>`test -s docs/audit_baseline.md`<br>`test -s SPEEDRUN_STATUS.md`<br>`git status --short --branch` |
 | 1 | Socle reproductible, CI et premier déploiement | DONE | `speedrun/application-ready` | modifications locales non commitées sur `30c9db6` | `uv lock --check`<br>`uv sync --frozen --all-groups`<br>`uv run ruff check .`<br>`APP_MODE=demo uv run pytest -q`<br>`APP_MODE=demo uv run streamlit run app.py`<br>healthcheck et contrôle navigateur locaux |
-| 2 | Noyau quantitatif fiable | TODO | À créer | — | `uv run ruff check .`<br>`uv run pytest -q tests/unit`<br>`uv run pytest -q` |
+| 2 | Noyau quantitatif fiable | DONE | `speedrun/application-ready` | modifications locales non commitées sur `091d73d` | `uv lock --check`<br>`uv sync --frozen --all-groups`<br>`uv run --frozen ruff check .`<br>`APP_MODE=demo uv run --frozen pytest -q`<br>`git diff --check`<br>healthcheck et contrôle navigateur locaux |
 | 3 | Contrats de confiance et tranche verticale | TODO | À créer | — | `APP_MODE=demo uv run pytest -q tests/unit tests/integration`<br>`APP_MODE=demo uv run streamlit run app.py` |
 | 4 | Corpus sustainable finance traçable | TODO | À créer | — | `uv run pytest -q -k "corpus or evidence or cutoff"`<br>contrôle manuel du manifeste, des hashes, pages et 12 annotations |
 | 5 | Retrieval évalué et LLM structuré | TODO | À créer | — | `APP_MODE=demo uv run pytest -q -k "retrieval or llm"`<br>régénérer et comparer l'artefact recall@1/recall@3/rang |
@@ -49,3 +49,14 @@ Statuts autorisés : `TODO`, `DOING`, `DONE`. Un bloc n'est `DONE` que lorsque s
 - GitHub Actions: PASS
 - Public application: https://emen11-ai-quant-research-assistant-app-speedrunapplicati-qq9lei.streamlit.app/
 - Public verification: application rendered successfully with the frozen offline fixtures.
+
+## État du Bloc 2
+
+- `PortfolioDefinition` et `MarketSnapshot` sont immuables, typés et reliés à un snapshot canonique hashé par analyse.
+- Une fixture synthétique d'adjusted close est versionnée et chargée hors ligne ; `SnapshotRun` interdit un second chargement fournisseur.
+- Une matrice complete-case de rendements simples quotidiens, sans remplissage, est réutilisée par tous les calculs.
+- Rendement, volatilité, drawdown, VaR, Expected Shortfall, covariance, corrélation et agrégats portefeuille sont déterministes et documentés.
+- Markowitz long-only retourne poids et diagnostics complets, sans fallback silencieux en cas d'échec.
+- Le taux sans risque demo est configurable, daté, sourcé et explicitement présenté comme une hypothèse synthétique non temps réel.
+- 34 tests passent, dont 19 tests quantitatifs unitaires/intégration ajoutés au Bloc 2.
+- La page Quant locale affiche snapshot, période, unités, hypothèses, poids et diagnostics sans secret ni appel réseau métier en mode demo.
