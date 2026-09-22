@@ -51,3 +51,5 @@ def test_streamlit_entrypoint_starts_in_demo_without_secret(monkeypatch) -> None
     assert not app.exception
     assert app.title[0].value == "AI Quant Research Workbench"
     assert "Frozen public demo" in app.success[0].value
+    assert any(header.value == "Quant" for header in app.header)
+    assert any("neither a forecast" in warning.value for warning in app.warning)

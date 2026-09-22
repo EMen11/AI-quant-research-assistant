@@ -7,11 +7,19 @@ from ai_quant.market_data.base import (
     MarketSeries,
     PricePoint,
 )
+from ai_quant.market_data.snapshots import (
+    FrozenSnapshotProvider,
+    SnapshotMarketDataProvider,
+    SnapshotRun,
+)
 
 __all__ = [
     "FrozenMarketDataProvider",
+    "FrozenSnapshotProvider",
     "MarketDataError",
     "MarketDataProvider",
     "MarketSeries",
     "PricePoint",
+    "SnapshotMarketDataProvider",
+    "SnapshotRun",
 ]
