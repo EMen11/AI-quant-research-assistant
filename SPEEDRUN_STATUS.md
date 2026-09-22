@@ -37,5 +37,15 @@ Statuts autorisés : `TODO`, `DOING`, `DONE`. Un bloc n'est `DONE` que lorsque s
 - 15 tests unitaires et d'intégration passent sous Python 3.12.14.
 - Ruff passe sur l'ensemble du dépôt et la CI GitHub Actions reproduit installation, lint et tests.
 - Le serveur Streamlit local répond `ok` sur `/_stcore/health`; le contrôle navigateur confirme une page non vide, sans overlay ni erreur console.
-- Aucun déploiement, push, commit ou ajout à l'index n'a été effectué, conformément à la demande.
+- Pendant l'implémentation locale, aucun push, commit ou déploiement n'avait été effectué avant la validation indépendante.
 - `assets/Edited.png` reste non suivi, non modifié et hors périmètre.
+
+## R0 deployment
+
+- Status: DEPLOYED
+- Date: 2026-09-22
+- Branch: `speedrun/application-ready`
+- Commit: `a1428e5`
+- GitHub Actions: PASS
+- Public application: https://emen11-ai-quant-research-assistant-app-speedrunapplicati-qq9lei.streamlit.app/
+- Public verification: application rendered successfully with the frozen offline fixtures.
