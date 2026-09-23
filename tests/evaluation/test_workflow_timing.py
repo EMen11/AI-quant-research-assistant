@@ -49,6 +49,9 @@ def test_timing_sidecar_uses_monotonic_clock_and_preserves_canonical_report(
     assert time.get_clock_info("perf_counter").monotonic is True
     assert parsed.clock.name == "time.perf_counter_ns"
     assert parsed.clock.monotonic is True
+    assert parsed.measurement_scope == "deterministic_validation_evaluation_pipeline"
+    assert parsed.dataset.filename == DATASET.name
+    assert not Path(parsed.dataset.filename).is_absolute()
     assert evaluation_calls == 1 + 3 + 20
     assert len(parsed.observations) == 20
     assert parsed.observations == tuple(range(1, 21))

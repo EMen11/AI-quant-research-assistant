@@ -1,6 +1,6 @@
 # Speedrun status
 
-- Dernière mise à jour : 2026-09-23
+- Dernière mise à jour : 2026-09-24
 - Branche courante : `speedrun/application-ready`
 - Commit du Bloc 0 : `30c9db62b17685c5a0ed350c9780b08196b21f15`
 
@@ -14,7 +14,7 @@ Statuts autorisés : `TODO`, `DOING`, `DONE`. Un bloc n'est `DONE` que lorsque s
 | 3 | Contrats de confiance et tranche verticale | DONE | `speedrun/application-ready` | modifications locales non commitées sur `c4fbbf4` | `uv lock --check`<br>`uv sync --frozen --all-groups`<br>`uv run --frozen ruff check .`<br>`APP_MODE=demo uv run --frozen pytest -q`<br>`git diff --check`<br>healthcheck et contrôle navigateur locaux |
 | 4 | Corpus sustainable finance traçable | DONE | `speedrun/application-ready` | modifications locales non commitées sur `5972af7` | `uv lock --check`<br>`uv sync --frozen --all-groups`<br>`uv run --frozen ruff check .`<br>`APP_MODE=demo uv run --frozen pytest -q`<br>`APP_MODE=demo uv run --frozen pytest -q -k "corpus or evidence or cutoff"`<br>`git diff --check`<br>12 observations et 2 cibles vérifiées humainement contre les pages officielles |
 | 5 | Retrieval évalué et LLM structuré | DONE | `speedrun/application-ready` | modifications locales non commitées sur `ca10c3e` | `uv lock --check`<br>`uv sync --frozen --all-groups`<br>`uv run --frozen ruff check .`<br>`APP_MODE=demo uv run --frozen pytest -q -k "content_rules or trust or llm or anthropic or live_capture"`<br>`APP_MODE=demo uv run --frozen pytest -q`<br>fixture live v3 normalisée, validée et revue humainement |
-| 6 | Validateurs et évaluation de bout en bout | DONE | `speedrun/application-ready` | modifications du Bloc 6 sur `4c3dee8` | `uv lock --check`<br>`uv sync --frozen --all-groups`<br>`uv run --frozen ruff check .`<br>`APP_MODE=demo uv run --frozen pytest -q -k "evaluation or validation or workflow"`<br>`APP_MODE=demo uv run --frozen pytest -q`<br>double génération byte-identique du rapport |
+| 6 | Validateurs et évaluation de bout en bout | DONE | `codex/implementer-bloc-6-evaluateurs-et-rapport` | corrections locales sur `cd61978`, seconde revue indépendante `PASS` | `uv lock --check`<br>`uv sync --frozen --all-groups`<br>`uv run --frozen ruff check .`<br>`APP_MODE=demo uv run --frozen pytest -q -k "evaluation or validation or workflow or trust"`<br>`APP_MODE=demo uv run --frozen pytest -q`<br>double génération byte-identique du rapport<br>seconde revue indépendante `PASS`, aucun P0/P1 |
 | 7 | Interface analyste et release publique R1 | TODO | À créer | — | `APP_MODE=demo uv run streamlit run app.py`<br>smoke test deux fois des scénarios admissible et bloqué, puis navigation privée/mobile |
 | 8 | PostgreSQL, FastAPI et Docker Compose | TODO | À créer | — | `docker compose build`<br>`docker compose up -d`<br>`docker compose ps`<br>`uv run pytest -q`<br>`docker compose down` |
 | 9 | Préparation et vérification du déploiement final | TODO | À créer | — | test de démarrage hors ligne en `APP_MODE=demo`<br>scan de secrets à sortie masquée<br>smoke test URL publique anonyme et mobile |
@@ -104,14 +104,18 @@ Statuts autorisés : `TODO`, `DOING`, `DONE`. Un bloc n'est `DONE` que lorsque s
 
 ## État du Bloc 6
 
-- Le dataset `workflow_eval.v1.jsonl` contient 24 cas équilibrés : 8 dev, 8 validation et 8 holdout, avec deux contrôles propres et six cas adversariaux par split.
-- Onze types d'erreur sont couverts : identifiant et chiffre inventés, unité et période erronées, confusion Scope 2 location/market, document futur, contradiction, champ manquant, prompt injection documentaire, auto-approbation et couverture insuffisante.
-- Les validateurs comparent les claims aux références serveur pour les IDs, valeurs, unités, périodes, méthodes Scope 2, dates de cutoff, contradictions et couverture minimale.
-- La politique automatique accepte uniquement un `ValidationReport`, retourne exclusivement un `AutomatedAssessment` et ne crée jamais de `HumanReview`.
-- Sur le dataset de SHA-256 `e7924954cd2fd1aff6eb1b6d16ed6984487e7a6345283d3e89fc5a72b4b31244`, la matrice est TP=18, TN=6, FP=0, FN=0 ; chaque type versionné est détecté à 100 % et aucun des 18 cas critiques n'est `eligible_for_review`.
-- Ces résultats sont strictement limités à ce dataset versionné ; ils ne démontrent pas une performance en production ni sur des documents ouverts.
-- Le rapport canonique exclut les mesures murales dépendantes de la machine et indique honnêtement 24 unités de travail déterministes ; deux générations temporaires et l'artefact versionné ont le même SHA-256 `4530786143728d5b5d3440c6f24dbe5f0b703b5ee3590054fa08d4a9a80ad9d6`.
-- Le sidecar versionné `workflow_eval.v1.timing.json`, à schéma fermé, mesure avec l'horloge monotone `time.perf_counter_ns` trois warmups puis 20 exécutions séquentielles du pipeline complet : chargement, validation, création des assessments et agrégation.
-- Ces durées dépendent du matériel, des caches, de l'ordonnancement et de la charge système. Elles ne sont ni reproductibles byte-for-byte ni un benchmark portable ; leur variabilité normale entre deux générations n'est pas une erreur de reproductibilité.
-- Les 272 tests passent hors ligne, dont 60 tests ciblés ; lockfile, installation figée, Ruff et contrôles de diff passent.
-- Aucun appel réseau ou Anthropic, aucun secret, embedding, reranker, vector store, changement retrieval ou élément du Bloc 7 n'a été ajouté.
+- Statut `DONE` après une seconde revue indépendante `PASS`, sans P0 ni P1.
+- La première revue indépendante avait identifié six P1 : indépendance réelle des splits, liaison claim/référence, familles d'injection bornées, cross-run sans crash, rétablissement de `abstain` et passage par `validate_draft`. Les six ont été reproduits indépendamment puis corrigés.
+- Le dataset conserve 24 cas équilibrés : 8 dev, 8 validation et 8 holdout, avec deux contrôles propres et six cas adversariaux sémantiquement distincts par split.
+- La politique automatique reçoit toujours uniquement un `ValidationReport`. `eligible_for_review` n'est jamais une approbation ; `review_required` signale un finding bloquant ; `abstain` signale l'absence d'entrées de confiance suffisantes.
+- La détection d'injection est explicitement limitée aux familles directes, paraphrasées et obfusquées versionnées ; aucune protection universelle n'est revendiquée.
+- Le rapport canonique conserve uniquement les résultats et la charge en cas. Les durées réelles restent dans le sidecar local et concernent précisément le pipeline déterministe d'évaluation de validation, pas le workflow applicatif complet.
+- Les contrôles locaux de correction passent : 95 tests ciblés, 291 tests complets, 20 tests spécifiques P1, smoke test demo hors ligne et deux régénérations temporaires byte-identiques du rapport.
+- Hashes locaux après correction : dataset `db7cab17163e5df41d4e15ceb7c8e3524ccb1f6d2529c1a9c23967a967d6516e`, rapport `25fc32da059c07a0df3c3b36efa6cf69b7425fc4d61d0f39f2f8b5901d3c4c70`, sidecar `c85bc603abe21f01fef53161f302da06b0719f79255fb77fa3f21f5c45ca7217`.
+- Limites P2 conservées : les résultats valent uniquement pour ce dataset versionné et les familles d'attaques couvertes ; treize catégories ne disposent que d'un cas positif chacune.
+- Le détecteur déterministe d'injection est volontairement borné et peut bloquer certaines formulations bénignes proches d'une instruction.
+- Le holdout actuel a été construit pendant la correction et est gelé à partir de cette version ; ce n'est ni un jeu externe ni un holdout historiquement aveugle.
+- Les contrôles dépendant de `StructuredValidationContext` sont exercés par l'évaluation versionnée ; ils ne sont pas tous alimentés par `InMemoryTrustWorkflow`.
+- Les statuts restent calculés exclusivement par Python et `eligible_for_review` ne signifie jamais une approbation humaine.
+- Les durées du sidecar dépendent du matériel, des caches, de l'ordonnancement et de la charge système ; elles ne sont ni portables ni reproductibles byte-for-byte.
+- Le Bloc 7 reste `TODO` et aucun de ses fichiers ou travaux n'a commencé.

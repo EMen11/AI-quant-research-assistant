@@ -1,4 +1,4 @@
-"""CLI for regenerating the deterministic workflow evaluation report."""
+"""CLI for deterministic validation evaluation and its local timing sidecar."""
 
 from __future__ import annotations
 

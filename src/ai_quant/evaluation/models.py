@@ -26,6 +26,9 @@ ErrorType = Literal[
     "document_prompt_injection",
     "self_approval_attempt",
     "insufficient_coverage",
+    "reference_claim_key_mismatch",
+    "cross_run_reference",
+    "insufficient_trusted_inputs",
 ]
 PositiveNanoseconds = Annotated[int, Field(gt=0)]
 
@@ -34,6 +37,7 @@ class ReferenceValue(StrictModel):
     """Server-side source of truth supplied to deterministic validators."""
 
     reference_id: Identifier
+    run_id: Identifier
     claim_key: Identifier
     value: Decimal
     unit: str
@@ -41,7 +45,7 @@ class ReferenceValue(StrictModel):
     scope2_method: Scope2Method
     publication_date: date
     source_id: Identifier
-    contradicted: bool = False
+    contradicted_by_source_id: Identifier | None = None
     document_text: str = "Official issuer disclosure."
 
 
@@ -50,12 +54,12 @@ class ProposedClaim(StrictModel):
 
     claim_id: Identifier
     claim_key: Identifier
+    claim_text: Annotated[str, Field(min_length=1, max_length=1_000)]
     reference_id: Identifier | None
     value: Decimal | None
     unit: str | None
     period: str | None
     scope2_method: Scope2Method | None
-    requested_assessment: ExpectedOutcome | None = None
 
 
 class EvaluationInputs(StrictModel):
@@ -64,8 +68,30 @@ class EvaluationInputs(StrictModel):
     run_id: Identifier
     cutoff_date: date
     minimum_claims: int = Field(ge=1)
-    references: Annotated[tuple[ReferenceValue, ...], Field(min_length=1)]
-    proposed_claims: Annotated[tuple[ProposedClaim, ...], Field(min_length=1)]
+    references: tuple[ReferenceValue, ...]
+    proposed_claims: tuple[ProposedClaim, ...]
+
+    @model_validator(mode="after")
+    def run_and_record_identifiers_are_consistent(self) -> EvaluationInputs:
+        if len({reference.reference_id for reference in self.references}) != len(
+            self.references
+        ):
+            raise ValueError("reference_id values must be unique within an evaluation case.")
+        if len({claim.claim_id for claim in self.proposed_claims}) != len(
+            self.proposed_claims
+        ):
+            raise ValueError("claim_id values must be unique within an evaluation case.")
+        if any(
+            not claim.claim_id.startswith(f"claim-{self.run_id}-")
+            for claim in self.proposed_claims
+        ):
+            raise ValueError("Every claim_id must belong to the active evaluation run.")
+        if any(
+            not reference.reference_id.startswith(f"evidence-{reference.run_id}-")
+            for reference in self.references
+        ):
+            raise ValueError("Every reference_id must agree with its declared run_id.")
+        return self
 
 
 class WorkflowEvaluationCase(StrictModel):
@@ -75,7 +101,7 @@ class WorkflowEvaluationCase(StrictModel):
     case_id: Identifier
     split: Split
     inputs: EvaluationInputs
-    required_claims: Annotated[tuple[Identifier, ...], Field(min_length=1)]
+    required_claims: tuple[Identifier, ...]
     acceptable_claims: tuple[Identifier, ...]
     forbidden_claims: tuple[Identifier, ...]
     expected_outcome: ExpectedOutcome
@@ -107,7 +133,7 @@ class TimingDataset(StrictModel):
 
     version: Literal["workflow-eval.v1"]
     sha256: Sha256
-    path: Annotated[str, Field(min_length=1)]
+    filename: Annotated[str, Field(min_length=1)]
     case_count: int = Field(gt=0)
 
 
@@ -136,9 +162,7 @@ class WorkflowEvaluationTimingReport(StrictModel):
     """Closed, versioned schema for non-reproducible workflow timings."""
 
     schema_version: Literal["workflow-evaluation-timing.v1"]
-    measurement_scope: Literal[
-        "dataset_loading_validation_assessment_report_aggregation"
-    ]
+    measurement_scope: Literal["deterministic_validation_evaluation_pipeline"]
     warmup_runs: Literal[3]
     measured_runs: Literal[20]
     unit: Literal["nanoseconds"]

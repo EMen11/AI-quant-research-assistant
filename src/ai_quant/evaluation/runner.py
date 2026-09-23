@@ -1,4 +1,4 @@
-"""Reproducible dataset runner and machine-readable report generator."""
+"""Deterministic validation evaluation and separate local timing reporting."""
 
 from __future__ import annotations
 
@@ -24,7 +24,7 @@ from ai_quant.trust.validation import assess_draft
 
 DATASET_VERSION = "workflow-eval.v1"
 PROMPT_VERSION = "trust-synthesis-v3"
-VALIDATOR_VERSION = "deterministic-workflow-validators.v1"
+VALIDATOR_VERSION = "production-validation-adapter.v2"
 TIMING_SCHEMA_VERSION = "workflow-evaluation-timing.v1"
 TIMING_WARMUP_RUNS = 3
 TIMING_MEASURED_RUNS = 20
@@ -45,6 +45,9 @@ _ERROR_TO_CODE: dict[ErrorType, str] = {
     "document_prompt_injection": "document_prompt_injection",
     "self_approval_attempt": "self_approval_attempt",
     "insufficient_coverage": "insufficient_coverage",
+    "reference_claim_key_mismatch": "reference_claim_key_mismatch",
+    "cross_run_reference": "cross_run_reference",
+    "insufficient_trusted_inputs": "insufficient_trusted_inputs",
 }
 
 
@@ -65,6 +68,18 @@ def evaluate_dataset(path: Path) -> dict[str, object]:
     matrix = Counter({"true_positive": 0, "true_negative": 0, "false_positive": 0, "false_negative": 0})
     by_type: dict[str, list[bool]] = defaultdict(list)
     results: list[dict[str, object]] = []
+    split_matrices = {
+        split: Counter(
+            {
+                "true_positive": 0,
+                "true_negative": 0,
+                "false_positive": 0,
+                "false_negative": 0,
+            }
+        )
+        for split in ("dev", "validation", "holdout")
+    }
+    split_passed = Counter({split: 0 for split in split_matrices})
     false_eligible = 0
     critical_cases = 0
 
@@ -73,7 +88,10 @@ def evaluate_dataset(path: Path) -> dict[str, object]:
         assessment = assess_draft(report=report)
         expected_blocked = case.expected_outcome != "eligible_for_review"
         predicted_blocked = assessment.status != "eligible_for_review"
-        matrix[_matrix_cell(expected_blocked, predicted_blocked)] += 1
+        matrix_cell = _matrix_cell(expected_blocked, predicted_blocked)
+        matrix[matrix_cell] += 1
+        split_matrices[case.split][matrix_cell] += 1
+        split_passed[case.split] += assessment.status == case.expected_outcome
         if case.severity == "critical":
             critical_cases += 1
             if assessment.status == "eligible_for_review":
@@ -94,8 +112,12 @@ def evaluate_dataset(path: Path) -> dict[str, object]:
 
     split_counts = Counter(case.split for case in cases)
     return {
-        "schema_version": "workflow-evaluation-report.v1",
-        "scope_statement": "Results, including false-eligible claims, apply only to workflow_eval.v1.jsonl at the recorded SHA-256.",
+        "schema_version": "workflow-evaluation-report.v2",
+        "scope_statement": (
+            "Results apply only to the exact workflow_eval.v1.jsonl SHA-256 and the "
+            "versioned attack families represented there; they do not establish real-world "
+            "generalization or universal prompt-injection protection."
+        ),
         "versions": {
             "dataset": DATASET_VERSION,
             "dataset_sha256": _sha256(path.read_bytes()),
@@ -105,6 +127,14 @@ def evaluate_dataset(path: Path) -> dict[str, object]:
         "case_count": len(cases),
         "split_counts": dict(sorted(split_counts.items())),
         "confusion_matrix": dict(matrix),
+        "metrics_by_split": {
+            split: {
+                "case_count": split_counts[split],
+                "passed": split_passed[split],
+                "confusion_matrix": dict(split_matrices[split]),
+            }
+            for split in ("dev", "validation", "holdout")
+        },
         "detection_rate_by_error_type": {
             key: {"detected": sum(values), "total": len(values), "rate": sum(values) / len(values)}
             for key, values in sorted(by_type.items())
@@ -114,11 +144,10 @@ def evaluate_dataset(path: Path) -> dict[str, object]:
             "critical_case_count": critical_cases,
             "rate": false_eligible / critical_cases if critical_cases else 0.0,
         },
-        "latency": {
-            "measurement": "deterministic_validator_work_units",
-            "unit": "cases",
-            "value": len(cases),
-            "wall_clock_excluded_for_byte_reproducibility": True,
+        "workload": {
+            "measurement": "evaluated_cases",
+            "case_count": len(cases),
+            "timing_reported_separately": True,
         },
         "cases": results,
     }
@@ -160,7 +189,7 @@ def measure_evaluation_pipeline(dataset_path: Path) -> WorkflowEvaluationTimingR
 
     return WorkflowEvaluationTimingReport(
         schema_version=TIMING_SCHEMA_VERSION,
-        measurement_scope="dataset_loading_validation_assessment_report_aggregation",
+        measurement_scope="deterministic_validation_evaluation_pipeline",
         warmup_runs=TIMING_WARMUP_RUNS,
         measured_runs=TIMING_MEASURED_RUNS,
         unit="nanoseconds",
@@ -172,7 +201,7 @@ def measure_evaluation_pipeline(dataset_path: Path) -> WorkflowEvaluationTimingR
         dataset=TimingDataset(
             version=DATASET_VERSION,
             sha256=dataset_sha256,
-            path=str(dataset_path),
+            filename=dataset_path.name,
             case_count=case_count,
         ),
         environment=TimingEnvironment(

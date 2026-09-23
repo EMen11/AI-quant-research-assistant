@@ -28,6 +28,8 @@ from ai_quant.trust.models import (
     PublicFixturePromotionReview,
     RenderedClaim,
     RenderedDraft,
+    StructuredReferenceComparison,
+    StructuredValidationContext,
     ValidationIssue,
     ValidationReport,
 )
@@ -62,6 +64,8 @@ __all__ = [
     "RunStateMachine",
     "StructuredDraftGenerator",
     "StructuredGenerationResponse",
+    "StructuredReferenceComparison",
+    "StructuredValidationContext",
     "ValidationIssue",
     "ValidationReport",
     "WORKFLOW_STEPS",

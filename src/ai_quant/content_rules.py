@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import re
+import unicodedata
 from typing import TYPE_CHECKING, Final, Literal
 
 if TYPE_CHECKING:
@@ -102,6 +103,20 @@ _INTERNAL_STATUS_TOKEN = re.compile(
     r"\b(?:reported_zero|not_applicable)\b",
     re.IGNORECASE,
 )
+_DOCUMENT_OVERRIDE = re.compile(
+    r"\b(?:ignore|disregard|forget|override|bypass|discard)\b"
+    r".{0,80}\b(?:previous|prior|earlier|all|system|developer|safety|"
+    r"instructions?|guidance|directions?|rules?|safeguards?)\b"
+)
+_DOCUMENT_ROUTING = re.compile(
+    r"\b(?:approve|accept|mark|classify|label|route)\b"
+    r".{0,80}\b(?:claim|draft|output|response|result|review|eligible|approved|accepted)\b"
+)
+_SELF_APPROVAL = re.compile(
+    r"\b(?:approve|accept|mark|classify|label|route|set)\b"
+    r".{0,80}\b(?:this|claim|draft|output|response|result)\b"
+    r".{0,80}\b(?:eligible for review|eligible_for_review|approved|accepted)\b"
+)
 
 
 def metric_placeholder_ids(text: str) -> tuple[str, ...]:
@@ -183,6 +198,36 @@ def has_implicit_cross_domain_relation(text: str) -> bool:
 
 def has_internal_status_token(text: str) -> bool:
     return _INTERNAL_STATUS_TOKEN.search(text) is not None
+
+
+def normalize_instruction_text(text: str) -> str:
+    """Normalize Unicode, invisibles, punctuation and whitespace deterministically."""
+
+    normalized = unicodedata.normalize("NFKC", text)
+    normalized = "".join(
+        character
+        for character in normalized
+        if unicodedata.category(character) not in {"Cf", "Cc"}
+        or character in "\n\t"
+    )
+    normalized = normalized.casefold()
+    normalized = re.sub(r"[^\w]+", " ", normalized, flags=re.UNICODE)
+    return " ".join(normalized.split())
+
+
+def has_document_prompt_injection(text: str) -> bool:
+    """Detect the bounded, versioned instruction-override families covered by Block 6."""
+
+    normalized = normalize_instruction_text(text)
+    return bool(
+        _DOCUMENT_OVERRIDE.search(normalized) or _DOCUMENT_ROUTING.search(normalized)
+    )
+
+
+def has_self_approval_attempt(text: str) -> bool:
+    """Detect a draft asking to assign its own automated routing status."""
+
+    return _SELF_APPROVAL.search(normalize_instruction_text(text)) is not None
 
 
 def _contains_numeric_token(text: str, token: str) -> bool:

@@ -92,6 +92,8 @@ def test_cross_run_metric_reference_is_blocked(valid_result) -> None:  # type: i
     )
 
     assert "cross_run_reference" in {issue.code for issue in report.issues}
+    assert not report.identifier_checks_passed
+    assert not report.run_membership_checks_passed
 
 
 def test_cross_run_evidence_reference_is_blocked(valid_result) -> None:  # type: ignore[no-untyped-def]
@@ -204,6 +206,9 @@ def test_renderer_independently_rejects_a_residual_placeholder(valid_result) -> 
         run_id=draft.run_id,
         draft_id=draft.draft_id,
         issues=(),
+        trusted_input_count=(
+            len(valid_result.metric_records) + len(valid_result.evidence_records)
+        ),
         identifier_checks_passed=True,
         value_checks_passed=True,
         run_membership_checks_passed=True,
@@ -261,3 +266,26 @@ def test_policy_consumes_only_validation_report(valid_result) -> None:  # type: 
     )
 
     assert assessment.status == "eligible_for_review"
+
+
+def test_production_validator_abstains_without_server_owned_inputs(valid_result) -> None:  # type: ignore[no-untyped-def]
+    draft = _draft_with_claim(
+        valid_result,
+        ClaimProposal(
+            text_template="No trusted basis is available.",
+            claim_type="limitation",
+        ),
+    )
+
+    report = validate_draft(
+        run_id=valid_result.run_id,
+        draft=draft,
+        metrics=(),
+        evidence=(),
+    )
+    assessment = assess_draft(report=report)
+
+    assert {issue.code for issue in report.issues} == {"insufficient_trusted_inputs"}
+    assert report.trusted_input_count == 0
+    assert assessment.status == "abstain"
+    assert assessment.reason_codes == ("insufficient_trusted_inputs",)

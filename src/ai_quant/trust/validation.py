@@ -7,16 +7,20 @@ from ai_quant.content_rules import (
     evidence_placeholder_ids,
     evidence_supports_numeric_text,
     has_any_placeholder,
+    has_document_prompt_injection,
     has_generic_placeholder,
     has_implicit_cross_domain_relation,
     has_internal_status_token,
     has_prohibited_risk_language,
+    has_self_approval_attempt,
     has_unknown_placeholder_kind,
     has_unsupported_period_alignment,
     metric_placeholder_ids,
     numeric_literals,
 )
 from ai_quant.trust.models import (
+    IDENTIFIER_FAILURE_CODES,
+    VALUE_FAILURE_CODES,
     AutomatedAssessment,
     ClaimEvidenceReference,
     ClaimMetricReference,
@@ -26,6 +30,7 @@ from ai_quant.trust.models import (
     MetricRecord,
     RenderedClaim,
     RenderedDraft,
+    StructuredValidationContext,
     ValidationIssue,
     ValidationReport,
 )
@@ -37,12 +42,48 @@ def validate_draft(
     draft: GeneratedDraft,
     metrics: tuple[MetricRecord, ...],
     evidence: tuple[EvidenceRecord, ...],
+    structured_context: StructuredValidationContext | None = None,
 ) -> ValidationReport:
     """Validate all references and quantitative text against current-run records."""
 
     issues: list[ValidationIssue] = []
     metric_by_id = {record.metric_id: record for record in metrics}
     evidence_by_id = {record.evidence_id: record for record in evidence}
+
+    if not metrics and not evidence:
+        issues.append(
+            ValidationIssue(
+                code="insufficient_trusted_inputs",
+                severity="critical",
+                message="Validation requires at least one server-owned metric or evidence record.",
+            )
+        )
+
+    for record in (*metrics, *evidence):
+        if record.run_id != run_id:
+            issues.append(
+                ValidationIssue(
+                    code="cross_run_reference",
+                    severity="critical",
+                    message=(
+                        "A trusted record supplied to validation does not belong to the "
+                        f"active run: {record.run_id}."
+                    ),
+                )
+            )
+
+    for record in evidence:
+        if has_document_prompt_injection(record.excerpt):
+            issues.append(
+                ValidationIssue(
+                    code="document_prompt_injection",
+                    severity="critical",
+                    message=(
+                        "Evidence text matches a covered instruction-override attack family: "
+                        f"{record.evidence_id}."
+                    ),
+                )
+            )
 
     if has_any_placeholder(draft.summary):
         issues.append(
@@ -236,38 +277,14 @@ def validate_draft(
                 has_evidence=bool(evidence),
             )
 
-    identifier_checks_passed = not any(
-        issue.code
-        in {
-            "unknown_metric",
-            "unknown_evidence",
-            "metric_placeholder_mismatch",
-            "evidence_reference_mismatch",
-            "generic_placeholder",
-            "summary_placeholder",
-            "unresolved_placeholder",
-        }
-        for issue in issues
-    )
-    value_checks_passed = not any(
-        issue.code
-        in {
-            "free_numeric_literal",
-            "metric_value_literal",
-            "evidence_numeric_literal_unverified",
-        }
-        for issue in issues
-    )
-    run_membership_checks_passed = not any(
-        issue.code == "cross_run_reference" for issue in issues
-    )
-    return ValidationReport(
+    if structured_context is not None:
+        _append_structured_context_issues(issues, structured_context)
+
+    return build_validation_report(
         run_id=run_id,
         draft_id=draft.draft_id,
         issues=tuple(issues),
-        identifier_checks_passed=identifier_checks_passed,
-        value_checks_passed=value_checks_passed,
-        run_membership_checks_passed=run_membership_checks_passed,
+        trusted_input_count=len(metrics) + len(evidence),
     )
 
 
@@ -380,6 +397,14 @@ def assess_draft(
 ) -> AutomatedAssessment:
     """Route using only trusted validator output, never raw generated content."""
 
+    if report.trusted_input_count == 0 or any(
+        issue.code == "insufficient_trusted_inputs" for issue in report.issues
+    ):
+        return AutomatedAssessment(
+            run_id=report.run_id,
+            status="abstain",
+            reason_codes=("insufficient_trusted_inputs",),
+        )
     if report.has_blocking_issues:
         return AutomatedAssessment(
             run_id=report.run_id,
@@ -451,6 +476,174 @@ def _append_prose_issues(
                 message="Internal evidence statuses require public natural-language wording.",
             )
         )
+    if has_self_approval_attempt(text):
+        issues.append(
+            ValidationIssue(
+                code="self_approval_attempt",
+                severity="critical",
+                claim_id=claim_id,
+                message="Draft text attempted to assign its own routing outcome.",
+            )
+        )
+
+
+def build_validation_report(
+    *,
+    run_id: str,
+    draft_id: str,
+    issues: tuple[ValidationIssue, ...],
+    trusted_input_count: int,
+) -> ValidationReport:
+    """Build summary flags from one shared closed-code policy."""
+
+    deduplicated = _deduplicate_issues(issues)
+    return ValidationReport(
+        run_id=run_id,
+        draft_id=draft_id,
+        issues=deduplicated,
+        trusted_input_count=trusted_input_count,
+        identifier_checks_passed=not any(
+            issue.code in IDENTIFIER_FAILURE_CODES for issue in deduplicated
+        ),
+        value_checks_passed=not any(
+            issue.code in VALUE_FAILURE_CODES for issue in deduplicated
+        ),
+        run_membership_checks_passed=not any(
+            issue.code == "cross_run_reference" for issue in deduplicated
+        ),
+    )
+
+
+def _append_structured_context_issues(
+    issues: list[ValidationIssue],
+    context: StructuredValidationContext,
+) -> None:
+    for comparison in context.comparisons:
+        if not comparison.reference_present:
+            issues.append(
+                ValidationIssue(
+                    code="unknown_evidence",
+                    severity="critical",
+                    claim_id=comparison.claim_id,
+                    message="Claim has no active-run reference.",
+                )
+            )
+            continue
+        if comparison.claim_key != comparison.reference_claim_key:
+            issues.append(
+                ValidationIssue(
+                    code="reference_claim_key_mismatch",
+                    severity="critical",
+                    claim_id=comparison.claim_id,
+                    message="Claim subject differs from the referenced subject.",
+                )
+            )
+        missing = any(
+            value is None
+            for value in (
+                comparison.claim_value,
+                comparison.claim_unit,
+                comparison.claim_period,
+                comparison.claim_scope2_method,
+            )
+        )
+        if missing:
+            issues.append(
+                ValidationIssue(
+                    code="missing_required_field",
+                    severity="critical",
+                    claim_id=comparison.claim_id,
+                    message="Claim is missing a required comparison field.",
+                )
+            )
+            continue
+        if comparison.claim_value != comparison.reference_value:
+            issues.append(
+                ValidationIssue(
+                    code="reference_value_mismatch",
+                    severity="critical",
+                    claim_id=comparison.claim_id,
+                    message="Claimed number differs from the reference value.",
+                )
+            )
+        if comparison.claim_unit != comparison.reference_unit:
+            issues.append(
+                ValidationIssue(
+                    code="reference_unit_mismatch",
+                    severity="critical",
+                    claim_id=comparison.claim_id,
+                    message="Claimed unit differs from the reference unit.",
+                )
+            )
+        if comparison.claim_period != comparison.reference_period:
+            issues.append(
+                ValidationIssue(
+                    code="reference_period_mismatch",
+                    severity="critical",
+                    claim_id=comparison.claim_id,
+                    message="Claimed period differs from the reference period.",
+                )
+            )
+        if comparison.claim_scope2_method != comparison.reference_scope2_method:
+            issues.append(
+                ValidationIssue(
+                    code="scope2_method_mismatch",
+                    severity="critical",
+                    claim_id=comparison.claim_id,
+                    message="Claimed Scope 2 method differs from the reference method.",
+                )
+            )
+        if (
+            comparison.publication_date is not None
+            and comparison.publication_date > comparison.cutoff_date
+        ):
+            issues.append(
+                ValidationIssue(
+                    code="document_after_cutoff",
+                    severity="critical",
+                    claim_id=comparison.claim_id,
+                    message="Reference document was published after the run cutoff.",
+                )
+            )
+        if comparison.contradicted_by_source_id is not None:
+            issues.append(
+                ValidationIssue(
+                    code="contradictory_source",
+                    severity="critical",
+                    claim_id=comparison.claim_id,
+                    message="A separately identified source contradicts this reference.",
+                )
+            )
+
+    missing_claims = set(context.required_claim_keys) - set(context.proposed_claim_keys)
+    forbidden_claims = set(context.forbidden_claim_keys) & set(
+        context.proposed_claim_keys
+    )
+    if (
+        missing_claims
+        or forbidden_claims
+        or len(context.proposed_claim_keys) < context.minimum_claims
+    ):
+        issues.append(
+            ValidationIssue(
+                code="insufficient_coverage",
+                severity="critical",
+                message="Required claim coverage was not satisfied.",
+            )
+        )
+
+
+def _deduplicate_issues(
+    issues: tuple[ValidationIssue, ...],
+) -> tuple[ValidationIssue, ...]:
+    result: list[ValidationIssue] = []
+    seen: set[tuple[str, str | None]] = set()
+    for issue in issues:
+        key = (issue.code, issue.claim_id)
+        if key not in seen:
+            seen.add(key)
+            result.append(issue)
+    return tuple(result)
 
 
 def _missing_reference_issue(

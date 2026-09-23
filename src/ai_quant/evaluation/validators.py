@@ -1,100 +1,134 @@
-"""Deterministic validators over trusted references and untrusted claim fields."""
+"""Block 6 adapter into the production deterministic validation path."""
 
 from __future__ import annotations
 
-from ai_quant.evaluation.models import WorkflowEvaluationCase
-from ai_quant.trust.models import ValidationIssue, ValidationReport
+import hashlib
+from datetime import UTC, datetime
 
-_INJECTION_MARKERS = (
-    "ignore previous instructions",
-    "ignore all instructions",
-    "system prompt",
-    "approve this",
+from ai_quant.evaluation.models import ProposedClaim, WorkflowEvaluationCase
+from ai_quant.trust.models import (
+    ClaimDraft,
+    EvidenceRecord,
+    GeneratedDraft,
+    GenerationMetadata,
+    StructuredReferenceComparison,
+    StructuredValidationContext,
+    ValidationReport,
 )
+from ai_quant.trust.validation import validate_draft
 
 
 def validate_evaluation_case(case: WorkflowEvaluationCase) -> ValidationReport:
-    """Validate a case from its values; expected labels are never read here."""
+    """Adapt a versioned case and return the production validator's exact report."""
 
-    issues: list[ValidationIssue] = []
-    references = {reference.reference_id: reference for reference in case.inputs.references}
-    proposed_keys: set[str] = set()
-
-    for claim in case.inputs.proposed_claims:
-        proposed_keys.add(claim.claim_key)
-        if claim.requested_assessment is not None:
-            issues.append(_issue("self_approval_attempt", claim.claim_id, "Draft requested its own routing outcome."))
-        if claim.reference_id is None or claim.reference_id not in references:
-            issues.append(_issue("unknown_evidence", claim.claim_id, "Claim reference is not in the active run allowlist."))
-            continue
-        reference = references[claim.reference_id]
-        if not reference.reference_id.startswith(f"evidence-{case.inputs.run_id}-"):
-            issues.append(_issue("cross_run_reference", claim.claim_id, "Reference does not belong to the active run."))
-        missing = any(
-            value is None
-            for value in (claim.value, claim.unit, claim.period, claim.scope2_method)
+    evidence = tuple(
+        EvidenceRecord(
+            evidence_id=reference.reference_id,
+            run_id=reference.run_id,
+            document_id=reference.source_id,
+            document_sha256=hashlib.sha256(
+                reference.document_text.encode("utf-8")
+            ).hexdigest(),
+            page=1,
+            excerpt=reference.document_text,
+            period=reference.period,
+            unit=reference.unit,
+            status="synthetic_demo_evidence",
         )
-        if missing:
-            issues.append(_issue("missing_required_field", claim.claim_id, "Claim is missing a required comparison field."))
-            continue
-        if claim.value != reference.value:
-            issues.append(_issue("reference_value_mismatch", claim.claim_id, "Claimed number differs from the reference value."))
-        if claim.unit != reference.unit:
-            issues.append(_issue("reference_unit_mismatch", claim.claim_id, "Claimed unit differs from the reference unit."))
-        if claim.period != reference.period:
-            issues.append(_issue("reference_period_mismatch", claim.claim_id, "Claimed period differs from the reference period."))
-        if claim.scope2_method != reference.scope2_method:
-            issues.append(_issue("scope2_method_mismatch", claim.claim_id, "Claimed Scope 2 method differs from the reference method."))
-        if reference.publication_date > case.inputs.cutoff_date:
-            issues.append(_issue("document_after_cutoff", claim.claim_id, "Reference document was published after the run cutoff."))
-        if reference.contradicted:
-            issues.append(_issue("contradictory_source", claim.claim_id, "The selected source is marked as contradicted."))
-        normalized_document = reference.document_text.casefold()
-        if any(marker in normalized_document for marker in _INJECTION_MARKERS):
-            issues.append(_issue("document_prompt_injection", claim.claim_id, "Document contains instruction-like adversarial text."))
-
-    missing_claims = set(case.required_claims) - proposed_keys
-    forbidden_claims = set(case.forbidden_claims) & proposed_keys
-    if (
-        missing_claims
-        or forbidden_claims
-        or len(case.inputs.proposed_claims) < case.inputs.minimum_claims
-    ):
-        issues.append(_issue("insufficient_coverage", None, "Required claim coverage was not satisfied."))
-
-    return ValidationReport(
-        run_id=case.inputs.run_id,
+        for reference in case.inputs.references
+    )
+    claims = tuple(_production_claim(case, claim) for claim in case.inputs.proposed_claims)
+    if not claims:
+        claims = (
+            ClaimDraft(
+                claim_id=f"claim-{case.inputs.run_id}-no-trusted-inputs",
+                run_id=case.inputs.run_id,
+                text_template="No trusted inputs are available for this evaluation case.",
+                claim_type="limitation",
+            ),
+        )
+    draft = GeneratedDraft(
         draft_id=f"draft-{case.case_id}",
-        issues=tuple(_deduplicate(issues)),
-        identifier_checks_passed=not any(
-            issue.code in {"unknown_evidence", "cross_run_reference"} for issue in issues
+        run_id=case.inputs.run_id,
+        summary="Deterministic validation evaluation case.",
+        claims=claims,
+        limitations=("Versioned evaluation input; no live model call.",),
+        generation=GenerationMetadata(
+            provider="offline-evaluation",
+            model_id="deterministic-adapter-v1",
+            parameters=(),
+            prompt_version="trust-synthesis-v3",
+            response_id=f"response-{case.case_id}",
+            generated_at=datetime(2026, 9, 23, tzinfo=UTC),
         ),
-        value_checks_passed=not any(
-            issue.code
-            in {
-                "reference_value_mismatch",
-                "reference_unit_mismatch",
-                "reference_period_mismatch",
-                "scope2_method_mismatch",
-            }
-            for issue in issues
+    )
+    context = StructuredValidationContext(
+        comparisons=tuple(
+            _structured_comparison(case, claim)
+            for claim in case.inputs.proposed_claims
         ),
-        run_membership_checks_passed=not any(
-            issue.code == "cross_run_reference" for issue in issues
+        proposed_claim_keys=tuple(
+            claim.claim_key for claim in case.inputs.proposed_claims
         ),
+        required_claim_keys=case.required_claims,
+        forbidden_claim_keys=case.forbidden_claims,
+        minimum_claims=case.inputs.minimum_claims,
+    )
+    return validate_draft(
+        run_id=case.inputs.run_id,
+        draft=draft,
+        metrics=(),
+        evidence=evidence,
+        structured_context=context,
     )
 
 
-def _issue(code: str, claim_id: str | None, message: str) -> ValidationIssue:
-    return ValidationIssue(code=code, severity="critical", claim_id=claim_id, message=message)  # type: ignore[arg-type]
+def _production_claim(
+    case: WorkflowEvaluationCase,
+    claim: ProposedClaim,
+) -> ClaimDraft:
+    if claim.reference_id is None:
+        return ClaimDraft(
+            claim_id=claim.claim_id,
+            run_id=case.inputs.run_id,
+            text_template=claim.claim_text,
+            claim_type="limitation",
+        )
+    return ClaimDraft(
+        claim_id=claim.claim_id,
+        run_id=case.inputs.run_id,
+        text_template=f"{claim.claim_text} {{{{evidence:{claim.reference_id}}}}}.",
+        claim_type="evidence",
+        evidence_ids=(claim.reference_id,),
+    )
 
 
-def _deduplicate(issues: list[ValidationIssue]) -> list[ValidationIssue]:
-    result: list[ValidationIssue] = []
-    seen: set[tuple[str, str | None]] = set()
-    for issue in issues:
-        key = (issue.code, issue.claim_id)
-        if key not in seen:
-            seen.add(key)
-            result.append(issue)
-    return result
+def _structured_comparison(
+    case: WorkflowEvaluationCase,
+    claim: ProposedClaim,
+) -> StructuredReferenceComparison:
+    references = {
+        reference.reference_id: reference for reference in case.inputs.references
+    }
+    reference = references.get(claim.reference_id) if claim.reference_id is not None else None
+    return StructuredReferenceComparison(
+        claim_id=claim.claim_id,
+        claim_key=claim.claim_key,
+        reference_present=reference is not None,
+        reference_claim_key=None if reference is None else reference.claim_key,
+        claim_value=claim.value,
+        reference_value=None if reference is None else reference.value,
+        claim_unit=claim.unit,
+        reference_unit=None if reference is None else reference.unit,
+        claim_period=claim.period,
+        reference_period=None if reference is None else reference.period,
+        claim_scope2_method=claim.scope2_method,
+        reference_scope2_method=(
+            None if reference is None else reference.scope2_method
+        ),
+        publication_date=None if reference is None else reference.publication_date,
+        cutoff_date=case.inputs.cutoff_date,
+        contradicted_by_source_id=(
+            None if reference is None else reference.contradicted_by_source_id
+        ),
+    )

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import math
 from datetime import date, datetime, timedelta
+from decimal import Decimal
 from typing import Annotated, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
@@ -18,6 +19,7 @@ Sha256 = Annotated[str, Field(pattern=r"^[0-9a-f]{64}$")]
 NonEmptyText = Annotated[str, Field(min_length=1, max_length=2_000)]
 
 ClaimType = Literal["quantitative", "evidence", "limitation"]
+ReferenceScope2Method = Literal["location_based", "market_based", "not_applicable"]
 IssueCode = Literal[
     "unknown_metric",
     "unknown_evidence",
@@ -35,6 +37,7 @@ IssueCode = Literal[
     "implicit_cross_domain_relation",
     "internal_status_token",
     "reference_value_mismatch",
+    "reference_claim_key_mismatch",
     "reference_unit_mismatch",
     "reference_period_mismatch",
     "scope2_method_mismatch",
@@ -44,6 +47,7 @@ IssueCode = Literal[
     "insufficient_coverage",
     "document_prompt_injection",
     "self_approval_attempt",
+    "insufficient_trusted_inputs",
 ]
 IssueSeverity = Literal["info", "warning", "error", "critical"]
 AssessmentStatus = Literal["eligible_for_review", "review_required", "abstain"]
@@ -54,6 +58,31 @@ AssessmentReason = Literal[
 ]
 HumanDisposition = Literal["approved", "corrected", "rejected", "escalated"]
 RunState = Literal["created", "generated", "validated", "pending_review", "finalized"]
+
+IDENTIFIER_FAILURE_CODES: frozenset[IssueCode] = frozenset(
+    {
+        "unknown_metric",
+        "unknown_evidence",
+        "cross_run_reference",
+        "metric_placeholder_mismatch",
+        "evidence_reference_mismatch",
+        "generic_placeholder",
+        "summary_placeholder",
+        "unresolved_placeholder",
+        "reference_claim_key_mismatch",
+    }
+)
+VALUE_FAILURE_CODES: frozenset[IssueCode] = frozenset(
+    {
+        "free_numeric_literal",
+        "metric_value_literal",
+        "evidence_numeric_literal_unverified",
+        "reference_value_mismatch",
+        "reference_unit_mismatch",
+        "reference_period_mismatch",
+        "scope2_method_mismatch",
+    }
+)
 
 
 class StrictModel(BaseModel):
@@ -337,12 +366,43 @@ class ValidationIssue(StrictModel):
     message: NonEmptyText
 
 
+class StructuredReferenceComparison(StrictModel):
+    """Server-owned structured fields compared by the production validator."""
+
+    claim_id: Identifier
+    claim_key: Identifier
+    reference_present: bool
+    reference_claim_key: Identifier | None = None
+    claim_value: Decimal | None = None
+    reference_value: Decimal | None = None
+    claim_unit: str | None = None
+    reference_unit: str | None = None
+    claim_period: str | None = None
+    reference_period: str | None = None
+    claim_scope2_method: ReferenceScope2Method | None = None
+    reference_scope2_method: ReferenceScope2Method | None = None
+    publication_date: date | None = None
+    cutoff_date: date
+    contradicted_by_source_id: Identifier | None = None
+
+
+class StructuredValidationContext(StrictModel):
+    """Optional server-owned comparison and coverage context for validate_draft."""
+
+    comparisons: tuple[StructuredReferenceComparison, ...]
+    proposed_claim_keys: tuple[Identifier, ...]
+    required_claim_keys: tuple[Identifier, ...]
+    forbidden_claim_keys: tuple[Identifier, ...]
+    minimum_claims: int = Field(ge=1)
+
+
 class ValidationReport(StrictModel):
     """Trusted validation result, distinct from generation and assessment."""
 
     run_id: Identifier
     draft_id: Identifier
     issues: tuple[ValidationIssue, ...]
+    trusted_input_count: int = Field(ge=0)
     identifier_checks_passed: bool
     value_checks_passed: bool
     run_membership_checks_passed: bool
@@ -355,29 +415,11 @@ class ValidationReport(StrictModel):
 
     @model_validator(mode="after")
     def check_summary_flags(self) -> ValidationReport:
-        identifier_codes = {
-            "unknown_metric",
-            "unknown_evidence",
-            "metric_placeholder_mismatch",
-            "evidence_reference_mismatch",
-            "generic_placeholder",
-            "summary_placeholder",
-            "unresolved_placeholder",
-        }
         expected_identifier = not any(
-            issue.code in identifier_codes for issue in self.issues
+            issue.code in IDENTIFIER_FAILURE_CODES for issue in self.issues
         )
         expected_value = not any(
-            issue.code
-            in {
-                "free_numeric_literal",
-                "metric_value_literal",
-                "evidence_numeric_literal_unverified",
-                "reference_value_mismatch",
-                "reference_unit_mismatch",
-                "reference_period_mismatch",
-                "scope2_method_mismatch",
-            }
+            issue.code in VALUE_FAILURE_CODES
             for issue in self.issues
         )
         expected_membership = not any(
