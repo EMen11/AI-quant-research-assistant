@@ -38,9 +38,8 @@ def test_demo_view_builds_without_secret_or_network(monkeypatch) -> None:
 
     view = build_demo_view(Settings.from_env({}))
 
-    assert view.summary.startswith("The reproducible offline foundation")
-    assert len(view.market_series) == 2
-    assert tuple(result.assessment.status for result in view.trust_scenarios) == (
+    assert view.analysis.snapshot.provider == "frozen-demo-fixture"
+    assert tuple(result.assessment.status for result in view.scenarios.values()) == (
         "eligible_for_review",
         "review_required",
     )
@@ -54,10 +53,13 @@ def test_streamlit_entrypoint_starts_in_demo_without_secret(monkeypatch) -> None
 
     assert not app.exception
     assert app.title[0].value == "AI Quant Research Workbench"
-    assert "Frozen public demo" in app.success[0].value
-    assert any(header.value == "Quant" for header in app.header)
-    assert any(header.value == "Trust boundaries" for header in app.header)
-    assert any("neither a forecast" in warning.value for warning in app.warning)
-    assert any(
-        "No reliable final text emitted" in error.value for error in app.error
-    )
+    assert [tab.label for tab in app.tabs] == [
+        "Overview",
+        "Quant",
+        "Climate Evidence",
+        "Validation & Review",
+        "Quality",
+        "Methodology",
+    ]
+    assert any("APP_MODE=demo" in info.value for info in app.info)
+    assert any("not a forecast" in warning.value for warning in app.warning)

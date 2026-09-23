@@ -1,7 +1,7 @@
 # Speedrun status
 
 - Dernière mise à jour : 2026-09-24
-- Branche courante : `speedrun/application-ready`
+- Branche courante : `codex/block-7-analyst-dashboard`
 - Commit du Bloc 0 : `30c9db62b17685c5a0ed350c9780b08196b21f15`
 
 Statuts autorisés : `TODO`, `DOING`, `DONE`. Un bloc n'est `DONE` que lorsque ses contrôles sont passés et documentés. Les commandes des blocs futurs sont les gates prévues ; elles ne sont pas encore disponibles dans le dépôt actuel.
@@ -15,7 +15,7 @@ Statuts autorisés : `TODO`, `DOING`, `DONE`. Un bloc n'est `DONE` que lorsque s
 | 4 | Corpus sustainable finance traçable | DONE | `speedrun/application-ready` | modifications locales non commitées sur `5972af7` | `uv lock --check`<br>`uv sync --frozen --all-groups`<br>`uv run --frozen ruff check .`<br>`APP_MODE=demo uv run --frozen pytest -q`<br>`APP_MODE=demo uv run --frozen pytest -q -k "corpus or evidence or cutoff"`<br>`git diff --check`<br>12 observations et 2 cibles vérifiées humainement contre les pages officielles |
 | 5 | Retrieval évalué et LLM structuré | DONE | `speedrun/application-ready` | modifications locales non commitées sur `ca10c3e` | `uv lock --check`<br>`uv sync --frozen --all-groups`<br>`uv run --frozen ruff check .`<br>`APP_MODE=demo uv run --frozen pytest -q -k "content_rules or trust or llm or anthropic or live_capture"`<br>`APP_MODE=demo uv run --frozen pytest -q`<br>fixture live v3 normalisée, validée et revue humainement |
 | 6 | Validateurs et évaluation de bout en bout | DONE | `codex/implementer-bloc-6-evaluateurs-et-rapport` | corrections locales sur `cd61978`, seconde revue indépendante `PASS` | `uv lock --check`<br>`uv sync --frozen --all-groups`<br>`uv run --frozen ruff check .`<br>`APP_MODE=demo uv run --frozen pytest -q -k "evaluation or validation or workflow or trust"`<br>`APP_MODE=demo uv run --frozen pytest -q`<br>double génération byte-identique du rapport<br>seconde revue indépendante `PASS`, aucun P0/P1 |
-| 7 | Interface analyste et release publique R1 | TODO | À créer | — | `APP_MODE=demo uv run streamlit run app.py`<br>smoke test deux fois des scénarios admissible et bloqué, puis navigation privée/mobile |
+| 7 | Interface analyste et release publique R1 | DOING | `codex/block-7-analyst-dashboard` | modifications locales sur `4eee6d6` | `uv lock --check`<br>`uv sync --frozen --all-groups`<br>`uv run --frozen ruff check .`<br>53 tests de fichiers ciblés et 341 tests complets<br>smoke local desktop/mobile et nouvelle session<br>URL publique et navigation privée publique restantes |
 | 8 | PostgreSQL, FastAPI et Docker Compose | TODO | À créer | — | `docker compose build`<br>`docker compose up -d`<br>`docker compose ps`<br>`uv run pytest -q`<br>`docker compose down` |
 | 9 | Préparation et vérification du déploiement final | TODO | À créer | — | test de démarrage hors ligne en `APP_MODE=demo`<br>scan de secrets à sortie masquée<br>smoke test URL publique anonyme et mobile |
 | 10 | README, preuves et release de candidature | TODO | À créer | — | vérifier chaque commande/lien depuis un clone propre<br>`uv run ruff check .`<br>`uv run pytest -q`<br>revue finale des claims contre artefacts versionnés |
@@ -118,4 +118,22 @@ Statuts autorisés : `TODO`, `DOING`, `DONE`. Un bloc n'est `DONE` que lorsque s
 - Les contrôles dépendant de `StructuredValidationContext` sont exercés par l'évaluation versionnée ; ils ne sont pas tous alimentés par `InMemoryTrustWorkflow`.
 - Les statuts restent calculés exclusivement par Python et `eligible_for_review` ne signifie jamais une approbation humaine.
 - Les durées du sidecar dépendent du matériel, des caches, de l'ordonnancement et de la charge système ; elles ne sont ni portables ni reproductibles byte-for-byte.
-- Le Bloc 7 reste `TODO` et aucun de ses fichiers ou travaux n'a commencé.
+- À l'issue du Bloc 6, le Bloc 7 restait `TODO` et aucun de ses travaux n'avait commencé.
+
+## État du Bloc 7
+
+- Statut `DOING` : tous les gates locaux sont passés, mais aucun déploiement n'était autorisé ; l'URL publique R1 et son contrôle réel en navigation privée restent donc à effectuer.
+- L'application Streamlit contient exactement six vues : Overview, Quant, Climate Evidence, Validation & Review, Quality et Methodology.
+- Les scénarios admissible et bloqué sont reconstruits hors ligne depuis les artefacts versionnés. Deux exécutions navigateur de chaque scénario ont conservé le même run ID, snapshot ID, SHA-256 et assessment, sans doublon ni appel live.
+- La couche `analyst_dashboard` isole le chargement des artefacts, les view models, le repository session-only, les révisions, la validation des corrections et la politique d'export. Streamlit demeure une couche de présentation.
+- Une `HumanReview` demo porte sur une version exacte du draft, utilise le reviewer explicitement non authentifié `demo-reviewer-unauthenticated`, est horodatée côté serveur en UTC et reste uniquement dans `st.session_state`.
+- Une correction conserve l'ancienne version et sa revue dans l'historique de session, crée une nouvelle version, relance `validate_draft`, `assess_draft` et `render_validated_draft`, puis exige une nouvelle revue.
+- Aucun export portant `approved` n'est disponible sans `HumanReview` approved sur la version courante, fiable et `eligible_for_review`, liée au run, au draft, au numéro de révision, au SHA-256 du draft canonique complet et au SHA-256 du texte final exact. La frontière d'export revalide les données sérialisées et échoue fermée ; les 16 contournements P1, les 6 mutations de draft P2 et leurs cas positifs dédiés passent.
+- Les versions bloquées utilisent le libellé factuel `failed validation` et affichent le même bandeau non fiable, y compris lorsqu'une correction humaine demeure `review_required`. Overview sépare l'origine du contenu courant de la génération source historique.
+- La vue Quality lit uniquement `reports/evaluation/retrieval_baselines.v1.json`, `reports/evaluation/workflow_eval.v1.json` et les métadonnées d'appel déjà présentes dans la fixture sélectionnée. Aucune métrique de cache, latence ou coût absente n'est créée.
+- Gates locaux : lock et sync figés, Ruff, 7/7 nouveaux cas de hash du draft, 53 tests de fichiers ciblés, 341 tests complets, `/_stcore/health=ok`, six vues accessibles, aucun overlay ni erreur console dans une session navigateur propre.
+- Le viewport mobile 390×844 conserve les six vues, les preuves et les findings accessibles, sans débordement horizontal. Un rechargement et un nouvel onglet redémarrent sans revue persistée dans l'environnement testé.
+- Captures 1280×720 : `docs/screenshots/block-7/admissible-overview.jpg` montre la provenance historique, `eligible_for_review` et l'absence de revue ; `docs/screenshots/block-7/blocked-validation-findings.jpg` montre `failed validation`, le bandeau, `ValidationReport` et les codes bloquants.
+- Le serveur local lancé sur `127.0.0.1:8519` avec les connexions sortantes interdites par la politique OS a été arrêté par `SIGTERM` ; son PID `61441` est terminé et le port est libre.
+- Aucun appel Anthropic, PostgreSQL ou réseau métier n'a été effectué. Aucun stage, commit, push ou déploiement n'a été réalisé.
+- `assets/Edited.png` reste non suivi et hors périmètre.
