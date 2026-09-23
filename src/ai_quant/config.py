@@ -25,6 +25,7 @@ class Settings:
 
     app_mode: AppMode = AppMode.DEMO
     anthropic_api_key: str | None = field(default=None, repr=False)
+    anthropic_model: str | None = None
 
     @classmethod
     def from_env(cls, environ: Mapping[str, str] | None = None) -> Settings:
@@ -42,7 +43,14 @@ class Settings:
             ) from exc
 
         api_key = source.get("ANTHROPIC_API_KEY", "").strip() or None
+        model = source.get("ANTHROPIC_MODEL", "").strip() or None
         if app_mode is AppMode.LIVE and api_key is None:
             raise ConfigurationError("ANTHROPIC_API_KEY is required when APP_MODE=live.")
+        if app_mode is AppMode.LIVE and model is None:
+            raise ConfigurationError("ANTHROPIC_MODEL is required when APP_MODE=live.")
 
-        return cls(app_mode=app_mode, anthropic_api_key=api_key)
+        return cls(
+            app_mode=app_mode,
+            anthropic_api_key=api_key,
+            anthropic_model=model,
+        )

@@ -1,18 +1,22 @@
 {
-  "summary": "A synthetic offline draft grounded only in the listed metric and evidence identifiers.",
+  "summary": "Historical financial metrics and authorized evidence are presented as separate observations for review.",
   "claims": [
     {
-      "text_template": "The frozen equal-weight portfolio cumulative return is {{metric:metric-run-demo-valid-cumulative-return}} and its maximum drawdown is {{metric:metric-run-demo-valid-maximum-drawdown}}.",
+      "text_template": "The frozen equal-weight portfolio cumulative return is {{metric:metric-run-demo-valid-cumulative-return}}.",
       "claim_type": "quantitative",
-      "metric_ids": [
-        "metric-run-demo-valid-cumulative-return",
-        "metric-run-demo-valid-maximum-drawdown"
-      ],
+      "metric_ids": ["metric-run-demo-valid-cumulative-return"],
       "evidence_ids": [],
       "uncertainty": "Historical fixture metrics are descriptive and are not forecasts."
     },
     {
-      "text_template": "The lineage note is {{evidence:evidence-run-demo-valid-methodology}}.",
+      "text_template": "The frozen equal-weight portfolio maximum drawdown is {{metric:metric-run-demo-valid-maximum-drawdown}}.",
+      "claim_type": "quantitative",
+      "metric_ids": ["metric-run-demo-valid-maximum-drawdown"],
+      "evidence_ids": [],
+      "uncertainty": "One historical run does not establish risk in other market regimes."
+    },
+    {
+      "text_template": "Separately, the lineage note is {{evidence:evidence-run-demo-valid-methodology}}.",
       "claim_type": "evidence",
       "metric_ids": [],
       "evidence_ids": ["evidence-run-demo-valid-methodology"],
@@ -20,6 +24,8 @@
     }
   ],
   "limitations": [
-    "No live market data, external retrieval or investment recommendation is included."
+    "The metrics describe a single run.",
+    "No out-of-sample validation is included.",
+    "No live trading validation or investment recommendation is included."
   ]
 }

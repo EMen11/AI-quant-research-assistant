@@ -13,7 +13,7 @@ Statuts autorisés : `TODO`, `DOING`, `DONE`. Un bloc n'est `DONE` que lorsque s
 | 2 | Noyau quantitatif fiable | DONE | `speedrun/application-ready` | modifications locales non commitées sur `091d73d` | `uv lock --check`<br>`uv sync --frozen --all-groups`<br>`uv run --frozen ruff check .`<br>`APP_MODE=demo uv run --frozen pytest -q`<br>`git diff --check`<br>healthcheck et contrôle navigateur locaux |
 | 3 | Contrats de confiance et tranche verticale | DONE | `speedrun/application-ready` | modifications locales non commitées sur `c4fbbf4` | `uv lock --check`<br>`uv sync --frozen --all-groups`<br>`uv run --frozen ruff check .`<br>`APP_MODE=demo uv run --frozen pytest -q`<br>`git diff --check`<br>healthcheck et contrôle navigateur locaux |
 | 4 | Corpus sustainable finance traçable | DONE | `speedrun/application-ready` | modifications locales non commitées sur `5972af7` | `uv lock --check`<br>`uv sync --frozen --all-groups`<br>`uv run --frozen ruff check .`<br>`APP_MODE=demo uv run --frozen pytest -q`<br>`APP_MODE=demo uv run --frozen pytest -q -k "corpus or evidence or cutoff"`<br>`git diff --check`<br>12 observations et 2 cibles vérifiées humainement contre les pages officielles |
-| 5 | Retrieval évalué et LLM structuré | TODO | À créer | — | `APP_MODE=demo uv run pytest -q -k "retrieval or llm"`<br>régénérer et comparer l'artefact recall@1/recall@3/rang |
+| 5 | Retrieval évalué et LLM structuré | DONE | `speedrun/application-ready` | modifications locales non commitées sur `ca10c3e` | `uv lock --check`<br>`uv sync --frozen --all-groups`<br>`uv run --frozen ruff check .`<br>`APP_MODE=demo uv run --frozen pytest -q -k "content_rules or trust or llm or anthropic or live_capture"`<br>`APP_MODE=demo uv run --frozen pytest -q`<br>fixture live v3 normalisée, validée et revue humainement |
 | 6 | Validateurs et évaluation de bout en bout | TODO | À créer | — | `uv run pytest -q`<br>régénérer le rapport d'évaluation et vérifier qu'aucun cas critique connu n'est `eligible_for_review` |
 | 7 | Interface analyste et release publique R1 | TODO | À créer | — | `APP_MODE=demo uv run streamlit run app.py`<br>smoke test deux fois des scénarios admissible et bloqué, puis navigation privée/mobile |
 | 8 | PostgreSQL, FastAPI et Docker Compose | TODO | À créer | — | `docker compose build`<br>`docker compose up -d`<br>`docker compose ps`<br>`uv run pytest -q`<br>`docker compose down` |
@@ -85,3 +85,19 @@ Statuts autorisés : `TODO`, `DOING`, `DONE`. Un bloc n'est `DONE` que lorsque s
 - 83 tests passent, dont 20 tests unitaires/intégration dédiés au Bloc 4 ; le gate ciblé sélectionne 14 tests, tous verts.
 - Le Bloc est `DONE` après correction du cutoff, validation des artefacts, revue humaine des 12 observations et des 2 cibles, et réussite de tous les contrôles.
 - `assets/Edited.png` reste non suivi, non modifié et hors périmètre.
+
+## État du Bloc 5
+
+- Seize passages immuables sont reconstruits hors ligne depuis les observations, cibles et constats de couverture typés ; les limitations administratives libres ne sont pas indexées.
+- Le gold set gelé contient exactement 10 questions : 6 cas `filter_only` et 4 cas `ranking`. L'artefact publie le nombre de candidats après filtrage, recall@1, recall@3 et le rang du premier passage pertinent.
+- Les métriques globales restent 0,90/1,00 pour BM25 et 0,70/0,90 pour le long context ; sur les seuls cas `ranking`, elles sont 0,75/1,00 et 0,25/0,75 respectivement.
+- `LLMClient`, `FakeLLMClient` et `AnthropicLLMClient` partagent une synthèse structurée à allowlists exactes, un seul appel, aucun outil et des métadonnées typées de succès ou d'échec.
+- La projection LLM accepte sans troncature les extraits officiels jusqu'à 4 000 caractères ; le passage Bachem de 287 caractères traverse le workflow complet avec identité et provenance intactes.
+- Le workflow conserve métriques, preuves et métadonnées nettoyées sur erreur ou timeout, sans draft validé ; les timeouts transport/contrôleur sont alignés et les exceptions publiques sont détachées des erreurs et sorties brutes.
+- La réponse live v3 à appel unique a été conservée avec ses métadonnées sûres, puis son unique défaut sur `summary` a été corrigé hors ligne par `canonical-summary-v1`, sans seconde synthèse LLM.
+- La fixture publique `public_demo_live_v3_v1.json` conserve la provenance `live_provider`, le statut historique `schema_error`, les tokens, la latence, le coût, les identifiants et les hashes sources ; aucune réponse brute n'est persistée.
+- La revue humaine du 23 septembre 2026 approuve la fixture pour le mode demo et accepte comme limites non bloquantes la redondance éditoriale du troisième claim et les deux incertitudes `null` des claims de preuve.
+- L'approbation de promotion ne crée aucune `HumanReview` de session : le workflow relance les validations et le rendu Python, puis demeure `pending_review` pour chaque sortie analytique.
+- Les contrôles figés passent : Ruff, lockfile, installation verrouillée, tests ciblés et suite complète hors ligne, ainsi que la double génération byte-identique de l'artefact retrieval (`25eec8ba5c3f5e87d4bb1c7ced6b8891f5730a2c0266b191f0e6fdaa18f57d27`).
+- Le Bloc est `DONE` après validation déterministe, revue humaine et promotion explicite de la fixture live normalisée dans le mode demo hors ligne.
+- `assets/Edited.png` reste non suivi, non lu, non modifié et hors périmètre.

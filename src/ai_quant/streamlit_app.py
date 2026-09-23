@@ -7,7 +7,7 @@ from dataclasses import dataclass
 import streamlit as st
 
 from ai_quant.config import AppMode, Settings
-from ai_quant.llm import FakeLLM, LLMClient
+from ai_quant.llm import FakeLLMClient, TextLLMClient
 from ai_quant.market_data import (
     FrozenMarketDataProvider,
     FrozenSnapshotProvider,
@@ -32,7 +32,7 @@ class DemoViewModel:
 
 def build_demo_view(
     settings: Settings,
-    llm: LLMClient | None = None,
+    llm: TextLLMClient | None = None,
     market_data: MarketDataProvider | None = None,
     snapshot_provider: SnapshotMarketDataProvider | None = None,
 ) -> DemoViewModel:
@@ -41,7 +41,7 @@ def build_demo_view(
     if settings.app_mode is not AppMode.DEMO:
         raise ValueError("The frozen demo view can only be built in APP_MODE=demo.")
 
-    llm_client = llm or FakeLLM(
+    llm_client = llm or FakeLLMClient(
         "The reproducible offline foundation is ready. The deterministic Quant Core is loaded."
     )
     provider = market_data or FrozenMarketDataProvider.demo()

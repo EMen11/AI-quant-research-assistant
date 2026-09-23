@@ -8,6 +8,7 @@ def test_settings_default_to_demo_without_secrets() -> None:
 
     assert settings.app_mode is AppMode.DEMO
     assert settings.anthropic_api_key is None
+    assert settings.anthropic_model is None
 
 
 def test_settings_accept_demo_without_anthropic_key() -> None:
@@ -32,11 +33,23 @@ def test_live_mode_requires_anthropic_key() -> None:
         Settings.from_env({"APP_MODE": "live"})
 
 
+def test_live_mode_requires_anthropic_model() -> None:
+    with pytest.raises(ConfigurationError, match="ANTHROPIC_MODEL is required"):
+        Settings.from_env(
+            {"APP_MODE": "live", "ANTHROPIC_API_KEY": "placeholder-test-key"}
+        )
+
+
 def test_live_mode_accepts_configured_anthropic_key_without_exposing_it() -> None:
     settings = Settings.from_env(
-        {"APP_MODE": "live", "ANTHROPIC_API_KEY": "placeholder-test-key"}
+        {
+            "APP_MODE": "live",
+            "ANTHROPIC_API_KEY": "placeholder-test-key",
+            "ANTHROPIC_MODEL": "placeholder-model-id",
+        }
     )
 
     assert settings.app_mode is AppMode.LIVE
     assert settings.anthropic_api_key == "placeholder-test-key"
+    assert settings.anthropic_model == "placeholder-model-id"
     assert "placeholder-test-key" not in repr(settings)

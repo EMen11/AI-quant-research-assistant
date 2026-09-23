@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import json
 from datetime import datetime
+from decimal import Decimal
+from pathlib import Path
 
 import pytest
 from pydantic import ValidationError
@@ -19,16 +21,52 @@ from ai_quant.trust import (
     HumanReview,
     InMemoryTrustWorkflow,
     MetricRecord,
+    PublicDemoFixture,
 )
 
 
 def test_valid_fixture_json_matches_closed_schema() -> None:
-    proposal, _ = GenerationController(
-        FixtureDraftGenerator.valid(), GenerationBudget()
-    ).generate(allowed_metric_ids=(), allowed_evidence_ids=())
+    generator = FixtureDraftGenerator.valid()
+    proposal, metadata = GenerationController(generator, GenerationBudget()).generate(
+        allowed_metric_ids=(
+            "metric-run-demo-valid-cumulative-return",
+            "metric-run-demo-valid-maximum-drawdown",
+        ),
+        allowed_evidence_ids=("evidence-run-demo-valid-retrieval-01",),
+    )
 
     assert isinstance(proposal, DraftProposal)
-    assert len(proposal.claims) == 2
+    assert len(proposal.claims) == 4
+    assert proposal.summary == (
+        "This report presents historical run metrics and a separate official evidence record. "
+        "Each is reported independently, and no temporal, causal, predictive or investment "
+        "relationship between them is asserted."
+    )
+    assert generator.call_count == 1
+    assert metadata.provider == "anthropic"
+    assert metadata.model_id == "claude-sonnet-5"
+    assert metadata.model_call is not None
+    assert metadata.model_call.status == "schema_error"
+    assert metadata.model_call.response_origin == "live_provider"
+    assert metadata.model_call.cost_estimate == Decimal("0.015574")
+
+
+def test_public_demo_fixture_records_explicit_promotion_and_limits() -> None:
+    fixture = PublicDemoFixture.model_validate_json(
+        Path("src/ai_quant/fixtures/llm/public_demo_live_v3_v1.json").read_text(
+            encoding="utf-8"
+        )
+    )
+
+    assert fixture.status == "approved_for_public_demo"
+    assert fixture.demo_eligible is True
+    assert fixture.promotion_review.disposition == "approved"
+    assert fixture.promotion_review.review_basis == "explicit-user-approval"
+    assert fixture.promotion_review.accepted_non_blocking_limitations == (
+        "editorial-redundancy-in-evidence-claim",
+        "null-uncertainty-on-two-evidence-claims",
+    )
+    assert fixture.raw_provider_response_persisted is False
 
 
 def test_invalid_json_is_rejected_with_clear_boundary_error(tmp_path) -> None:
@@ -114,7 +152,13 @@ def test_generated_draft_rejects_claim_from_another_run() -> None:
 
 def test_fake_generator_has_no_human_review_capability() -> None:
     fake = FixtureDraftGenerator.valid()
-    response = fake.generate(allowed_metric_ids=(), allowed_evidence_ids=())
+    response = fake.generate(
+        allowed_metric_ids=(
+            "metric-run-demo-valid-cumulative-return",
+            "metric-run-demo-valid-maximum-drawdown",
+        ),
+        allowed_evidence_ids=("evidence-run-demo-valid-retrieval-01",),
+    )
 
     assert not hasattr(fake, "create_human_review")
     assert "human_review" not in response.payload_json

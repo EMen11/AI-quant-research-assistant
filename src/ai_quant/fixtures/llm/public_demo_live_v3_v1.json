@@ -1,0 +1,127 @@
+{
+  "schema_version": "public-demo-fixture.v1",
+  "status": "approved_for_public_demo",
+  "demo_eligible": true,
+  "promotion_policy": "explicit_human_approval_recorded",
+  "fixture_derivation": "live_derived_deterministically_normalized",
+  "normalization_version": "canonical-summary-v1",
+  "normalized_fields": [
+    "summary"
+  ],
+  "raw_provider_response_persisted": false,
+  "source_artifact_type": "rejected_live_capture",
+  "source_artifact_sha256": "ac94b30563857a87259484879fb20009c8ce6c234c795769cbe16cabea708141",
+  "source_candidate_schema_version": "sanitized-live-capture-candidate.v1",
+  "source_candidate_sha256": "31534fd4e28a5678fe4a1b77c68b23e36e315b772a1099284b3ae68ade7f1134",
+  "validated_input_schema_version": "validated-run-input.v1",
+  "validation_status": "validated",
+  "render_status": "reliable",
+  "run_id": "run-demo-valid",
+  "provider": "anthropic",
+  "model_id": "claude-sonnet-5",
+  "prompt_version": "trust-synthesis-v3",
+  "allowed_metric_ids": [
+    "metric-run-demo-valid-cumulative-return",
+    "metric-run-demo-valid-maximum-drawdown"
+  ],
+  "evidence": [
+    {
+      "evidence_id": "evidence-run-demo-valid-retrieval-01",
+      "run_id": "run-demo-valid",
+      "document_id": "document-bachem-annual-report-2025",
+      "document_sha256": "acd34aee09ad95bd29e0a527b841b7158c4886f2f1f33c1ce9618b9e39ca1751",
+      "page": 33,
+      "excerpt": "Total fuel consumption from renewable sources. Indicator renewable_energy_consumption. Coverage status reported_zero. Reported value 0 GJ. Scope 2 method not_applicable. Basis absolute. Period 2025-01-01 to 2025-12-31. Issuer excerpt: TOTAL FUEL CONSUMPTION FROM RENEWABLE SOURCES (GJ) 0",
+      "period": "2025-01-01/2025-12-31",
+      "unit": null,
+      "status": "official_corpus_passage",
+      "passage_id": "passage-observation-bachem-2025-renewable-fuel",
+      "source_record_type": "sustainability_observation",
+      "source_record_id": "observation-bachem-2025-renewable-fuel",
+      "issuer_id": "bachem-holding-ag",
+      "publication_date": "2026-03-12",
+      "printed_page": 31
+    }
+  ],
+  "proposal": {
+    "summary": "This report presents historical run metrics and a separate official evidence record. Each is reported independently, and no temporal, causal, predictive or investment relationship between them is asserted.",
+    "claims": [
+      {
+        "text_template": "Historical metric {{metric:metric-run-demo-valid-cumulative-return}}.",
+        "claim_type": "quantitative",
+        "metric_ids": [
+          "metric-run-demo-valid-cumulative-return"
+        ],
+        "evidence_ids": [],
+        "uncertainty": "This is a backward-looking figure and does not predict future performance."
+      },
+      {
+        "text_template": "Historical metric {{metric:metric-run-demo-valid-maximum-drawdown}}.",
+        "claim_type": "quantitative",
+        "metric_ids": [
+          "metric-run-demo-valid-maximum-drawdown"
+        ],
+        "evidence_ids": [],
+        "uncertainty": "This is a backward-looking figure and does not by itself establish that risk is low or limited."
+      },
+      {
+        "text_template": "Separately, official evidence {{evidence:evidence-run-demo-valid-retrieval-01}} reports a zero value explicitly reported by the source, not missing data, for total fuel consumption from renewable sources over its stated reporting period.",
+        "claim_type": "evidence",
+        "metric_ids": [],
+        "evidence_ids": [
+          "evidence-run-demo-valid-retrieval-01"
+        ],
+        "uncertainty": null
+      },
+      {
+        "text_template": "For official evidence {{evidence:evidence-run-demo-valid-retrieval-01}}, the method does not apply to that specific field for the Scope 2 calculation referenced in the record.",
+        "claim_type": "evidence",
+        "metric_ids": [],
+        "evidence_ids": [
+          "evidence-run-demo-valid-retrieval-01"
+        ],
+        "uncertainty": null
+      }
+    ],
+    "limitations": [
+      "Historical financial metrics reflect past performance only and do not guarantee or predict future results.",
+      "The financial metrics and the ESG evidence originate from different sources and time frames; no shared period should be assumed unless explicitly stated with matching dates.",
+      "A zero value explicitly reported by the source, not missing data, should not be interpreted as an absence of data or as a favorable or unfavorable indicator without further context.",
+      "Where a method does not apply to a specific field, this reflects a scoping limitation of the reporting method rather than a performance outcome.",
+      "The presence of a low historical drawdown figure does not by itself establish that the strategy's risk is limited, low, or safe."
+    ]
+  },
+  "model_call": {
+    "schema_version": "model-call-metadata.v1",
+    "provider": "anthropic",
+    "model_id": "claude-sonnet-5",
+    "prompt_version": "trust-synthesis-v3",
+    "status": "schema_error",
+    "latency_ms": 10818.668249994516,
+    "response_id": "msg_011CfLpZHD8PLL9ULgPxmAiW",
+    "provider_request_id": "req_011CfLpZFuVtWuPiFBJop5ih",
+    "http_status": null,
+    "input_tokens": 2742,
+    "output_tokens": 1009,
+    "total_tokens": 3751,
+    "stop_reason": "end_turn",
+    "retry_count": 0,
+    "error_type": "DraftContentValidationError",
+    "cost_estimate": "0.015574",
+    "currency": "USD",
+    "pricing_source_url": "https://platform.claude.com/docs/en/models/overview",
+    "pricing_valid_on": "2026-09-23",
+    "pricing_snapshot_id": "anthropic-standard-token-pricing-2026-09-23-v1",
+    "cost_unavailable_reason": null,
+    "response_origin": "live_provider"
+  },
+  "promotion_review": {
+    "disposition": "approved",
+    "review_basis": "explicit-user-approval",
+    "reviewed_on": "2026-09-23",
+    "accepted_non_blocking_limitations": [
+      "editorial-redundancy-in-evidence-claim",
+      "null-uncertainty-on-two-evidence-claims"
+    ]
+  }
+}

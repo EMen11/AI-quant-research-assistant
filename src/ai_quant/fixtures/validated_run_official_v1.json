@@ -1,0 +1,53 @@
+{
+  "schema_version": "validated-run-input.v1",
+  "validation_status": "validated",
+  "run_id": "run-demo-valid",
+  "prompt_version": "trust-synthesis-v3",
+  "context": "Use only the supplied run-scoped metrics and official evidence records.",
+  "metrics": [
+    {
+      "metric_id": "metric-run-demo-valid-cumulative-return",
+      "run_id": "run-demo-valid",
+      "metric_name": "cumulative-return",
+      "value": 0.06982119406430298,
+      "unit": "decimal return",
+      "horizon_or_frequency": "12 complete daily observations",
+      "formula_version": "cumulative_simple_v1",
+      "snapshot_id": "demo-adjusted-prices-2026-09-18-v1"
+    },
+    {
+      "metric_id": "metric-run-demo-valid-maximum-drawdown",
+      "run_id": "run-demo-valid",
+      "metric_name": "maximum-drawdown",
+      "value": 0.008335606281488328,
+      "unit": "decimal loss",
+      "horizon_or_frequency": "full snapshot period",
+      "formula_version": "maximum_drawdown_v1",
+      "snapshot_id": "demo-adjusted-prices-2026-09-18-v1"
+    }
+  ],
+  "evidence": [
+    {
+      "evidence_id": "evidence-run-demo-valid-retrieval-01",
+      "run_id": "run-demo-valid",
+      "document_id": "document-bachem-annual-report-2025",
+      "document_sha256": "acd34aee09ad95bd29e0a527b841b7158c4886f2f1f33c1ce9618b9e39ca1751",
+      "page": 33,
+      "excerpt": "Total fuel consumption from renewable sources. Indicator renewable_energy_consumption. Coverage status reported_zero. Reported value 0 GJ. Scope 2 method not_applicable. Basis absolute. Period 2025-01-01 to 2025-12-31. Issuer excerpt: TOTAL FUEL CONSUMPTION FROM RENEWABLE SOURCES (GJ) 0",
+      "period": "2025-01-01/2025-12-31",
+      "unit": null,
+      "status": "official_corpus_passage",
+      "passage_id": "passage-observation-bachem-2025-renewable-fuel",
+      "source_record_type": "sustainability_observation",
+      "source_record_id": "observation-bachem-2025-renewable-fuel",
+      "issuer_id": "bachem-holding-ag",
+      "publication_date": "2026-03-12",
+      "printed_page": 31
+    }
+  ],
+  "limits": {
+    "max_output_tokens": 1200,
+    "timeout_seconds": 15.0,
+    "max_claims": 12
+  }
+}

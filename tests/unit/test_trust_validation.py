@@ -8,6 +8,7 @@ from ai_quant.trust import (
     ClaimProposal,
     DraftProposal,
     InMemoryTrustWorkflow,
+    ValidationReport,
     assess_draft,
     render_validated_draft,
     validate_draft,
@@ -126,7 +127,9 @@ def test_python_injects_metric_values_and_creates_references(valid_result) -> No
     assert rendered.reliable
     assert expected_values == actual_values
     assert all(value in rendered.final_text for value in expected_values)  # type: ignore[operator]
+    assert all(metric.unit in rendered.final_text for metric in valid_result.metric_records)  # type: ignore[operator]
     assert "{{metric:" not in rendered.final_text  # type: ignore[operator]
+    assert "{{evidence:" not in rendered.final_text  # type: ignore[operator]
 
 
 def test_invented_number_blocks_rendering(valid_result) -> None:  # type: ignore[no-untyped-def]
@@ -157,6 +160,99 @@ def test_invented_number_blocks_rendering(valid_result) -> None:  # type: ignore
     assert "free_numeric_literal" in {issue.code for issue in report.issues}
     assert not rendered.reliable
     assert rendered.final_text is None
+
+
+def test_generic_and_unknown_placeholders_fail_closed(valid_result) -> None:  # type: ignore[no-untyped-def]
+    for text, expected_code in (
+        ("Return is {value}.", "generic_placeholder"),
+        ("Unknown {{other:identifier}}.", "unresolved_placeholder"),
+    ):
+        draft = _draft_with_claim(
+            valid_result,
+            ClaimProposal(
+                text_template=text,
+                claim_type="limitation",
+            ),
+        )
+        report = validate_draft(
+            run_id=valid_result.run_id,
+            draft=draft,
+            metrics=valid_result.metric_records,
+            evidence=valid_result.evidence_records,
+        )
+        rendered = render_validated_draft(
+            draft=draft,
+            report=report,
+            metrics=valid_result.metric_records,
+            evidence=valid_result.evidence_records,
+        )
+
+        assert expected_code in {issue.code for issue in report.issues}
+        assert not rendered.reliable
+        assert rendered.final_text is None
+
+
+def test_renderer_independently_rejects_a_residual_placeholder(valid_result) -> None:  # type: ignore[no-untyped-def]
+    draft = _draft_with_claim(
+        valid_result,
+        ClaimProposal(
+            text_template="Unknown {{other:identifier}}.",
+            claim_type="limitation",
+        ),
+    )
+    forged_clean_report = ValidationReport(
+        run_id=draft.run_id,
+        draft_id=draft.draft_id,
+        issues=(),
+        identifier_checks_passed=True,
+        value_checks_passed=True,
+        run_membership_checks_passed=True,
+    )
+
+    rendered = render_validated_draft(
+        draft=draft,
+        report=forged_clean_report,
+        metrics=valid_result.metric_records,
+        evidence=valid_result.evidence_records,
+    )
+
+    assert not rendered.reliable
+    assert rendered.final_text is None
+    assert rendered.claims == ()
+
+
+@pytest.mark.parametrize("metric_index", (0, 1))
+def test_metric_value_in_summary_is_blocked(
+    valid_result,
+    metric_index: int,
+) -> None:  # type: ignore[no-untyped-def]
+    metric = valid_result.metric_records[metric_index]
+    proposal = DraftProposal(
+        summary=f"The summary states {metric.value:.2%} directly.",
+        claims=(
+            ClaimProposal(
+                text_template=f"Metric {{{{metric:{metric.metric_id}}}}}.",
+                claim_type="quantitative",
+                metric_ids=(metric.metric_id,),
+            ),
+        ),
+        limitations=("Offline test only.",),
+    )
+    draft = materialize_generated_draft(
+        valid_result.run_id,
+        proposal,
+        valid_result.draft.generation,
+    )
+
+    report = validate_draft(
+        run_id=valid_result.run_id,
+        draft=draft,
+        metrics=valid_result.metric_records,
+        evidence=valid_result.evidence_records,
+    )
+
+    assert "metric_value_literal" in {issue.code for issue in report.issues}
+    assert not report.value_checks_passed
 
 
 def test_missing_trusted_inputs_force_abstention(valid_result) -> None:  # type: ignore[no-untyped-def]

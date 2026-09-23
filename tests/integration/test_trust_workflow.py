@@ -70,10 +70,22 @@ def test_state_machine_rejects_skipped_transition_without_mutation() -> None:
 def test_generation_call_budget_is_enforced_before_second_call() -> None:
     fake = FixtureDraftGenerator.valid()
     controller = GenerationController(fake, GenerationBudget(max_calls=1))
-    controller.generate(allowed_metric_ids=(), allowed_evidence_ids=())
+    controller.generate(
+        allowed_metric_ids=(
+            "metric-run-demo-valid-cumulative-return",
+            "metric-run-demo-valid-maximum-drawdown",
+        ),
+        allowed_evidence_ids=("evidence-run-demo-valid-retrieval-01",),
+    )
 
     with pytest.raises(GenerationBudgetExceeded, match="budget exhausted"):
-        controller.generate(allowed_metric_ids=(), allowed_evidence_ids=())
+        controller.generate(
+            allowed_metric_ids=(
+                "metric-run-demo-valid-cumulative-return",
+                "metric-run-demo-valid-maximum-drawdown",
+            ),
+            allowed_evidence_ids=("evidence-run-demo-valid-retrieval-01",),
+        )
 
     assert fake.call_count == 1
 
@@ -87,7 +99,13 @@ def test_generation_timeout_uses_injected_clock_without_waiting() -> None:
     )
 
     with pytest.raises(GenerationTimeout, match="exceeded 2 seconds"):
-        controller.generate(allowed_metric_ids=(), allowed_evidence_ids=())
+        controller.generate(
+            allowed_metric_ids=(
+                "metric-run-demo-valid-cumulative-return",
+                "metric-run-demo-valid-maximum-drawdown",
+            ),
+            allowed_evidence_ids=("evidence-run-demo-valid-retrieval-01",),
+        )
 
 
 def test_demo_results_are_deterministic() -> None:
