@@ -12,7 +12,7 @@ aggregators and secondary sources are outside this corpus. The LLM does not extr
 correct, verify or approve any observation. Python validates closed schemas, hashes,
 references, publication cutoffs and supported unit conversions. Human page-by-page
 verification of all 12 `SustainabilityObservation` records has been completed against the
-official report pages. The two separate `ClimateTarget` records remain on the checklist.
+official report pages. The two separate `ClimateTarget` records have also passed human review.
 
 ## Official source manifest
 
@@ -147,16 +147,16 @@ records: Bachem 6/6 and Siegfried 6/6 for values, units, pages, Scope 2 methods 
 statuses. Confirmed pagination is Bachem PDF page 33 / printed page 31, Siegfried emissions
 page 57 / 57, and Siegfried energy page 58 / 58.
 
-The targets are separate records and are not included in that count. They remain to be
-checked independently:
+The targets are separate records and are not included in that count. Both have now been
+checked independently with a `PASS` result:
 
-| Target ID | Issuer | Target | Base → target year | PDF / printed page | Short excerpt | Review status |
+| Target ID | Issuer | Target | Base → target year | PDF / printed page | Validation note | Review status |
 |---|---|---:|---|---|---|---|
-| `target-bachem-scope-one-two-2030` | Bachem | 44% | 2023 → 2030 | 30 / 28 | “Reducing absolute Scope 1 and 2 GHG emissions” | To check |
-| `target-siegfried-scope-one-two-2033` | Siegfried | 66.89% | 2020 → 2033 | 9 / 9 | “reduce absolute scope 1 and 2 GHG emissions” | To check |
+| `target-bachem-scope-one-two-2030` | Bachem | 44% absolute Scope 1+2 reduction | 2023 → 2030 | 30 / 28 | Submitted to SBTi; validation is not yet declared in this source | `PASS` |
+| `target-siegfried-scope-one-two-2033` | Siegfried | 66.89% absolute Scope 1+2 reduction | 2020 → 2033 | 9 / 9 | SBTi validation declared in March 2025; the separate graph rounds the value to 67% | `PASS` |
 
 Version 1 is intentionally narrow: two English-language PDFs, one reporting year, 12 actual
 observations, two targets and three explicit coverage findings. It does not prove exhaustive
 issuer disclosure, validate physical measurements, normalize group size, or authorize a
-financial recommendation. The completed observation review does not imply that the two
-separate targets have been checked or that any issuer statement is physically true.
+financial recommendation. The completed observation and target reviews do not imply that
+any issuer statement is physically true.
