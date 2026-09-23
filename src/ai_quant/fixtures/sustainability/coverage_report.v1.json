@@ -1,0 +1,62 @@
+{
+  "schema_version": "climate-coverage-report.v1",
+  "manual_verification_status": "completed",
+  "document_count": 2,
+  "observation_count": 12,
+  "observations_by_issuer": [
+    ["bachem-holding-ag", 6],
+    ["siegfried-holding-ag", 6]
+  ],
+  "findings": [
+    {
+      "schema_version": "coverage-finding.v1",
+      "finding_id": "finding-bachem-renewable-electricity-share-2025",
+      "issuer_id": "bachem-holding-ag",
+      "indicator_type": "renewable_electricity_share",
+      "period_start": "2025-01-01",
+      "period_end": "2025-12-31",
+      "status": "not_found",
+      "searched_document_ids": ["document-bachem-annual-report-2025"],
+      "pdf_page": null,
+      "printed_page": null,
+      "short_exact_excerpt": null,
+      "notes": "No renewable-electricity share was identified in the bounded Bachem report; this does not prove that Bachem never publishes one elsewhere."
+    },
+    {
+      "schema_version": "coverage-finding.v1",
+      "finding_id": "finding-bachem-scope-three-capital-goods-2026",
+      "issuer_id": "bachem-holding-ag",
+      "indicator_type": "scope_3_ghg_emissions",
+      "period_start": "2026-01-01",
+      "period_end": "2026-12-31",
+      "status": "explicitly_not_published",
+      "searched_document_ids": ["document-bachem-annual-report-2025"],
+      "pdf_page": 30,
+      "printed_page": 28,
+      "short_exact_excerpt": "From 2026, Bachem will no longer report Scope 3.2",
+      "notes": "The issuer explicitly states prospective non-reporting for Scope 3.2 Capital Goods."
+    },
+    {
+      "schema_version": "coverage-finding.v1",
+      "finding_id": "finding-bachem-scope-two-location-2023",
+      "issuer_id": "bachem-holding-ag",
+      "indicator_type": "scope_2_ghg_emissions",
+      "period_start": "2023-01-01",
+      "period_end": "2023-12-31",
+      "status": "ambiguous",
+      "searched_document_ids": ["document-bachem-annual-report-2025"],
+      "pdf_page": 33,
+      "printed_page": 31,
+      "short_exact_excerpt": "SCOPE 2 GHG EMISSIONS, LOCATION BASED",
+      "notes": "The row is present, but the 2023 cell is blank; no numeric value is inferred."
+    }
+  ],
+  "limitations": [
+    "The corpus contains exactly two issuer PDFs and is not a search of all issuer publications.",
+    "A not_found status means only that the item was not found in this bounded corpus.",
+    "Official publication proves what the issuer reported, not the physical truth of the measurement.",
+    "Cross-issuer absolute values do not control for group size, operational boundary or production mix.",
+    "Human page-by-page verification of all 12 SustainabilityObservation records was completed against the official report pages.",
+    "The two ClimateTarget records are listed separately in the methodology checklist and remain to be reviewed; they are not included in the 12 SustainabilityObservation records."
+  ]
+}

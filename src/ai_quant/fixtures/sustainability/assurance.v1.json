@@ -1,0 +1,47 @@
+{
+  "schema_version": "climate-assurance.v1",
+  "assessments": [
+    {
+      "schema_version": "assurance-assessment.v1",
+      "assessment_id": "assurance-bachem-scope-one-2025",
+      "observation_id": "observation-bachem-2025-scope-one",
+      "document_id": "document-bachem-annual-report-2025",
+      "document_sha256": "acd34aee09ad95bd29e0a527b841b7158c4886f2f1f33c1ce9618b9e39ca1751",
+      "status": "verified_in_assurance_statement",
+      "level": "limited",
+      "assurance_scope_confirmed": true,
+      "pdf_page": 39,
+      "printed_page": 37,
+      "short_exact_excerpt": "limited assurance procedures on selected Sustainability Information",
+      "notes": "The Scope 1 row is check-marked and the assurance report defines check-marked indicators as selected Sustainability Information."
+    },
+    {
+      "schema_version": "assurance-assessment.v1",
+      "assessment_id": "assurance-bachem-total-energy-2025",
+      "observation_id": "observation-bachem-2025-total-energy",
+      "document_id": "document-bachem-annual-report-2025",
+      "document_sha256": "acd34aee09ad95bd29e0a527b841b7158c4886f2f1f33c1ce9618b9e39ca1751",
+      "status": "verified_in_assurance_statement",
+      "level": "limited",
+      "assurance_scope_confirmed": true,
+      "pdf_page": 39,
+      "printed_page": 37,
+      "short_exact_excerpt": "indicators marked with the check mark",
+      "notes": "The total-energy row carries the check mark referenced by the limited-assurance report."
+    },
+    {
+      "schema_version": "assurance-assessment.v1",
+      "assessment_id": "assurance-siegfried-scope-one-2025",
+      "observation_id": "observation-siegfried-2025-scope-one",
+      "document_id": "document-siegfried-sustainability-report-2025",
+      "document_sha256": "d6475053473b146882c8758e3133b4d5de4b4886158572215376f9adc81622bb",
+      "status": "explicitly_not_assured",
+      "level": "not_applicable",
+      "assurance_scope_confirmed": false,
+      "pdf_page": 36,
+      "printed_page": 36,
+      "short_exact_excerpt": "this non-financial report was not subjected to an external audit",
+      "notes": "Financial-statement audit references on the same page do not assure this sustainability observation."
+    }
+  ]
+}

@@ -1,0 +1,93 @@
+{
+  "schema_version": "climate-comparisons.v1",
+  "assessments": [
+    {
+      "schema_version": "comparison-assessment.v1",
+      "comparison_id": "comparison-bachem-siegfried-scope-one-2025",
+      "left_observation_id": "observation-bachem-2025-scope-one",
+      "right_observation_id": "observation-siegfried-2025-scope-one",
+      "purpose": "cross_issuer",
+      "ruleset_version": "climate-comparability.v1",
+      "status": "partially_comparable",
+      "organizational_boundary": "different",
+      "period": "same",
+      "unit": "convertible",
+      "scope_2_method": "not_applicable",
+      "basis": "same",
+      "restatement": "different",
+      "assurance": "different",
+      "definition_or_methodology": "unknown",
+      "reasons": [
+        "Both are absolute 2025 Scope 1 values and tCO2e converts exactly to ktCO2e.",
+        "The groups have different operational boundaries and sizes, so absolute totals do not rank climate performance.",
+        "Bachem marks the KPI within limited-assurance scope; Siegfried states that its non-financial report was not externally audited."
+      ]
+    },
+    {
+      "schema_version": "comparison-assessment.v1",
+      "comparison_id": "comparison-bachem-siegfried-scope-two-market-2025",
+      "left_observation_id": "observation-bachem-2025-scope-two-market",
+      "right_observation_id": "observation-siegfried-2025-scope-two-market",
+      "purpose": "cross_issuer",
+      "ruleset_version": "climate-comparability.v1",
+      "status": "partially_comparable",
+      "organizational_boundary": "different",
+      "period": "same",
+      "unit": "convertible",
+      "scope_2_method": "same",
+      "basis": "same",
+      "restatement": "different",
+      "assurance": "different",
+      "definition_or_methodology": "unknown",
+      "reasons": [
+        "Both records explicitly use the market-based Scope 2 method for 2025.",
+        "Units are convertible, but organizational boundaries, restatement history and assurance differ.",
+        "Absolute values alone do not establish relative performance between differently sized groups."
+      ]
+    },
+    {
+      "schema_version": "comparison-assessment.v1",
+      "comparison_id": "comparison-bachem-siegfried-scope-two-location-2025",
+      "left_observation_id": "observation-bachem-2025-scope-two-location",
+      "right_observation_id": "observation-siegfried-2025-scope-two-location",
+      "purpose": "cross_issuer",
+      "ruleset_version": "climate-comparability.v1",
+      "status": "partially_comparable",
+      "organizational_boundary": "different",
+      "period": "same",
+      "unit": "convertible",
+      "scope_2_method": "same",
+      "basis": "same",
+      "restatement": "different",
+      "assurance": "different",
+      "definition_or_methodology": "unknown",
+      "reasons": [
+        "Both records explicitly use the location-based Scope 2 method for 2025.",
+        "Units are convertible, while boundaries, restatement history and assurance differ.",
+        "No performance ranking is supported by these absolute totals."
+      ]
+    },
+    {
+      "schema_version": "comparison-assessment.v1",
+      "comparison_id": "comparison-bachem-fuel-siegfried-electricity-2025",
+      "left_observation_id": "observation-bachem-2025-renewable-fuel",
+      "right_observation_id": "observation-siegfried-2025-renewable-electricity",
+      "purpose": "cross_issuer",
+      "ruleset_version": "climate-comparability.v1",
+      "status": "not_comparable",
+      "organizational_boundary": "different",
+      "period": "same",
+      "unit": "convertible",
+      "scope_2_method": "not_applicable",
+      "basis": "same",
+      "restatement": "unknown",
+      "assurance": "different",
+      "definition_or_methodology": "different",
+      "reasons": [
+        "Bachem reports renewable fuel consumption, whereas Siegfried reports renewable electrical energy consumption.",
+        "Energy units are convertible but the indicator definitions and denominators are not equivalent.",
+        "The zero renewable-fuel value must not be compared with renewable-electricity volume."
+      ]
+    }
+  ]
+}

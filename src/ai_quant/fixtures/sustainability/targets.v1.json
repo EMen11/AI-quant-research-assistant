@@ -1,0 +1,53 @@
+{
+  "schema_version": "climate-targets.v1",
+  "targets": [
+    {
+      "schema_version": "climate-target.v1",
+      "target_id": "target-bachem-scope-one-two-2030",
+      "issuer_id": "bachem-holding-ag",
+      "document_id": "document-bachem-annual-report-2025",
+      "document_sha256": "acd34aee09ad95bd29e0a527b841b7158c4886f2f1f33c1ce9618b9e39ca1751",
+      "publication_date": "2026-03-12",
+      "pdf_page": 30,
+      "printed_page": 28,
+      "short_exact_excerpt": "Reducing absolute Scope 1 and 2 GHG emissions by 44% between 2023 and 2030",
+      "indicator_type": "climate_target",
+      "value_kind": "target",
+      "value_origin": "issuer_reported",
+      "target_value": "44",
+      "unit": "%",
+      "base_year": 2023,
+      "target_year": 2030,
+      "covered_scopes": ["scope_1", "scope_2"],
+      "validation_status": "submitted_for_validation",
+      "organizational_boundary": "Bachem value-chain climate agenda; target text covers absolute Scope 1 and Scope 2 emissions.",
+      "methodology_or_standard": "Issuer states that the targets were submitted to SBTi for confirmation.",
+      "assurance_status": "not_stated",
+      "provenance": "official_issuer_pdf_manual_annotation_v1"
+    },
+    {
+      "schema_version": "climate-target.v1",
+      "target_id": "target-siegfried-scope-one-two-2033",
+      "issuer_id": "siegfried-holding-ag",
+      "document_id": "document-siegfried-sustainability-report-2025",
+      "document_sha256": "d6475053473b146882c8758e3133b4d5de4b4886158572215376f9adc81622bb",
+      "publication_date": "2026-02-20",
+      "pdf_page": 9,
+      "printed_page": 9,
+      "short_exact_excerpt": "reduce absolute scope 1 and 2 GHG emissions 66.89% by 2033 from a 2020 base year",
+      "indicator_type": "climate_target",
+      "value_kind": "target",
+      "value_origin": "issuer_reported",
+      "target_value": "66.89",
+      "unit": "%",
+      "base_year": 2020,
+      "target_year": 2033,
+      "covered_scopes": ["scope_1", "scope_2"],
+      "validation_status": "issuer_claimed_external_validation",
+      "organizational_boundary": "Siegfried absolute Scope 1 and Scope 2 emissions target.",
+      "methodology_or_standard": "Issuer reports validation by the Science Based Targets initiative; no registry source is included in this corpus.",
+      "assurance_status": "explicitly_not_assured",
+      "provenance": "official_issuer_pdf_manual_annotation_v1"
+    }
+  ]
+}

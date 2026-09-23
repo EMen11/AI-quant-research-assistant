@@ -1,0 +1,53 @@
+{
+  "schema_version": "climate-source-manifest.v1",
+  "documents": [
+    {
+      "schema_version": "source-document-manifest.v1",
+      "document_id": "document-bachem-annual-report-2025",
+      "issuer_id": "bachem-holding-ag",
+      "title": "Bachem Annual Report 2025",
+      "document_year": 2025,
+      "document_type": "annual_report",
+      "reporting_period_start": "2025-01-01",
+      "reporting_period_end": "2025-12-31",
+      "publication_date": "2026-03-12",
+      "publication_date_status": "exact",
+      "publication_date_evidence": "The official Bachem media release is dated 2026-03-12 and states that the complete Annual Report 2025 can be viewed and downloaded on the Bachem website. The separate Board approval date stated in the annual report is 2026-03-02.",
+      "publication_date_evidence_url": "https://www.bachem.com/wp-content/uploads/2026/03/Media-Release-Financial-Year-2025_final.pdf",
+      "official_page_url": "https://www.bachem.com/about-bachem/investor-hub/reports-and-presentations/",
+      "requested_url": "https://www.bachem.com/wp-content/uploads/2026/03/Bachem-Annual-report-2025-EN.pdf",
+      "final_url": "https://www.bachem.com/wp-content/uploads/2026/03/Bachem-Annual-report-2025-EN.pdf",
+      "accessed_at": "2026-09-22T23:50:36Z",
+      "local_filename": "bachem-annual-report-2025-en.pdf",
+      "local_path": "data/source_documents/bachem-annual-report-2025-en.pdf",
+      "sha256": "acd34aee09ad95bd29e0a527b841b7158c4886f2f1f33c1ce9618b9e39ca1751",
+      "page_count": 106,
+      "language": "en",
+      "extraction_status": "text_extractable"
+    },
+    {
+      "schema_version": "source-document-manifest.v1",
+      "document_id": "document-siegfried-sustainability-report-2025",
+      "issuer_id": "siegfried-holding-ag",
+      "title": "Siegfried Sustainability Report 2025",
+      "document_year": 2025,
+      "document_type": "sustainability_report",
+      "reporting_period_start": "2025-01-01",
+      "reporting_period_end": "2025-12-31",
+      "publication_date": "2026-02-20",
+      "publication_date_status": "exact",
+      "publication_date_evidence": "The report states on PDF page 3 that it was published on February 20, 2026.",
+      "publication_date_evidence_url": "https://www.siegfried.ch/app/uploads/2026/02/Siegfried_2025_AR_Sustainability_Report_EN.pdf",
+      "official_page_url": "https://www.siegfried.ch/sustainability/",
+      "requested_url": "https://www.siegfried.ch/app/uploads/2026/02/Siegfried_2025_AR_Sustainability_Report_EN.pdf",
+      "final_url": "https://www.siegfried.ch/app/uploads/2026/02/Siegfried_2025_AR_Sustainability_Report_EN.pdf",
+      "accessed_at": "2026-09-22T23:50:36Z",
+      "local_filename": "siegfried-sustainability-report-2025-en.pdf",
+      "local_path": "data/source_documents/siegfried-sustainability-report-2025-en.pdf",
+      "sha256": "d6475053473b146882c8758e3133b4d5de4b4886158572215376f9adc81622bb",
+      "page_count": 62,
+      "language": "en",
+      "extraction_status": "text_extractable"
+    }
+  ]
+}
