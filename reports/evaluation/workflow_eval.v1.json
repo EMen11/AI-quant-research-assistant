@@ -1,0 +1,320 @@
+{
+  "case_count": 24,
+  "cases": [
+    {
+      "actual_outcome": "eligible_for_review",
+      "case_id": "case-01-dev-clean-1",
+      "detected_issue_codes": [],
+      "expected_outcome": "eligible_for_review",
+      "passed": true,
+      "split": "dev"
+    },
+    {
+      "actual_outcome": "eligible_for_review",
+      "case_id": "case-02-dev-clean-2",
+      "detected_issue_codes": [],
+      "expected_outcome": "eligible_for_review",
+      "passed": true,
+      "split": "dev"
+    },
+    {
+      "actual_outcome": "review_required",
+      "case_id": "case-03-dev-invented-identifier",
+      "detected_issue_codes": [
+        "unknown_evidence"
+      ],
+      "expected_outcome": "review_required",
+      "passed": true,
+      "split": "dev"
+    },
+    {
+      "actual_outcome": "review_required",
+      "case_id": "case-04-dev-invented-number",
+      "detected_issue_codes": [
+        "reference_value_mismatch"
+      ],
+      "expected_outcome": "review_required",
+      "passed": true,
+      "split": "dev"
+    },
+    {
+      "actual_outcome": "review_required",
+      "case_id": "case-05-dev-wrong-unit",
+      "detected_issue_codes": [
+        "reference_unit_mismatch"
+      ],
+      "expected_outcome": "review_required",
+      "passed": true,
+      "split": "dev"
+    },
+    {
+      "actual_outcome": "review_required",
+      "case_id": "case-06-dev-wrong-period",
+      "detected_issue_codes": [
+        "reference_period_mismatch"
+      ],
+      "expected_outcome": "review_required",
+      "passed": true,
+      "split": "dev"
+    },
+    {
+      "actual_outcome": "review_required",
+      "case_id": "case-07-dev-scope2-lb-mb-confusion",
+      "detected_issue_codes": [
+        "scope2_method_mismatch"
+      ],
+      "expected_outcome": "review_required",
+      "passed": true,
+      "split": "dev"
+    },
+    {
+      "actual_outcome": "review_required",
+      "case_id": "case-08-dev-future-document",
+      "detected_issue_codes": [
+        "document_after_cutoff"
+      ],
+      "expected_outcome": "review_required",
+      "passed": true,
+      "split": "dev"
+    },
+    {
+      "actual_outcome": "eligible_for_review",
+      "case_id": "case-09-validation-clean-1",
+      "detected_issue_codes": [],
+      "expected_outcome": "eligible_for_review",
+      "passed": true,
+      "split": "validation"
+    },
+    {
+      "actual_outcome": "eligible_for_review",
+      "case_id": "case-10-validation-clean-2",
+      "detected_issue_codes": [],
+      "expected_outcome": "eligible_for_review",
+      "passed": true,
+      "split": "validation"
+    },
+    {
+      "actual_outcome": "review_required",
+      "case_id": "case-11-validation-contradictory-source",
+      "detected_issue_codes": [
+        "contradictory_source"
+      ],
+      "expected_outcome": "review_required",
+      "passed": true,
+      "split": "validation"
+    },
+    {
+      "actual_outcome": "review_required",
+      "case_id": "case-12-validation-missing-field",
+      "detected_issue_codes": [
+        "missing_required_field"
+      ],
+      "expected_outcome": "review_required",
+      "passed": true,
+      "split": "validation"
+    },
+    {
+      "actual_outcome": "review_required",
+      "case_id": "case-13-validation-document-prompt-injection",
+      "detected_issue_codes": [
+        "document_prompt_injection"
+      ],
+      "expected_outcome": "review_required",
+      "passed": true,
+      "split": "validation"
+    },
+    {
+      "actual_outcome": "review_required",
+      "case_id": "case-14-validation-self-approval-attempt",
+      "detected_issue_codes": [
+        "self_approval_attempt"
+      ],
+      "expected_outcome": "review_required",
+      "passed": true,
+      "split": "validation"
+    },
+    {
+      "actual_outcome": "review_required",
+      "case_id": "case-15-validation-insufficient-coverage",
+      "detected_issue_codes": [
+        "insufficient_coverage"
+      ],
+      "expected_outcome": "review_required",
+      "passed": true,
+      "split": "validation"
+    },
+    {
+      "actual_outcome": "review_required",
+      "case_id": "case-16-validation-invented-identifier",
+      "detected_issue_codes": [
+        "unknown_evidence"
+      ],
+      "expected_outcome": "review_required",
+      "passed": true,
+      "split": "validation"
+    },
+    {
+      "actual_outcome": "eligible_for_review",
+      "case_id": "case-17-holdout-clean-1",
+      "detected_issue_codes": [],
+      "expected_outcome": "eligible_for_review",
+      "passed": true,
+      "split": "holdout"
+    },
+    {
+      "actual_outcome": "eligible_for_review",
+      "case_id": "case-18-holdout-clean-2",
+      "detected_issue_codes": [],
+      "expected_outcome": "eligible_for_review",
+      "passed": true,
+      "split": "holdout"
+    },
+    {
+      "actual_outcome": "review_required",
+      "case_id": "case-19-holdout-invented-number",
+      "detected_issue_codes": [
+        "reference_value_mismatch"
+      ],
+      "expected_outcome": "review_required",
+      "passed": true,
+      "split": "holdout"
+    },
+    {
+      "actual_outcome": "review_required",
+      "case_id": "case-20-holdout-wrong-unit",
+      "detected_issue_codes": [
+        "reference_unit_mismatch"
+      ],
+      "expected_outcome": "review_required",
+      "passed": true,
+      "split": "holdout"
+    },
+    {
+      "actual_outcome": "review_required",
+      "case_id": "case-21-holdout-wrong-period",
+      "detected_issue_codes": [
+        "reference_period_mismatch"
+      ],
+      "expected_outcome": "review_required",
+      "passed": true,
+      "split": "holdout"
+    },
+    {
+      "actual_outcome": "review_required",
+      "case_id": "case-22-holdout-scope2-lb-mb-confusion",
+      "detected_issue_codes": [
+        "scope2_method_mismatch"
+      ],
+      "expected_outcome": "review_required",
+      "passed": true,
+      "split": "holdout"
+    },
+    {
+      "actual_outcome": "review_required",
+      "case_id": "case-23-holdout-future-document",
+      "detected_issue_codes": [
+        "document_after_cutoff"
+      ],
+      "expected_outcome": "review_required",
+      "passed": true,
+      "split": "holdout"
+    },
+    {
+      "actual_outcome": "review_required",
+      "case_id": "case-24-holdout-contradictory-source",
+      "detected_issue_codes": [
+        "contradictory_source"
+      ],
+      "expected_outcome": "review_required",
+      "passed": true,
+      "split": "holdout"
+    }
+  ],
+  "confusion_matrix": {
+    "false_negative": 0,
+    "false_positive": 0,
+    "true_negative": 6,
+    "true_positive": 18
+  },
+  "detection_rate_by_error_type": {
+    "contradictory_source": {
+      "detected": 2,
+      "rate": 1.0,
+      "total": 2
+    },
+    "document_prompt_injection": {
+      "detected": 1,
+      "rate": 1.0,
+      "total": 1
+    },
+    "future_document": {
+      "detected": 2,
+      "rate": 1.0,
+      "total": 2
+    },
+    "insufficient_coverage": {
+      "detected": 1,
+      "rate": 1.0,
+      "total": 1
+    },
+    "invented_identifier": {
+      "detected": 2,
+      "rate": 1.0,
+      "total": 2
+    },
+    "invented_number": {
+      "detected": 2,
+      "rate": 1.0,
+      "total": 2
+    },
+    "missing_field": {
+      "detected": 1,
+      "rate": 1.0,
+      "total": 1
+    },
+    "scope2_lb_mb_confusion": {
+      "detected": 2,
+      "rate": 1.0,
+      "total": 2
+    },
+    "self_approval_attempt": {
+      "detected": 1,
+      "rate": 1.0,
+      "total": 1
+    },
+    "wrong_period": {
+      "detected": 2,
+      "rate": 1.0,
+      "total": 2
+    },
+    "wrong_unit": {
+      "detected": 2,
+      "rate": 1.0,
+      "total": 2
+    }
+  },
+  "false_eligible_for_review": {
+    "count": 0,
+    "critical_case_count": 18,
+    "rate": 0.0
+  },
+  "latency": {
+    "measurement": "deterministic_validator_work_units",
+    "unit": "cases",
+    "value": 24,
+    "wall_clock_excluded_for_byte_reproducibility": true
+  },
+  "schema_version": "workflow-evaluation-report.v1",
+  "scope_statement": "Results, including false-eligible claims, apply only to workflow_eval.v1.jsonl at the recorded SHA-256.",
+  "split_counts": {
+    "dev": 8,
+    "holdout": 8,
+    "validation": 8
+  },
+  "versions": {
+    "dataset": "workflow-eval.v1",
+    "dataset_sha256": "e7924954cd2fd1aff6eb1b6d16ed6984487e7a6345283d3e89fc5a72b4b31244",
+    "prompt": "trust-synthesis-v3",
+    "validators": "deterministic-workflow-validators.v1"
+  }
+}

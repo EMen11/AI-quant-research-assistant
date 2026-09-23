@@ -255,12 +255,9 @@ def test_metric_value_in_summary_is_blocked(
     assert not report.value_checks_passed
 
 
-def test_missing_trusted_inputs_force_abstention(valid_result) -> None:  # type: ignore[no-untyped-def]
+def test_policy_consumes_only_validation_report(valid_result) -> None:  # type: ignore[no-untyped-def]
     assessment = assess_draft(
-        run_id=valid_result.run_id,
         report=valid_result.validation_report,
-        metrics=(),
-        evidence=(),
     )
 
-    assert assessment.status == "abstain"
+    assert assessment.status == "eligible_for_review"

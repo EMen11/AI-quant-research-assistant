@@ -493,4 +493,3 @@ def _structural_depth(schema: dict[str, Any]) -> int:
         return max(depths)
 
     return visit(schema, 1, frozenset())
-

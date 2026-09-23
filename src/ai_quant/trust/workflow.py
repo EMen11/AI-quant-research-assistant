@@ -284,10 +284,7 @@ class InMemoryTrustWorkflow:
         state.transition("validated")
 
         assessment = assess_draft(
-            run_id=run_id,
             report=report,
-            metrics=metric_records,
-            evidence=evidence_records,
         )
         rendered = render_validated_draft(
             draft=draft,

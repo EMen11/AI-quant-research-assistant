@@ -34,6 +34,16 @@ IssueCode = Literal[
     "unsupported_period_alignment",
     "implicit_cross_domain_relation",
     "internal_status_token",
+    "reference_value_mismatch",
+    "reference_unit_mismatch",
+    "reference_period_mismatch",
+    "scope2_method_mismatch",
+    "document_after_cutoff",
+    "contradictory_source",
+    "missing_required_field",
+    "insufficient_coverage",
+    "document_prompt_injection",
+    "self_approval_attempt",
 ]
 IssueSeverity = Literal["info", "warning", "error", "critical"]
 AssessmentStatus = Literal["eligible_for_review", "review_required", "abstain"]
@@ -363,6 +373,10 @@ class ValidationReport(StrictModel):
                 "free_numeric_literal",
                 "metric_value_literal",
                 "evidence_numeric_literal_unverified",
+                "reference_value_mismatch",
+                "reference_unit_mismatch",
+                "reference_period_mismatch",
+                "scope2_method_mismatch",
             }
             for issue in self.issues
         )

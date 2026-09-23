@@ -14,7 +14,7 @@ Statuts autorisés : `TODO`, `DOING`, `DONE`. Un bloc n'est `DONE` que lorsque s
 | 3 | Contrats de confiance et tranche verticale | DONE | `speedrun/application-ready` | modifications locales non commitées sur `c4fbbf4` | `uv lock --check`<br>`uv sync --frozen --all-groups`<br>`uv run --frozen ruff check .`<br>`APP_MODE=demo uv run --frozen pytest -q`<br>`git diff --check`<br>healthcheck et contrôle navigateur locaux |
 | 4 | Corpus sustainable finance traçable | DONE | `speedrun/application-ready` | modifications locales non commitées sur `5972af7` | `uv lock --check`<br>`uv sync --frozen --all-groups`<br>`uv run --frozen ruff check .`<br>`APP_MODE=demo uv run --frozen pytest -q`<br>`APP_MODE=demo uv run --frozen pytest -q -k "corpus or evidence or cutoff"`<br>`git diff --check`<br>12 observations et 2 cibles vérifiées humainement contre les pages officielles |
 | 5 | Retrieval évalué et LLM structuré | DONE | `speedrun/application-ready` | modifications locales non commitées sur `ca10c3e` | `uv lock --check`<br>`uv sync --frozen --all-groups`<br>`uv run --frozen ruff check .`<br>`APP_MODE=demo uv run --frozen pytest -q -k "content_rules or trust or llm or anthropic or live_capture"`<br>`APP_MODE=demo uv run --frozen pytest -q`<br>fixture live v3 normalisée, validée et revue humainement |
-| 6 | Validateurs et évaluation de bout en bout | TODO | À créer | — | `uv run pytest -q`<br>régénérer le rapport d'évaluation et vérifier qu'aucun cas critique connu n'est `eligible_for_review` |
+| 6 | Validateurs et évaluation de bout en bout | DONE | `speedrun/application-ready` | modifications du Bloc 6 sur `4c3dee8` | `uv lock --check`<br>`uv sync --frozen --all-groups`<br>`uv run --frozen ruff check .`<br>`APP_MODE=demo uv run --frozen pytest -q -k "evaluation or validation or workflow"`<br>`APP_MODE=demo uv run --frozen pytest -q`<br>double génération byte-identique du rapport |
 | 7 | Interface analyste et release publique R1 | TODO | À créer | — | `APP_MODE=demo uv run streamlit run app.py`<br>smoke test deux fois des scénarios admissible et bloqué, puis navigation privée/mobile |
 | 8 | PostgreSQL, FastAPI et Docker Compose | TODO | À créer | — | `docker compose build`<br>`docker compose up -d`<br>`docker compose ps`<br>`uv run pytest -q`<br>`docker compose down` |
 | 9 | Préparation et vérification du déploiement final | TODO | À créer | — | test de démarrage hors ligne en `APP_MODE=demo`<br>scan de secrets à sortie masquée<br>smoke test URL publique anonyme et mobile |
@@ -101,3 +101,15 @@ Statuts autorisés : `TODO`, `DOING`, `DONE`. Un bloc n'est `DONE` que lorsque s
 - Les contrôles figés passent : Ruff, lockfile, installation verrouillée, tests ciblés et suite complète hors ligne, ainsi que la double génération byte-identique de l'artefact retrieval (`25eec8ba5c3f5e87d4bb1c7ced6b8891f5730a2c0266b191f0e6fdaa18f57d27`).
 - Le Bloc est `DONE` après validation déterministe, revue humaine et promotion explicite de la fixture live normalisée dans le mode demo hors ligne.
 - `assets/Edited.png` reste non suivi, non lu, non modifié et hors périmètre.
+
+## État du Bloc 6
+
+- Le dataset `workflow_eval.v1.jsonl` contient 24 cas équilibrés : 8 dev, 8 validation et 8 holdout, avec deux contrôles propres et six cas adversariaux par split.
+- Onze types d'erreur sont couverts : identifiant et chiffre inventés, unité et période erronées, confusion Scope 2 location/market, document futur, contradiction, champ manquant, prompt injection documentaire, auto-approbation et couverture insuffisante.
+- Les validateurs comparent les claims aux références serveur pour les IDs, valeurs, unités, périodes, méthodes Scope 2, dates de cutoff, contradictions et couverture minimale.
+- La politique automatique accepte uniquement un `ValidationReport`, retourne exclusivement un `AutomatedAssessment` et ne crée jamais de `HumanReview`.
+- Sur le dataset de SHA-256 `e7924954cd2fd1aff6eb1b6d16ed6984487e7a6345283d3e89fc5a72b4b31244`, la matrice est TP=18, TN=6, FP=0, FN=0 ; chaque type versionné est détecté à 100 % et aucun des 18 cas critiques n'est `eligible_for_review`.
+- Ces résultats sont strictement limités à ce dataset versionné ; ils ne démontrent pas une performance en production ni sur des documents ouverts.
+- Le rapport canonique exclut les mesures murales dépendantes de la machine et indique honnêtement 24 unités de travail déterministes ; deux générations temporaires et l'artefact versionné ont le même SHA-256 `4530786143728d5b5d3440c6f24dbe5f0b703b5ee3590054fa08d4a9a80ad9d6`.
+- Les 269 tests passent hors ligne, dont 57 tests ciblés ; lockfile, installation figée, Ruff et contrôles de diff passent.
+- Aucun appel réseau ou Anthropic, aucun secret, embedding, reranker, vector store, changement retrieval ou élément du Bloc 7 n'a été ajouté.

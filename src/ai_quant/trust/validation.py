@@ -376,27 +376,18 @@ def render_validated_draft(
 
 def assess_draft(
     *,
-    run_id: str,
     report: ValidationReport,
-    metrics: tuple[MetricRecord, ...],
-    evidence: tuple[EvidenceRecord, ...],
 ) -> AutomatedAssessment:
-    """Route the draft without expressing any approval or human decision."""
+    """Route using only trusted validator output, never raw generated content."""
 
-    if not metrics or not evidence:
+    if report.has_blocking_issues:
         return AutomatedAssessment(
-            run_id=run_id,
-            status="abstain",
-            reason_codes=("insufficient_trusted_inputs",),
-        )
-    if report.run_id != run_id or report.has_blocking_issues:
-        return AutomatedAssessment(
-            run_id=run_id,
+            run_id=report.run_id,
             status="review_required",
             reason_codes=("blocking_validation_issues",),
         )
     return AutomatedAssessment(
-        run_id=run_id,
+        run_id=report.run_id,
         status="eligible_for_review",
         reason_codes=("validated_references",),
     )
