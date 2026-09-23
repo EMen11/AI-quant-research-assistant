@@ -111,5 +111,7 @@ Statuts autorisés : `TODO`, `DOING`, `DONE`. Un bloc n'est `DONE` que lorsque s
 - Sur le dataset de SHA-256 `e7924954cd2fd1aff6eb1b6d16ed6984487e7a6345283d3e89fc5a72b4b31244`, la matrice est TP=18, TN=6, FP=0, FN=0 ; chaque type versionné est détecté à 100 % et aucun des 18 cas critiques n'est `eligible_for_review`.
 - Ces résultats sont strictement limités à ce dataset versionné ; ils ne démontrent pas une performance en production ni sur des documents ouverts.
 - Le rapport canonique exclut les mesures murales dépendantes de la machine et indique honnêtement 24 unités de travail déterministes ; deux générations temporaires et l'artefact versionné ont le même SHA-256 `4530786143728d5b5d3440c6f24dbe5f0b703b5ee3590054fa08d4a9a80ad9d6`.
-- Les 269 tests passent hors ligne, dont 57 tests ciblés ; lockfile, installation figée, Ruff et contrôles de diff passent.
+- Le sidecar versionné `workflow_eval.v1.timing.json`, à schéma fermé, mesure avec l'horloge monotone `time.perf_counter_ns` trois warmups puis 20 exécutions séquentielles du pipeline complet : chargement, validation, création des assessments et agrégation.
+- Ces durées dépendent du matériel, des caches, de l'ordonnancement et de la charge système. Elles ne sont ni reproductibles byte-for-byte ni un benchmark portable ; leur variabilité normale entre deux générations n'est pas une erreur de reproductibilité.
+- Les 272 tests passent hors ligne, dont 60 tests ciblés ; lockfile, installation figée, Ruff et contrôles de diff passent.
 - Aucun appel réseau ou Anthropic, aucun secret, embedding, reranker, vector store, changement retrieval ou élément du Bloc 7 n'a été ajouté.

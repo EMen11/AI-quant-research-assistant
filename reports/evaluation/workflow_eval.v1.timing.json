@@ -1,0 +1,56 @@
+{
+  "clock": {
+    "monotonic": true,
+    "name": "time.perf_counter_ns",
+    "resolution_ns": 42
+  },
+  "dataset": {
+    "case_count": 24,
+    "path": "tests/evaluation/workflow_eval.v1.jsonl",
+    "sha256": "e7924954cd2fd1aff6eb1b6d16ed6984487e7a6345283d3e89fc5a72b4b31244",
+    "version": "workflow-eval.v1"
+  },
+  "environment": {
+    "logical_cpu_count": 10,
+    "platform_machine": "arm64",
+    "platform_release": "24.6.0",
+    "platform_system": "Darwin",
+    "processor": "arm",
+    "python_compiler": "Clang 22.1.3 ",
+    "python_implementation": "CPython",
+    "python_version": "3.12.14"
+  },
+  "measured_runs": 20,
+  "measurement_scope": "dataset_loading_validation_assessment_report_aggregation",
+  "observations": [
+    277959,
+    284041,
+    274125,
+    301625,
+    283000,
+    273917,
+    288042,
+    295833,
+    290750,
+    294416,
+    289833,
+    286208,
+    300584,
+    284500,
+    291875,
+    290917,
+    294750,
+    301875,
+    292500,
+    298166
+  ],
+  "reproducibility_notice": "Durations depend on hardware, caches, scheduling, and system load; they are not byte-for-byte reproducible and are not a portable benchmark.",
+  "schema_version": "workflow-evaluation-timing.v1",
+  "summary": {
+    "maximum": 301875,
+    "median": 290833.5,
+    "minimum": 273917
+  },
+  "unit": "nanoseconds",
+  "warmup_runs": 3
+}

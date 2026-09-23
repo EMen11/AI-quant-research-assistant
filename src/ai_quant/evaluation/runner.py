@@ -3,16 +3,35 @@
 from __future__ import annotations
 
 import json
+import os
+import platform
+import statistics
+import time
 from collections import Counter, defaultdict
 from pathlib import Path
 
-from ai_quant.evaluation.models import ErrorType, WorkflowEvaluationCase
+from ai_quant.evaluation.models import (
+    ErrorType,
+    TimingClock,
+    TimingDataset,
+    TimingEnvironment,
+    TimingSummary,
+    WorkflowEvaluationCase,
+    WorkflowEvaluationTimingReport,
+)
 from ai_quant.evaluation.validators import validate_evaluation_case
 from ai_quant.trust.validation import assess_draft
 
 DATASET_VERSION = "workflow-eval.v1"
 PROMPT_VERSION = "trust-synthesis-v3"
 VALIDATOR_VERSION = "deterministic-workflow-validators.v1"
+TIMING_SCHEMA_VERSION = "workflow-evaluation-timing.v1"
+TIMING_WARMUP_RUNS = 3
+TIMING_MEASURED_RUNS = 20
+TIMING_REPRODUCIBILITY_NOTICE = (
+    "Durations depend on hardware, caches, scheduling, and system load; "
+    "they are not byte-for-byte reproducible and are not a portable benchmark."
+)
 
 _ERROR_TO_CODE: dict[ErrorType, str] = {
     "invented_identifier": "unknown_evidence",
@@ -113,6 +132,89 @@ def write_evaluation_report(dataset_path: Path, output_path: Path) -> None:
         json.dumps(evaluate_dataset(dataset_path), indent=2, sort_keys=True) + "\n",
         encoding="utf-8",
     )
+
+
+def measure_evaluation_pipeline(dataset_path: Path) -> WorkflowEvaluationTimingReport:
+    """Measure complete sequential evaluations after fixed untimed warmups."""
+
+    for _ in range(TIMING_WARMUP_RUNS):
+        evaluate_dataset(dataset_path)
+
+    observations: list[int] = []
+    last_report: dict[str, object] | None = None
+    for _ in range(TIMING_MEASURED_RUNS):
+        started_ns = time.perf_counter_ns()
+        last_report = evaluate_dataset(dataset_path)
+        elapsed_ns = time.perf_counter_ns() - started_ns
+        observations.append(elapsed_ns)
+
+    assert last_report is not None
+    clock_info = time.get_clock_info("perf_counter")
+    resolution_ns = max(1, round(clock_info.resolution * 1_000_000_000))
+    versions = last_report["versions"]
+    assert isinstance(versions, dict)
+    dataset_sha256 = versions["dataset_sha256"]
+    assert isinstance(dataset_sha256, str)
+    case_count = last_report["case_count"]
+    assert isinstance(case_count, int)
+
+    return WorkflowEvaluationTimingReport(
+        schema_version=TIMING_SCHEMA_VERSION,
+        measurement_scope="dataset_loading_validation_assessment_report_aggregation",
+        warmup_runs=TIMING_WARMUP_RUNS,
+        measured_runs=TIMING_MEASURED_RUNS,
+        unit="nanoseconds",
+        clock=TimingClock(
+            name="time.perf_counter_ns",
+            monotonic=clock_info.monotonic,
+            resolution_ns=resolution_ns,
+        ),
+        dataset=TimingDataset(
+            version=DATASET_VERSION,
+            sha256=dataset_sha256,
+            path=str(dataset_path),
+            case_count=case_count,
+        ),
+        environment=TimingEnvironment(
+            python_version=platform.python_version(),
+            python_implementation=platform.python_implementation(),
+            python_compiler=platform.python_compiler(),
+            platform_system=platform.system(),
+            platform_release=platform.release(),
+            platform_machine=platform.machine(),
+            processor=platform.processor(),
+            logical_cpu_count=os.cpu_count(),
+        ),
+        observations=tuple(observations),
+        summary=TimingSummary(
+            minimum=min(observations),
+            median=float(statistics.median(observations)),
+            maximum=max(observations),
+        ),
+        reproducibility_notice=TIMING_REPRODUCIBILITY_NOTICE,
+    )
+
+
+def write_evaluation_timing_report(dataset_path: Path, output_path: Path) -> None:
+    """Write the non-deterministic timing sidecar separately from the canonical report."""
+
+    timing_report = measure_evaluation_pipeline(dataset_path)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path.write_text(
+        json.dumps(timing_report.model_dump(mode="json"), indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+
+
+def write_evaluation_artifacts(
+    dataset_path: Path,
+    report_path: Path,
+    timing_path: Path,
+) -> None:
+    """Write the deterministic report and machine-dependent timing sidecar."""
+
+    write_evaluation_report(dataset_path, report_path)
+    write_evaluation_timing_report(dataset_path, timing_path)
 
 
 def _matrix_cell(expected_blocked: bool, predicted_blocked: bool) -> str:
