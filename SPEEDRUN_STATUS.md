@@ -17,8 +17,8 @@ Statuts autorisés : `TODO`, `DOING`, `DONE`. Un bloc n'est `DONE` que lorsque s
 | 6 | Validateurs et évaluation de bout en bout | DONE | `codex/implementer-bloc-6-evaluateurs-et-rapport` | corrections locales sur `cd61978`, seconde revue indépendante `PASS` | `uv lock --check`<br>`uv sync --frozen --all-groups`<br>`uv run --frozen ruff check .`<br>`APP_MODE=demo uv run --frozen pytest -q -k "evaluation or validation or workflow or trust"`<br>`APP_MODE=demo uv run --frozen pytest -q`<br>double génération byte-identique du rapport<br>seconde revue indépendante `PASS`, aucun P0/P1 |
 | 7 | Interface analyste et release publique R1 | DONE | `speedrun/application-ready` | `2f15f1fd426db312eb38a8c334746d8169ba1199` | PR #2 fusionnée en fast-forward<br>CI post-fusion réussie<br>application publique vérifiée sur desktop anonyme<br>contrôle mobile public 390×844 confirmé manuellement |
 | 8 | PostgreSQL, FastAPI et Docker Compose | DONE | `codex/block-8-postgres-fastapi-docker` | `23c4f9192aedf9899989a839ae53f3b80b99f6a2` | Deux revues indépendantes exécutées<br>tous les constats confirmés corrigés<br>tests ciblés : 24 PASS<br>suite locale et Docker : 367 PASS, 1 SKIP expliqué, 2 warnings tiers<br>smoke live : 1 PASS<br>migration vide, Alembic, healthchecks et teardown : PASS |
-| 9 | Préparation et vérification du déploiement final | DOING | `codex/block-9-secure-demo-deployment` | commit candidat de cette branche (`feat: prepare isolated public demo deployment`) | lock, sync et Ruff : PASS<br>tests ciblés hors ligne : 94 PASS<br>suite complète hors ligne : 353 PASS, 20 SKIP PostgreSQL/live attendus, 2 warnings tiers<br>scan masqué : 147 fichiers suivis dans le candidat, PASS<br>serveur gardé, healthcheck et navigateur local : PASS<br>URL publique anonyme et mobile : non vérifiées |
-| 10 | README, preuves et release de candidature | TODO | À créer | — | vérifier chaque commande/lien depuis un clone propre<br>`uv run ruff check .`<br>`uv run pytest -q`<br>revue finale des claims contre artefacts versionnés |
+| 9 | Préparation et vérification du déploiement final | DONE | `codex/block-9-secure-demo-deployment` | `a4ee5c0b6944ebe8432c6029f51e8b1be5556644` | CI du commit candidat : PASS<br>release locale hors ligne : PASS<br>scan masqué du candidat : PASS<br>URL publique desktop anonyme : PASS<br>viewport public émulé 390×844 : PASS |
+| 10 | README, preuves et release de candidature | DOING | `codex/block-9-secure-demo-deployment` | candidat documentaire construit sur `a4ee5c0b6944ebe8432c6029f51e8b1be5556644` | README professionnel et preuves : prêts<br>liens essentiels et cohérence des commandes : vérifiés dans le worktree courant<br>clone propre : en attente<br>revue indépendante finale : en attente |
 
 ## État du Bloc 0
 
@@ -264,11 +264,19 @@ Statuts autorisés : `TODO`, `DOING`, `DONE`. Un bloc n'est `DONE` que lorsque s
 
 ## État du Bloc 9
 
-- Statut `DOING` : la préparation locale est vérifiée, mais le bloc ne pourra devenir `DONE`
-  qu'après publication du commit candidat et contrôle de l'URL réelle conformément au plan.
+- Statut `DONE` après publication et contrôle de l'URL réelle le 2026-09-24 à 02:56:16 UTC.
+- URL publique vérifiée :
+  https://ai-quant-research-assistant-2wpsobhnavfaznnp4pjmxt.streamlit.app/.
+- Commit déployé : `a4ee5c0b6944ebe8432c6029f51e8b1be5556644`. La branche distante
+  `origin/codex/block-9-secure-demo-deployment` pointait sur ce SHA exact lors du déploiement.
+- La CI GitHub Actions du commit a réussi :
+  https://github.com/EMen11/AI-quant-research-assistant/actions/runs/35948281716.
 - La branche `codex/block-9-secure-demo-deployment` part exactement du commit Bloc 8
-  `23c4f9192aedf9899989a839ae53f3b80b99f6a2`. Le commit candidat regroupe uniquement les
-  changements Bloc 9 revus ; aucun push, merge ou déploiement n'a été effectué.
+  `23c4f9192aedf9899989a839ae53f3b80b99f6a2`. Elle a été poussée sans force, sans merge dans
+  `main`. Le déploiement utilise cette branche, `app.py`, Python 3.12 et une zone Secrets vide.
+- `APP_MODE=demo` est assuré par le défaut fermé de l'application et confirmé par le bandeau public
+  `APP_MODE=demo · offline artifacts only · no provider call`. Aucun secret Anthropic ou PostgreSQL
+  n'a été configuré et aucun appel fournisseur payant n'a été effectué.
 - En `APP_MODE=demo`, les variables réservées au live sont ignorées. L'adaptateur Anthropic est
   importé paresseusement uniquement lorsqu'un appelant live le demande. Le test dédié présente
   volontairement une clé factice et une URL API invalide, refuse l'import des frontières
@@ -299,7 +307,38 @@ Statuts autorisés : `TODO`, `DOING`, `DONE`. Un bloc n'est `DONE` que lorsque s
   la passe demo sans service est intentionnelle. Deux warnings tiers restent présents ; healthcheck,
   rendu navigateur local et arrêt du serveur PASS.
 - `docs/deployment.md` décrit la configuration, le démarrage, les limites, la publication manuelle
-  et les checklists locale, anonyme distante et mobile. Les cases distante et mobile restent
-  explicitement non vérifiées avant un véritable déploiement.
-- Les revues demo restent session-only et non authentifiées ; aucune persistance PostgreSQL ne fait
-  partie de la démo publique. Le Bloc 10 reste `TODO` et n'a pas commencé.
+  et les checklists locale, anonyme distante et mobile.
+- Après déconnexion explicite du compte propriétaire Streamlit, l'URL a chargé sans authentification
+  applicative. Une session HTTP publique anonyme a obtenu 200 sur la racine et le healthcheck ; le
+  navigateur anonyme a rendu les six vues sans erreur console.
+- Le scénario admissible affiche `eligible_for_review`, la provenance historique, les extraits et
+  hashes de source, et aucune `HumanReview`. Le scénario bloqué affiche `review_required`, le
+  libellé de validation échouée, le bandeau non fiable, les findings `cross_run_reference` et
+  `free_numeric_literal` de sévérité `critical`, et aucun export approuvé.
+- Une nouvelle session anonyme redémarre sur le scénario admissible sans revue persistée. Les revues
+  demo restent session-only et non authentifiées ; aucune persistance PostgreSQL ne fait partie de
+  la démo publique.
+- Le viewport public anonyme émulé à 390×844 donne accès aux six vues, sans débordement horizontal
+  global ; le scénario bloqué et ses findings restent lisibles. Il s'agit d'une émulation navigateur,
+  pas d'un test sur téléphone physique.
+- Le Bloc 10 a commencé uniquement pour la finalisation documentaire demandée ci-dessous.
+
+## État du Bloc 10
+
+- Statut `DOING` : la documentation nécessaire à la candidature est prête, mais les autres gates
+  du bloc sont volontairement différés.
+- Le README anglais décrit l'objectif, la démo publique, le parcours court, les deux architectures
+  demo/live, les frontières de confiance, le statut réel des capacités, les résultats versionnés,
+  les commandes existantes et les limites connues.
+- Les résultats d'évaluation sont rattachés à leurs artefacts, datasets et commits. Les suites de
+  tests qui se recouvrent ne sont pas additionnées et ne sont pas présentées comme une mesure de
+  qualité analytique.
+- Le README indique explicitement que la démo publique utilise des fixtures figées et ne réalise
+  aucune génération LLM en direct. Il sépare les validations et assessments automatiques de la
+  décision humaine.
+- Les cibles des liens relatifs essentiels et les commandes documentées ont été comparées au
+  worktree et à la configuration actuels. Aucune campagne complète de tests n'a été relancée pour
+  cette modification strictement documentaire.
+- La vérification depuis un clone propre n'a pas été effectuée et n'est pas revendiquée. La revue
+  indépendante finale en lecture seule reste également en attente.
+- Aucun tag, release, merge dans `main` ou nouvelle fonctionnalité n'entre dans cette passe.

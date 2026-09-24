@@ -1,399 +1,187 @@
-# AI Quant Research Assistant — Controlled AI Financial Research Workflow
+# AI Quant Research Workbench
 
-> A Python workflow combining deterministic risk analytics with LLM-based interpretation for structured financial research memos.
+[![CI](https://github.com/EMen11/AI-quant-research-assistant/actions/workflows/ci.yml/badge.svg?branch=codex%2Fblock-9-secure-demo-deployment)](https://github.com/EMen11/AI-quant-research-assistant/actions/workflows/ci.yml?query=branch%3Acodex%2Fblock-9-secure-demo-deployment)
+![Python 3.12](https://img.shields.io/badge/Python-3.12-blue)
+![License: MIT](https://img.shields.io/badge/License-MIT-lightgrey)
+![Research only](https://img.shields.io/badge/use-research%20only-red)
 
-![Python](https://img.shields.io/badge/Python-3.12-blue)
-![Anthropic](https://img.shields.io/badge/Anthropic-Claude%20Sonnet-orange)
-![Streamlit](https://img.shields.io/badge/Streamlit-1.32+-red)
-![scipy](https://img.shields.io/badge/Markowitz-scipy.optimize-green)
-![License](https://img.shields.io/badge/License-MIT-lightgrey)
-![Not Financial Advice](https://img.shields.io/badge/Not%20Financial%20Advice-research%20only-red)
+AI Quant Research Workbench is a reference implementation for producing traceable financial and
+climate-research drafts without allowing generated text to become trusted evidence or an automatic
+decision. Deterministic Python owns quantitative calculations, evidence identities, validation and
+workflow state; structured generation can only propose bounded text and references. The project is
+designed to make assumptions, provenance, failure states and the remaining need for human review
+visible rather than hide them behind a chat interface.
 
----
+**Public demo:**
+[open the Streamlit application](https://ai-quant-research-assistant-2wpsobhnavfaznnp4pjmxt.streamlit.app/)
 
-## Reproducible Block 1 foundation
+The public application is a frozen, read-only demonstration. It does **not** generate a new LLM
+answer, download market data, connect to PostgreSQL or call Anthropic when a visitor opens it.
 
-The default application is now a small, frozen public demo. With `APP_MODE=demo` (the
-default), startup uses `FakeLLM` and `FrozenMarketDataProvider`: it requires no API key,
-market download, database, or paid network call. The historical prototype modules remain in
-the repository for later migration, but the public entry point does not import or execute them.
+![Admissible scenario overview](docs/screenshots/block-7/admissible-overview.jpg)
 
-### Install, run, test, and verify
+## A short demonstration path
 
-Prerequisites: Python 3.12 and [uv](https://docs.astral.sh/uv/).
+1. Open **Overview** and confirm the banner says `APP_MODE=demo` and the admissible scenario is
+   `eligible_for_review`, not approved.
+2. Open **Quant** to inspect the immutable market snapshot, assumptions, deterministic metrics and
+   optimizer diagnostics.
+3. Open **Climate Evidence** to inspect issuer, document date, page, excerpt, source hash and
+   assurance/comparability metadata.
+4. Open **Validation & Review** and confirm that no `HumanReview` exists at session start.
+5. Select the blocked scenario. It must show `review_required`, failed validation, an untrusted
+   result, critical findings and no approved export.
+6. Use **Quality** and **Methodology** to inspect the versioned evaluation results and the limits
+   attached to them.
+
+The automatic statuses only route work. `eligible_for_review` means that the implemented checks
+found no blocking issue; it is not an analytical approval. A `HumanReview` is a separate explicit
+decision, and reviews created in the public demo are unauthenticated, session-only and discarded
+with the session.
+
+## Architecture and trust boundaries
+
+```mermaid
+flowchart LR
+    subgraph Public["Public demo · APP_MODE=demo"]
+        U["Browser"] --> S["Streamlit · app.py"]
+        S --> F["Versioned frozen fixtures"]
+        F --> Q["Deterministic Quant Core"]
+        F --> R["Offline retrieval"]
+        Q --> V["Python validators"]
+        R --> V
+        V --> A["Automated assessment"]
+        A --> H["Explicit human review\nsession-only"]
+    end
+
+    subgraph Local["Local persistent mode · APP_MODE=live"]
+        LS["Streamlit"] --> API["FastAPI"]
+        API --> SV["Application service"]
+        SV --> DB["SQLAlchemy repositories\nPostgreSQL"]
+    end
+
+    LLM["Anthropic adapter\nexplicitly authorized path only"] -. "structured proposal" .-> V
+```
+
+The public path imports neither the live provider adapter nor the FastAPI/PostgreSQL stack. The
+local `APP_MODE=live` name identifies the API and persistence transport; its implemented analysis
+input is still labelled `frozen_offline_fixture` and does not imply live market data or a live model
+call. The Anthropic adapter exists behind a separate, explicit configuration and authorization
+boundary and is not part of the deployed demo.
+
+Generated content is always untrusted input. Python creates run, metric, evidence and claim
+identifiers; injects deterministic numeric values; checks every reference against the active run;
+and creates the `ValidationReport` and `AutomatedAssessment`. Only a person can create a
+`HumanReview` disposition.
+
+## Delivery status
+
+| Area | Status | What is available | Boundary or evidence |
+|---|---|---|---|
+| Deterministic quant core | **Implemented** | Frozen snapshot lineage; return, volatility, drawdown, VaR/ES, covariance/correlation and constrained Markowitz scenario | Synthetic daily price history; no forecast, backtest, fees or FX conversion. See [quant methodology](docs/methodology/quant_methodology.md). |
+| Climate evidence | **Implemented** | Versioned records for two issuers, with dates, pages, excerpts, units, source hashes, assurance and explicit comparability decisions | Small manually reviewed corpus, not comprehensive ESG coverage. See [corpus methodology](docs/methodology/sustainability_corpus.md). |
+| Retrieval | **Implemented** | Deterministic filters plus BM25 and long-context baselines over versioned passages | Small ten-question gold set; no embeddings, reranker or vector store. See [retrieval methodology](docs/methodology/retrieval_and_llm.md). |
+| Structured generation boundary | **Implemented** | Closed schemas, exact reference allowlists, one-call budget, mocked transport tests and sanitized metadata | The public fixture derives from a historical provider response; no live generation occurs in the demo. |
+| Validation and review routing | **Implemented** | Run-scoped references, numeric substitution, blocking findings, three automatic routing statuses and a separate human-decision record | Covered rules and attack families only; `eligible_for_review` never means approved. See [trust boundaries](docs/methodology/trust_boundaries.md). |
+| Public Streamlit experience | **Demo-only** | Six views, admissible and blocked scenarios, evidence inspection and session review workflow | Frozen artifacts; reviews are unauthenticated and non-persistent; no provider, database or market-network call. |
+| Local API and persistence | **Implemented** | FastAPI, SQLAlchemy repositories, Alembic, PostgreSQL and Docker Compose; atomic/idempotent analysis writes and append-only application APIs | Local workflow uses the frozen fixture. The append-only guarantee is application-level, not WORM or administrator-proof. See [local stack](docs/block8_local_stack.md). |
+| Public durable review workflow | **Planned** | — | Authentication, durable reviewer identity and public PostgreSQL persistence are not deployed. |
+| Candidate release sign-off | **Planned** | Documentation is prepared | Verification from a clean clone and the final independent read-only review remain outstanding. |
+
+## Measured results and their scope
+
+These numbers describe specific versioned evaluation sets or software checks. They are not added
+together, and passing tests is not presented as a measure of analytical quality.
+
+| Result | Exact scope | Version / reference |
+|---|---|---|
+| BM25 recall@1 **0.90**, recall@3 **1.00**; long-context recall@1 **0.70**, recall@3 **0.90** | Ten frozen retrieval questions: six filter-only and four ranking cases. On the four ranking cases, BM25 is 0.75/1.00 and long-context is 0.25/0.75. | [`retrieval_baselines.v1.json`](reports/evaluation/retrieval_baselines.v1.json), introduced at `4c3dee85ce9a7e8b968c7ee63ed19ef7e9150f9d` |
+| **24/24** expected routing outcomes; **0/18** critical cases incorrectly marked eligible | Eight development, eight validation and eight frozen holdout cases in the exact covered rule and attack families. Thirteen error categories have one positive case each; the holdout is neither external nor historically blind. | [`workflow_eval.v1.json`](reports/evaluation/workflow_eval.v1.json), dataset SHA-256 `db7cab17163e5df41d4e15ceb7c8e3524ccb1f6d2529c1a9c23967a967d6516e`, report last changed at `4eee6d637ac7d0bf0df2ee77d923f5a0337619cc` |
+| PostgreSQL/API/Docker verification completed, including an empty-database migration, repository/API tests, atomicity, rollback, idempotency, constraints, versioning and a Streamlit → FastAPI → PostgreSQL smoke test | Local disposable Docker environment. The full suite recorded for this gate was 367 passed, one expected live-path skip and two third-party warnings; this suite overlaps targeted checks and is not combined with them. | Block 8 commit `23c4f9192aedf9899989a839ae53f3b80b99f6a2`; details in [`SPEEDRUN_STATUS.md`](SPEEDRUN_STATUS.md) |
+| Offline public-release suite: **353 passed, 20 skipped**, with two third-party warnings | `APP_MODE=demo`, installed dependencies, uv offline execution. The skips are PostgreSQL/live integration tests intentionally excluded from the service-free demo pass; they had been exercised separately in Block 8. | Candidate and deployed code commit `a4ee5c0b6944ebe8432c6029f51e8b1be5556644`; [CI run](https://github.com/EMen11/AI-quant-research-assistant/actions/runs/35948281716) |
+| Anonymous desktop and emulated mobile public smoke checks passed | Deployed commit `a4ee5c0…`: six views, both scenarios, evidence, no persisted review, no global horizontal overflow at 390×844 and no observed application error. This was viewport emulation, not a physical-phone test. | Verification recorded at 2026-09-24 02:56:16 UTC in [`SPEEDRUN_STATUS.md`](SPEEDRUN_STATUS.md) |
+
+Timing data in `workflow_eval.v1.timing.json` measures only the deterministic validation evaluation
+pipeline on one recorded machine. It is not a portable benchmark and does not measure retrieval,
+generation, rendering, a provider call or the full application.
+
+## Run the frozen demo
+
+Prerequisites are Python 3.12 and [uv](https://docs.astral.sh/uv/). Dependency installation may
+need registry access when the locked packages are not cached:
 
 ```bash
-# Reproduce the complete development environment from uv.lock
-uv sync --frozen --all-groups
-
-# Start the offline Streamlit demo
-APP_MODE=demo uv run streamlit run app.py
-
-# Run tests
-uv run pytest -q
-
-# Run the same local quality gates as CI
-uv run ruff check .
-uv run pytest -q
-```
-
-The package is installed by `uv sync` and can be imported without changing `sys.path`:
-
-```bash
-uv run python -c "import ai_quant; print(ai_quant.__version__)"
-```
-
-On affected macOS filesystems, Python 3.12 can ignore editable `.pth` files below `.venv`
-when Finder reapplies the `UF_HIDDEN` flag. Use a visible environment behind the conventional
-`.venv` path instead; `uv run` and editors continue to discover it normally:
-
-```bash
-uv venv --python 3.12 venv
-ln -s venv .venv
-uv sync --frozen --all-groups
-```
-
-Both paths are ignored by Git. This avoids `PYTHONPATH`, source-path injection, and a temporary
-`chflags` workaround.
-
-For Streamlit Community Cloud, use `app.py` as the entry point, select Python 3.12, and
-leave the Secrets field empty for demo mode. Community Cloud reads the committed `uv.lock`.
-The historical live prototype remains available at `app/streamlit_app.py`; it is not the
-Community Cloud demo entry point and may perform live market and Anthropic calls.
-
-Copy `.env.example` to `.env` only for the historical prototype configuration. In Block 8,
-`APP_MODE=live` selects the local Streamlit → FastAPI → PostgreSQL transport and can persist the
-labelled frozen fixture without any Anthropic key or provider call. A real Anthropic key is needed
-only for a separate provider path that is explicitly authorized and configured; selecting live
-persistence alone never enables Anthropic or market-network access.
-
----
-
-## Historical prototype overview
-
-The following sections describe the preserved pre-migration workflow. They are not executed by
-the default Block 1 demo and will be migrated behind the new interfaces in later blocks.
-
-Ask any investment question in plain English. Four specialized Claude agents work in sequence to deliver institutional-style analysis in under 60 seconds.
-
-The system replicates a real buy-side research workflow:
-- **Data** is fetched live from market APIs
-- **Risk** is calculated quantitatively (VaR, drawdown, stress tests)
-- **Allocation** is optimized via real Markowitz (scipy.optimize, long-only constraints)
-- **Output** is a CIO-level executive memo + PDF report
-
----
-
-##  Design Principles
-
-- **Deterministic quantitative core** — VaR, drawdown, and Sharpe are computed mathematically, not generated by LLMs
-- **LLMs used for reasoning, not computation** — Claude interprets and communicates results, never calculates them
-- **Transparent assumptions** — risk-free rate, constraints, and annualization factors are explicit and documented
-- **Reproducible outputs** — same query on same data always produces same quantitative metrics
-
----
-
-## Why this is not just a chatbot
-
-This project separates quantitative computation from LLM-based interpretation. Market data, returns, VaR, drawdown, Sharpe ratio and portfolio weights are computed deterministically using Python, NumPy, pandas and scipy. The LLM is used only to interpret results, structure the analysis and generate an executive-style research memo. It cannot modify or override the underlying metrics.
-
----
-
-## Controls & Guardrails
-
-The following controls are actually implemented in the codebase:
-
-- **Ticker validation** — keyword-based extraction with an explicit blacklist (generic terms such as USA, US, NATO, GDP are rejected). When no relevant financial instrument is identified, the pipeline returns early with a message asking the user to specify assets rather than defaulting to an arbitrary index.
-- **Missing data guards** — `fetch_market_data` skips tickers that return empty histories from yfinance. `calculate_metrics` skips any series with fewer than two data points. `portfolio_strategist` guards against empty returns DataFrames before attempting Markowitz optimisation.
-- **Error handling** — `try/except` blocks around all yfinance calls; the Streamlit interface catches and displays exceptions without crashing.
-- **API key handling** — the Anthropic API key is loaded exclusively from a `.env` file via `python-dotenv`. It is not hardcoded anywhere in the source.
-- **Output persistence** — every completed analysis is saved to SQLite with a timestamp, the original query, tickers, and key metrics.
-- **Deterministic metric separation** — VaR (parametric, numpy), max drawdown, Sharpe ratio, and Markowitz portfolio weights are all computed in Python before the LLM receives any data. The LLM only receives pre-computed numbers; it does not perform calculations.
-- **UI disclaimer** — a visible research-purposes-only disclaimer is displayed in the Streamlit interface above the input area.
-- **Data source transparency** — the Streamlit interface displays the market data source (Yahoo Finance via yfinance) above the input area.
-
-### Future controls to add
-
-The following controls are **not yet implemented** and are listed here for transparency:
-
-- Retrieval timestamp displayed alongside market data in the UI
-- Automated metric consistency check (verifying that LLM prose does not contradict computed numbers)
-- Input rate limiting and API quota management
-
----
-
-##  Demo
-
-**Input:**
-```
-Should I increase my exposure to Swiss pharmaceutical stocks
-given recent FDA approvals?
-```
-
-**Output (< 60 seconds):**
-```
-EXECUTIVE SUMMARY
-Do not increase exposure to Swiss pharmaceutical stocks despite
-recent FDA approvals. Current market conditions show suboptimal
-risk-adjusted returns with excessive concentration risk that
-outweighs regulatory tailwinds.
-
-KEY FINDINGS
-1. Swiss Market Index delivers 5.07% returns with 14.51% volatility
-   → Sharpe ratio of 0.281 (below institutional threshold of 0.35)
-2. Max drawdown of -17.31% and 99% VaR of -2.13% indicate significant
-   downside vulnerability in single-country exposure
-3. 100% Swiss allocation violates institutional diversification standards
-   and creates unacceptable regulatory dependency risk
-
-RESEARCH VIEW
-REBALANCE: Reduce Swiss pharma exposure to 40% within 30 days.
-Diversify remaining 60% across developed markets.
-
-RISKS TO MONITOR
-- Regulatory pipeline dependency creating binary outcome scenarios
-- CHF/USD currency risk (~15-20% annual volatility impact)
-- Sector rotation away from defensive pharma in rising rate environment
-
-NEXT STEPS
-1. Begin systematic reduction of Swiss positions to 40% target allocation
-2. Identify diversification in US and European pharma within 2 weeks
-3. Establish monthly FDA pipeline monitoring + CHF hedge review
-```
-> Each analysis automatically generates an institutional PDF report 
-> saved to `reports/generated/`
----
-
-## Screenshots
-
-**Full Interface — Executive Summary**
-![Executive Summary](assets/Executive_Resume.png)
-
-**Risk Assessment — VaR & Stress Tests**
-![Risk Assessment](assets/Risk_Assesment_1.png)
-
-**Market Analysis — Live Data**
-![Market Analysis](assets/Market_Analysis.png)
-
----
-
-## 🏗️ Architecture
-```
-User Query (natural language)
-         │
-         ▼
-┌────────────────────────────────────────┐
-│        MultiAgentOrchestrator          │
-│                                        │
-│  ┌─────────────┐                       │
-│  │   Agent 1   │ Market Data Analyst   │
-│  │  yfinance   │ → prices, returns,    │
-│  │  + Claude   │   volatility, trends  │
-│  └──────┬──────┘                       │
-│         │                              │
-│  ┌──────▼──────┐                       │
-│  │   Agent 2   │ Risk Assessor         │
-│  │  numpy VaR  │ → VaR 95/99%,        │
-│  │  + Claude   │   drawdown, stress    │
-│  └──────┬──────┘                       │
-│         │                              │
-│  ┌──────▼──────┐                       │
-│  │   Agent 3   │ Portfolio Strategist  │
-│  │   scipy     │ → Markowitz weights,  │
-│  │  Markowitz  │   Sharpe, allocation  │
-│  └──────┬──────┘                       │
-│         │                              │
-│  ┌──────▼──────┐                       │
-│  │   Agent 4   │ Executive Synthesizer │
-│  │   Claude    │ → CIO memo,           │
-│  │             │   next steps, PDF     │
-│  └──────┬──────┘                       │
-└─────────┼──────────────────────────────┘
-          │
-    ┌─────┴──────┐
-    │            │
-    ▼            ▼
-SQLite DB    PDF Report
-(history)   (ReportLab)
-```
-
-
-
----
-
-##  Agent Specifications
-
-| Agent | Role | Input | Key Output |
-|-------|------|-------|-----------|
-| **Market Analyst** | Fetch & analyze live market data | User query + tickers | Returns, volatility, trends, anomalies |
-| **Risk Assessor** | Quantitative risk management | Agent 1 output | VaR 95/99%, max drawdown, stress scenarios |
-| **Portfolio Strategist** | Markowitz optimization | Agent 1+2 outputs | Optimal weights, Sharpe ratio, entry strategy |
-| **Executive Synthesizer** | CIO-level communication | All agents outputs | Executive memo, key findings, next steps |
-
-Each agent receives the full output of all previous agents — context accumulates through the chain.
-
----
-
-##  Methodology
-
-### Value at Risk (VaR) — Parametric Method
-
-$$VaR(\alpha) = -(\mu + z(\alpha) \times \sigma_{daily})$$
-
-Note: $\mu \approx 0$ on short horizons, but included for mathematical rigor.
-
-Where:
-
-$$z_{0.95} = 1.645 \quad z_{0.99} = 2.326 \quad \sigma_{daily} = \frac{\sigma_{annual}}{\sqrt{252}}$$
-
-Computed in `risk_assessor.py` via numpy. Represents the maximum expected daily loss at a given confidence level.
-
----
-
-### Maximum Drawdown
-
-$$MDD = \min_{t} \left( \frac{P_t - P_{peak,t}}{P_{peak,t}} \right)$$
-
-Where $P_{peak,t} = \max_{\tau \leq t} P_\tau$ is the expanding maximum of the price series up to time $t$.
-
----
-
-### Sharpe Ratio
-
-$$Sharpe = \frac{R_p - R_f}{\sigma_p}$$
-
-Where:
-- $R_p$ = annualized portfolio return
-- $R_f$ = 2% risk-free rate — Swiss context (configurable in `base_agent.py`)
-- $\sigma_p$ = annualized portfolio volatility
-
----
-
-### Markowitz Optimization — scipy.optimize
-
-**Objective:** Maximize Sharpe ratio
-
-$$\max_{w} \frac{w^\top \mu - R_f}{\sqrt{w^\top \Sigma w}}$$
-
-**Subject to:**
-
-$$\sum_{i=1}^{n} w_i = 1 \quad \text{(fully invested)}$$
-
-$$0.05 \leq w_i \leq 0.60 \quad \forall i \quad \text{(long-only, max 60\% per asset)}$$
-
-**Covariance matrix** $\Sigma$ computed on 252 trading days of real daily returns, annualized:
-
-$$\Sigma_{annual} = \Sigma_{daily} \times 252$$
-
-Solved via `scipy.optimize.minimize` with SLSQP method.
-
----
-
-## Limitations
-
-Being transparent about what this system does and does not do:
-
-| Limitation | Detail |
-|-----------|--------|
-| **Parametric VaR** | Assumes normal distribution of returns. Understates tail risk in fat-tailed markets. Historical simulation would be more robust. |
-| **No transaction costs** | Optimization ignores bid-ask spreads, commissions, and market impact. Real execution costs would reduce expected returns. |
-| **yfinance data quality** | Free API with potential latency and survivorship bias. Not suitable for production trading without a premium data source. |
-| **LLM hallucination risk** | Claude agents interpret quantitative metrics — qualitative commentary may not always align perfectly with the numbers. Always verify analytical outputs against the raw metrics. |
-| **Single-period optimization** | Markowitz is solved on a static 1-year window. No rolling reoptimization or regime detection. |
-| **Limited universe** | Ticker extraction covers major US and Swiss equities. Emerging markets, fixed income, and alternatives are not supported. |
-
----
-
-##  Quick Start
-
-### Prerequisites
-- Python 3.12
-- `uv`
-
-### Installation
-
-```bash
-# 1. Clone
-git clone https://github.com/EMen11/AI-quant-research-assistant.git
+git clone --branch codex/block-9-secure-demo-deployment \
+  https://github.com/EMen11/AI-quant-research-assistant.git
 cd AI-quant-research-assistant
-
-# 2. Locked dependencies and importable package
 uv sync --frozen --all-groups
-
-# 3. Launch the offline demo (APP_MODE=demo is also the default)
-APP_MODE=demo uv run streamlit run app.py
+APP_MODE=demo uv run --frozen streamlit run app.py
 ```
 
-The reproducible public-demo boundary, release procedure, and pre/post-publication smoke checklist
-are documented in [`docs/deployment.md`](docs/deployment.md).
+After installation, the documented release checks can execute with uv network access disabled:
 
-### Local persistent mode (Block 8, DONE)
-
-The completed Block 8 local stack adds Streamlit → FastAPI → SQLAlchemy repositories → PostgreSQL while
-leaving the public offline demo independent. Launch, migration, endpoint, reviewer-identity,
-append-only, and disposable empty-database instructions are documented in
-[`docs/block8_local_stack.md`](docs/block8_local_stack.md). `APP_MODE=live` currently persists an
-explicitly labelled frozen offline fixture without an Anthropic key; it does not imply live market
-data or a live model call. The `psycopg[binary]` dependency is a deliberate local/MVP convenience
-for reproducible setup, not a universal production recommendation. A production deployment must
-choose and operate its PostgreSQL driver packaging according to its platform and security policy.
-The pre-release schema head is `20260924_0002`. The earlier uncommitted
-`20260924_0001` identifier was ephemeral and local, is unsupported, and is deliberately absent
-from the final migration graph; a database stamped with it must be recreated or migrated
-explicitly before use and will fail closed rather than be treated as current.
-
-## 🛠️ Tech Stack
-
-| Layer | Technology | Purpose |
-|-------|-----------|---------|
-| AI Engine | Anthropic Claude Sonnet | 4 specialized agents |
-| Optimization | scipy.optimize (SLSQP) | Markowitz portfolio optimization |
-| Market Data | yfinance | Live prices, returns, volume |
-| Data Processing | pandas, numpy | Metrics calculation, covariance matrix |
-| Interface | Streamlit | Web application |
-| Local API | FastAPI | Typed persistent-mode HTTP boundary |
-| Persistence | PostgreSQL + SQLAlchemy 2 + Alembic | Versioned local research artifacts |
-| PDF Reports | ReportLab | Institutional report generation |
-| Historical prototype storage | SQLite standard library | Legacy conversation history only |
-| Config | typed environment settings; python-dotenv in legacy code | Environment management |
-
----
-
-## 📁 Project Structure
-
-```
-ai-quant-research-assistant/
-├── src/
-│   ├── ai_quant/                       # installable Block 1 package
-│   │   ├── config.py                   # typed startup configuration
-│   │   ├── api/                        # FastAPI public contracts and service
-│   │   ├── persistence/                # SQLAlchemy ORM and repositories
-│   │   ├── llm/                        # LLMClient + FakeLLM
-│   │   └── market_data/                # provider interface + frozen provider
-│   ├── agents/
-│   │   ├── base_agent.py              # Claude API client + base class
-│   │   ├── market_analyst.py          # Agent 1: live data + trends
-│   │   ├── risk_assessor.py           # Agent 2: VaR, drawdown, stress tests
-│   │   ├── portfolio_strategist.py    # Agent 3: scipy Markowitz optimization
-│   │   └── executive_synthesizer.py  # Agent 4: CIO memo generation
-│   ├── orchestrator.py                # Chain orchestration + SQLite persistence
-│   ├── data_fetcher.py                # yfinance wrapper + metric calculations
-│   └── report_generator.py           # PDF generation (ReportLab)
-├── app/
-│   └── streamlit_app.py              # preserved historical live prototype
-├── assets/                           # Screenshots for documentation
-├── data/                             # SQLite conversation history
-├── reports/generated/                # PDF outputs
-├── tests/                             # unit, integration, evaluation
-├── pyproject.toml                    # dependencies and tool configuration
-├── uv.lock                           # reproducible dependency resolution
-├── app.py                            # offline Community Cloud entry point
-├── .env.example                     # placeholders only
-└── main.py                           # CLI entry point
+```bash
+uv lock --check
+uv run --frozen ruff check .
+uv run --offline --frozen python scripts/scan_tracked_secrets.py
+APP_MODE=demo UV_OFFLINE=1 uv run --offline --frozen pytest -q \
+  tests/integration/test_block9_demo_release.py
+APP_MODE=demo UV_OFFLINE=1 uv run --offline --frozen pytest -q
 ```
 
----
+The socket guard used by the release test rejects non-loopback Python socket connections while
+allowing localhost health checks. It is a process-level test boundary, not an operating-system
+firewall and not a guarantee about browsers, native code or deliberately altered subprocesses.
+See the complete [deployment and smoke-test procedure](docs/deployment.md).
 
-> *Built to demonstrate multi-agent AI orchestration applied to institutional quantitative finance.*
-> *For informational and educational purposes only — not financial advice.*
+## Run the local persistent stack
+
+Docker Compose starts PostgreSQL, applies Alembic migrations, then starts FastAPI and Streamlit.
+The values below are explicit local placeholders, not production credentials:
+
+```bash
+BLOCK8_POSTGRES_DB=ai_quant_local \
+BLOCK8_POSTGRES_USER=ai_quant_local \
+BLOCK8_POSTGRES_PASSWORD=block8-local-placeholder \
+docker compose up --build -d
+
+docker compose ps
+docker compose logs --no-color --tail=100
+docker compose down
 ```
+
+Streamlit is exposed at `http://127.0.0.1:8501` and FastAPI at
+`http://127.0.0.1:8000`. The migration head is `20260924_0002`. The earlier local,
+uncommitted `20260924_0001` stamp is not part of the final migration graph; a database carrying
+that stamp must be recreated or handled through an explicit manual migration and fails closed by
+default. Full operational and disposable-database instructions are in
+[`docs/block8_local_stack.md`](docs/block8_local_stack.md).
+
+## Known limitations
+
+- Demo market prices are synthetic and climate content is historical; neither is a current market
+  view, a forecast, an impact measurement or investment advice.
+- Quantitative estimates use a short frozen sample. Markowitz inputs are in-sample historical
+  estimates and no predictive backtest is claimed.
+- The climate corpus covers two issuers and selected reported indicators. Different scopes,
+  methods, periods, organizational boundaries and assurance levels limit comparison.
+- Retrieval and validation results apply only to the named, versioned datasets and covered attack
+  families. They do not establish real-world generalization or universal prompt-injection safety.
+- The public demo does not authenticate reviewers or persist reviews. PostgreSQL persistence is a
+  separate local workflow.
+- The tracked-file secret scan is focused and masks findings; it is not a scan of all Git history,
+  host configuration or platform-managed secrets.
+- The current documentation commit has not yet been reproduced from a clean clone. A final
+  independent read-only review and a physical-phone smoke test remain pending.
+
+## Final checks still pending
+
+The candidate documentation is ready, but the following Block 10 work is intentionally deferred:
+
+- reproduce the documented commands from a clean clone;
+- perform the final independent recruiter-style review of every README claim;
+- decide on a release note and tag only after that review;
+- create no release or merge into `main` until those gates are explicitly accepted.
+
+This repository is licensed under the [MIT License](LICENSE). All outputs are for research and
+educational use only and require independent human verification.
