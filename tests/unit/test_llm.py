@@ -328,6 +328,33 @@ def test_demo_factory_builds_fake_without_anthropic_initialization(monkeypatch) 
     assert isinstance(client_from_settings(Settings.from_env({})), FakeLLMClient)
 
 
+def test_live_factory_still_builds_anthropic_client_without_calling_provider(
+    monkeypatch,
+) -> None:  # type: ignore[no-untyped-def]
+    constructed: list[tuple[str, str]] = []
+
+    class StubAnthropicClient:
+        def __init__(self, *, api_key: str, model: str) -> None:
+            constructed.append((api_key, model))
+
+    monkeypatch.setattr(
+        "ai_quant.llm.anthropic.AnthropicLLMClient",
+        StubAnthropicClient,
+    )
+    settings = Settings.from_env(
+        {
+            "APP_MODE": "live",
+            "ANTHROPIC_API_KEY": "placeholder-live-key",
+            "ANTHROPIC_MODEL": "placeholder-live-model",
+        }
+    )
+
+    client = client_from_settings(settings)
+
+    assert isinstance(client, StubAnthropicClient)
+    assert constructed == [("placeholder-live-key", "placeholder-live-model")]
+
+
 def _request() -> SynthesisRequest:
     metric = LLMMetricInput(
         metric_id="metric-run-test-return",

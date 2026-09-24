@@ -4,13 +4,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from ai_quant.llm.anthropic import (
-    AnthropicLLMClient,
-    AnthropicSDKTransport,
-    AnthropicTransport,
-    AnthropicTransportRequest,
-    AnthropicTransportResponse,
-)
 from ai_quant.llm.base import (
     FakeLLM,
     FakeLLMClient,
@@ -43,10 +36,31 @@ def client_from_settings(settings: Settings) -> LLMClient:
         return FakeLLMClient()
     if settings.anthropic_api_key is None or settings.anthropic_model is None:
         raise ValueError("Live settings require an Anthropic key and model.")
+    from ai_quant.llm.anthropic import AnthropicLLMClient
+
     return AnthropicLLMClient(
         api_key=settings.anthropic_api_key,
         model=settings.anthropic_model,
     )
+
+
+_ANTHROPIC_EXPORTS = {
+    "AnthropicLLMClient",
+    "AnthropicSDKTransport",
+    "AnthropicTransport",
+    "AnthropicTransportRequest",
+    "AnthropicTransportResponse",
+}
+
+
+def __getattr__(name: str):  # type: ignore[no-untyped-def]
+    """Load the live adapter only when an explicitly live caller requests it."""
+
+    if name in _ANTHROPIC_EXPORTS:
+        from ai_quant.llm import anthropic
+
+        return getattr(anthropic, name)
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 __all__ = [
     "AnthropicLLMClient",

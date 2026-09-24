@@ -31,5 +31,16 @@ jobs:
       - name: Lint
         run: uv run --frozen ruff check .
 
+      - name: Scan tracked files for secrets (masked output)
+        run: uv run --offline --frozen python scripts/scan_tracked_secrets.py
+
+      - name: Verify the offline public-demo boundary
+        env:
+          ANTHROPIC_API_KEY: placeholder-ci-value
+          ANTHROPIC_MODEL: placeholder-ci-model
+          API_BASE_URL: postgres://ignored-in-demo
+          UV_OFFLINE: "1"
+        run: uv run --offline --frozen pytest -q tests/integration/test_block9_demo_release.py
+
       - name: Test
-        run: uv run --frozen pytest -q
+        run: uv run --offline --frozen pytest -q

@@ -43,6 +43,11 @@ class Settings:
                 f"APP_MODE must be one of: {allowed}; received {raw_mode!r}."
             ) from exc
 
+        # Demo is a closed offline runtime. Live-only environment values are ignored even
+        # when a hosting platform or developer shell happens to provide them.
+        if app_mode is AppMode.DEMO:
+            return cls(app_mode=app_mode)
+
         api_key = source.get("ANTHROPIC_API_KEY", "").strip() or None
         model = source.get("ANTHROPIC_MODEL", "").strip() or None
         api_base_url = source.get("API_BASE_URL", "http://api:8000").strip()

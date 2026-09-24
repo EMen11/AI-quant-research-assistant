@@ -17,6 +17,19 @@ def test_settings_accept_demo_without_anthropic_key() -> None:
     assert settings == Settings(app_mode=AppMode.DEMO)
 
 
+def test_demo_ignores_all_live_only_environment_values() -> None:
+    settings = Settings.from_env(
+        {
+            "APP_MODE": "demo",
+            "ANTHROPIC_API_KEY": "placeholder-present-but-ignored",
+            "ANTHROPIC_MODEL": "placeholder-model-id",
+            "API_BASE_URL": "postgres://invalid-but-ignored",
+        }
+    )
+
+    assert settings == Settings(app_mode=AppMode.DEMO)
+
+
 def test_settings_normalize_app_mode() -> None:
     settings = Settings.from_env({"APP_MODE": "  DEMO  "})
 

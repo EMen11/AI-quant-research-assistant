@@ -1,7 +1,7 @@
 # Speedrun status
 
 - Dernière mise à jour : 2026-09-24
-- Branche courante : `codex/block-8-postgres-fastapi-docker`
+- Branche courante : `codex/block-9-secure-demo-deployment`
 - Commit du Bloc 0 : `30c9db62b17685c5a0ed350c9780b08196b21f15`
 
 Statuts autorisés : `TODO`, `DOING`, `DONE`. Un bloc n'est `DONE` que lorsque ses contrôles sont passés et documentés. Les commandes des blocs futurs sont les gates prévues ; elles ne sont pas encore disponibles dans le dépôt actuel.
@@ -16,8 +16,8 @@ Statuts autorisés : `TODO`, `DOING`, `DONE`. Un bloc n'est `DONE` que lorsque s
 | 5 | Retrieval évalué et LLM structuré | DONE | `speedrun/application-ready` | modifications locales non commitées sur `ca10c3e` | `uv lock --check`<br>`uv sync --frozen --all-groups`<br>`uv run --frozen ruff check .`<br>`APP_MODE=demo uv run --frozen pytest -q -k "content_rules or trust or llm or anthropic or live_capture"`<br>`APP_MODE=demo uv run --frozen pytest -q`<br>fixture live v3 normalisée, validée et revue humainement |
 | 6 | Validateurs et évaluation de bout en bout | DONE | `codex/implementer-bloc-6-evaluateurs-et-rapport` | corrections locales sur `cd61978`, seconde revue indépendante `PASS` | `uv lock --check`<br>`uv sync --frozen --all-groups`<br>`uv run --frozen ruff check .`<br>`APP_MODE=demo uv run --frozen pytest -q -k "evaluation or validation or workflow or trust"`<br>`APP_MODE=demo uv run --frozen pytest -q`<br>double génération byte-identique du rapport<br>seconde revue indépendante `PASS`, aucun P0/P1 |
 | 7 | Interface analyste et release publique R1 | DONE | `speedrun/application-ready` | `2f15f1fd426db312eb38a8c334746d8169ba1199` | PR #2 fusionnée en fast-forward<br>CI post-fusion réussie<br>application publique vérifiée sur desktop anonyme<br>contrôle mobile public 390×844 confirmé manuellement |
-| 8 | PostgreSQL, FastAPI et Docker Compose | DONE | `codex/block-8-postgres-fastapi-docker` | commit de clôture de cette branche (`feat: complete Block 8 PostgreSQL API and Docker workflow`) | Deux revues indépendantes exécutées<br>tous les constats confirmés corrigés<br>tests ciblés : 24 PASS<br>suite locale et Docker : 367 PASS, 1 SKIP expliqué, 2 warnings tiers<br>smoke live : 1 PASS<br>migration vide, Alembic, healthchecks et teardown : PASS |
-| 9 | Préparation et vérification du déploiement final | TODO | À créer | — | test de démarrage hors ligne en `APP_MODE=demo`<br>scan de secrets à sortie masquée<br>smoke test URL publique anonyme et mobile |
+| 8 | PostgreSQL, FastAPI et Docker Compose | DONE | `codex/block-8-postgres-fastapi-docker` | `23c4f9192aedf9899989a839ae53f3b80b99f6a2` | Deux revues indépendantes exécutées<br>tous les constats confirmés corrigés<br>tests ciblés : 24 PASS<br>suite locale et Docker : 367 PASS, 1 SKIP expliqué, 2 warnings tiers<br>smoke live : 1 PASS<br>migration vide, Alembic, healthchecks et teardown : PASS |
+| 9 | Préparation et vérification du déploiement final | DOING | `codex/block-9-secure-demo-deployment` | commit candidat de cette branche (`feat: prepare isolated public demo deployment`) | lock, sync et Ruff : PASS<br>tests ciblés hors ligne : 94 PASS<br>suite complète hors ligne : 353 PASS, 20 SKIP PostgreSQL/live attendus, 2 warnings tiers<br>scan masqué : 147 fichiers suivis dans le candidat, PASS<br>serveur gardé, healthcheck et navigateur local : PASS<br>URL publique anonyme et mobile : non vérifiées |
 | 10 | README, preuves et release de candidature | TODO | À créer | — | vérifier chaque commande/lien depuis un clone propre<br>`uv run ruff check .`<br>`uv run pytest -q`<br>revue finale des claims contre artefacts versionnés |
 
 ## État du Bloc 0
@@ -260,4 +260,46 @@ Statuts autorisés : `TODO`, `DOING`, `DONE`. Un bloc n'est `DONE` que lorsque s
   aucun conteneur, réseau ou volume `ai-quant-block8-finalfix` ne subsiste et les ports
   18108, 18608 et 55438 ne sont plus en écoute.
   Aucune nouvelle revue indépendante n'a été lancée après cette dernière correction. Le Bloc 8 est
-  clôturé `DONE`. Le Bloc 9 reste `TODO` et n'a pas commencé.
+  clôturé `DONE`. Le Bloc 9 a ensuite commencé sur sa branche dédiée.
+
+## État du Bloc 9
+
+- Statut `DOING` : la préparation locale est vérifiée, mais le bloc ne pourra devenir `DONE`
+  qu'après publication du commit candidat et contrôle de l'URL réelle conformément au plan.
+- La branche `codex/block-9-secure-demo-deployment` part exactement du commit Bloc 8
+  `23c4f9192aedf9899989a839ae53f3b80b99f6a2`. Le commit candidat regroupe uniquement les
+  changements Bloc 9 revus ; aucun push, merge ou déploiement n'a été effectué.
+- En `APP_MODE=demo`, les variables réservées au live sont ignorées. L'adaptateur Anthropic est
+  importé paresseusement uniquement lorsqu'un appelant live le demande. Le test dédié présente
+  volontairement une clé factice et une URL API invalide, refuse l'import des frontières
+  Anthropic/FastAPI/PostgreSQL, et confirme le parcours admissible puis bloqué sans export approuvé.
+- Les fixtures approuvées et bloquées restent versionnées avec leur provenance, dates, hashes et
+  statuts. L'approbation de promotion de la fixture historique ne crée aucune approbation
+  analytique : chaque session demo démarre sans `HumanReview`, et `eligible_for_review` reste une
+  invitation à la revue humaine.
+- Installation et exécution sont distinguées : `uv sync --frozen --all-groups` peut nécessiter le
+  réseau si son cache est vide ; les tests et le serveur ont ensuite été lancés avec
+  `UV_OFFLINE=1` et `uv run --offline --frozen`.
+- Le vrai serveur Streamlit a démarré avec les connexions socket Python non-loopback bloquées ; son
+  healthcheck localhost a répondu `ok`, aucune tentative sortante n'a été enregistrée, et le port
+  temporaire 8519 a été arrêté. Ce garde de processus Python n'est pas un pare-feu OS et ne couvre
+  ni le navigateur, ni du code natif contournant `socket`, ni un sous-processus retirant le garde.
+- Le contrôle navigateur desktop local via le Playwright fourni par le runtime Codex a rendu une
+  page non vide, les six vues, sans erreur console ni erreur de page. L'outil `agent-browser`
+  n'était pas installé ; ce contrôle local ne vaut donc ni contrôle anonyme distant, ni contrôle
+  mobile public.
+- Après indexation explicite du candidat, le scan à sortie masquée passe sur ses 147 fichiers texte
+  suivis, y compris les 4 nouveaux fichiers Bloc 9 ; il n'affiche jamais les valeurs et reste un
+  scan ciblé à haute confiance, pas un scan de tout l'historique Git ni un substitut à la protection
+  de secrets de l'hébergeur.
+- Contrôles exécutés : `uv lock --check` PASS ; `uv sync --frozen --all-groups` PASS ;
+  `uv run --frozen ruff check .` PASS ; 94 tests ciblés hors ligne PASS ; suite complète hors ligne
+  353 PASS, 20 SKIP attendus : 19 tests exigent la base PostgreSQL jetable Bloc 8 et 1 exige le
+  service FastAPI live Bloc 8. Ces gates avaient réussi sous Docker au Bloc 8 ; leur exclusion de
+  la passe demo sans service est intentionnelle. Deux warnings tiers restent présents ; healthcheck,
+  rendu navigateur local et arrêt du serveur PASS.
+- `docs/deployment.md` décrit la configuration, le démarrage, les limites, la publication manuelle
+  et les checklists locale, anonyme distante et mobile. Les cases distante et mobile restent
+  explicitement non vérifiées avant un véritable déploiement.
+- Les revues demo restent session-only et non authentifiées ; aucune persistance PostgreSQL ne fait
+  partie de la démo publique. Le Bloc 10 reste `TODO` et n'a pas commencé.

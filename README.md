@@ -324,6 +324,9 @@ uv sync --frozen --all-groups
 APP_MODE=demo uv run streamlit run app.py
 ```
 
+The reproducible public-demo boundary, release procedure, and pre/post-publication smoke checklist
+are documented in [`docs/deployment.md`](docs/deployment.md).
+
 ### Local persistent mode (Block 8, DONE)
 
 The completed Block 8 local stack adds Streamlit → FastAPI → SQLAlchemy repositories → PostgreSQL while
