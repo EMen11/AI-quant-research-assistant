@@ -19,6 +19,7 @@ Sha256 = Annotated[str, Field(pattern=r"^[0-9a-f]{64}$")]
 NonEmptyText = Annotated[str, Field(min_length=1, max_length=2_000)]
 
 ClaimType = Literal["quantitative", "evidence", "limitation"]
+EvidenceStatus = Literal["synthetic_demo_evidence", "official_corpus_passage"]
 ReferenceScope2Method = Literal["location_based", "market_based", "not_applicable"]
 IssueCode = Literal[
     "unknown_metric",
@@ -122,7 +123,7 @@ class EvidenceRecord(StrictModel):
     excerpt: Annotated[str, Field(min_length=1, max_length=4_000)]
     period: NonEmptyText
     unit: str | None = Field(default=None, min_length=1, max_length=80)
-    status: Literal["synthetic_demo_evidence", "official_corpus_passage"]
+    status: EvidenceStatus
     passage_id: Identifier | None = None
     source_record_type: str | None = Field(default=None, min_length=1, max_length=80)
     source_record_id: Identifier | None = None

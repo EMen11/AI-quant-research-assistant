@@ -120,6 +120,16 @@ def test_demo_results_are_deterministic() -> None:
     assert first.rendered_draft == second.rendered_draft
 
 
+def test_valid_fixture_projects_references_to_server_owned_run_id() -> None:
+    result = InMemoryTrustWorkflow().run("valid", run_id="run-local-projection")
+
+    assert result.run_id == "run-local-projection"
+    assert all(record.run_id == result.run_id for record in result.metric_records)
+    assert all(record.run_id == result.run_id for record in result.evidence_records)
+    assert all(claim.run_id == result.run_id for claim in result.draft.claims)
+    assert result.assessment.status == "eligible_for_review"
+
+
 def test_demo_requires_no_network_or_secret(monkeypatch) -> None:  # type: ignore[no-untyped-def]
     def reject_network(*args, **kwargs):  # type: ignore[no-untyped-def]
         del args, kwargs

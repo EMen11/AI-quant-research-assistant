@@ -28,16 +28,16 @@ def test_settings_reject_unknown_app_mode() -> None:
         Settings.from_env({"APP_MODE": "preview"})
 
 
-def test_live_mode_requires_anthropic_key() -> None:
-    with pytest.raises(ConfigurationError, match="ANTHROPIC_API_KEY is required"):
-        Settings.from_env({"APP_MODE": "live"})
+def test_live_mode_requires_no_anthropic_configuration() -> None:
+    settings = Settings.from_env({"APP_MODE": "live"})
+
+    assert settings.app_mode is AppMode.LIVE
+    assert settings.api_base_url == "http://api:8000"
 
 
-def test_live_mode_requires_anthropic_model() -> None:
-    with pytest.raises(ConfigurationError, match="ANTHROPIC_MODEL is required"):
-        Settings.from_env(
-            {"APP_MODE": "live", "ANTHROPIC_API_KEY": "placeholder-test-key"}
-        )
+def test_api_base_url_must_be_http() -> None:
+    with pytest.raises(ConfigurationError, match="API_BASE_URL"):
+        Settings.from_env({"APP_MODE": "live", "API_BASE_URL": "postgres://wrong"})
 
 
 def test_live_mode_accepts_configured_anthropic_key_without_exposing_it() -> None:
@@ -46,10 +46,12 @@ def test_live_mode_accepts_configured_anthropic_key_without_exposing_it() -> Non
             "APP_MODE": "live",
             "ANTHROPIC_API_KEY": "placeholder-test-key",
             "ANTHROPIC_MODEL": "placeholder-model-id",
+            "API_BASE_URL": "http://127.0.0.1:8000/",
         }
     )
 
     assert settings.app_mode is AppMode.LIVE
     assert settings.anthropic_api_key == "placeholder-test-key"
     assert settings.anthropic_model == "placeholder-model-id"
+    assert settings.api_base_url == "http://127.0.0.1:8000"
     assert "placeholder-test-key" not in repr(settings)

@@ -24,6 +24,7 @@ class Settings:
     """Validated settings used at application startup."""
 
     app_mode: AppMode = AppMode.DEMO
+    api_base_url: str = "http://api:8000"
     anthropic_api_key: str | None = field(default=None, repr=False)
     anthropic_model: str | None = None
 
@@ -44,13 +45,13 @@ class Settings:
 
         api_key = source.get("ANTHROPIC_API_KEY", "").strip() or None
         model = source.get("ANTHROPIC_MODEL", "").strip() or None
-        if app_mode is AppMode.LIVE and api_key is None:
-            raise ConfigurationError("ANTHROPIC_API_KEY is required when APP_MODE=live.")
-        if app_mode is AppMode.LIVE and model is None:
-            raise ConfigurationError("ANTHROPIC_MODEL is required when APP_MODE=live.")
+        api_base_url = source.get("API_BASE_URL", "http://api:8000").strip()
+        if not api_base_url.startswith(("http://", "https://")):
+            raise ConfigurationError("API_BASE_URL must be an HTTP(S) URL.")
 
         return cls(
             app_mode=app_mode,
+            api_base_url=api_base_url.rstrip("/"),
             anthropic_api_key=api_key,
             anthropic_model=model,
         )

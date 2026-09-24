@@ -1,7 +1,7 @@
 # Speedrun status
 
 - Dernière mise à jour : 2026-09-24
-- Branche courante : `speedrun/application-ready`
+- Branche courante : `codex/block-8-postgres-fastapi-docker`
 - Commit du Bloc 0 : `30c9db62b17685c5a0ed350c9780b08196b21f15`
 
 Statuts autorisés : `TODO`, `DOING`, `DONE`. Un bloc n'est `DONE` que lorsque ses contrôles sont passés et documentés. Les commandes des blocs futurs sont les gates prévues ; elles ne sont pas encore disponibles dans le dépôt actuel.
@@ -16,7 +16,7 @@ Statuts autorisés : `TODO`, `DOING`, `DONE`. Un bloc n'est `DONE` que lorsque s
 | 5 | Retrieval évalué et LLM structuré | DONE | `speedrun/application-ready` | modifications locales non commitées sur `ca10c3e` | `uv lock --check`<br>`uv sync --frozen --all-groups`<br>`uv run --frozen ruff check .`<br>`APP_MODE=demo uv run --frozen pytest -q -k "content_rules or trust or llm or anthropic or live_capture"`<br>`APP_MODE=demo uv run --frozen pytest -q`<br>fixture live v3 normalisée, validée et revue humainement |
 | 6 | Validateurs et évaluation de bout en bout | DONE | `codex/implementer-bloc-6-evaluateurs-et-rapport` | corrections locales sur `cd61978`, seconde revue indépendante `PASS` | `uv lock --check`<br>`uv sync --frozen --all-groups`<br>`uv run --frozen ruff check .`<br>`APP_MODE=demo uv run --frozen pytest -q -k "evaluation or validation or workflow or trust"`<br>`APP_MODE=demo uv run --frozen pytest -q`<br>double génération byte-identique du rapport<br>seconde revue indépendante `PASS`, aucun P0/P1 |
 | 7 | Interface analyste et release publique R1 | DONE | `speedrun/application-ready` | `2f15f1fd426db312eb38a8c334746d8169ba1199` | PR #2 fusionnée en fast-forward<br>CI post-fusion réussie<br>application publique vérifiée sur desktop anonyme<br>contrôle mobile public 390×844 confirmé manuellement |
-| 8 | PostgreSQL, FastAPI et Docker Compose | TODO | À créer | — | Non commencé<br>`docker compose build`<br>`docker compose up -d`<br>`docker compose ps`<br>`uv run pytest -q`<br>`docker compose down` |
+| 8 | PostgreSQL, FastAPI et Docker Compose | DONE | `codex/block-8-postgres-fastapi-docker` | commit de clôture de cette branche (`feat: complete Block 8 PostgreSQL API and Docker workflow`) | Deux revues indépendantes exécutées<br>tous les constats confirmés corrigés<br>tests ciblés : 24 PASS<br>suite locale et Docker : 367 PASS, 1 SKIP expliqué, 2 warnings tiers<br>smoke live : 1 PASS<br>migration vide, Alembic, healthchecks et teardown : PASS |
 | 9 | Préparation et vérification du déploiement final | TODO | À créer | — | test de démarrage hors ligne en `APP_MODE=demo`<br>scan de secrets à sortie masquée<br>smoke test URL publique anonyme et mobile |
 | 10 | README, preuves et release de candidature | TODO | À créer | — | vérifier chaque commande/lien depuis un clone propre<br>`uv run ruff check .`<br>`uv run pytest -q`<br>revue finale des claims contre artefacts versionnés |
 
@@ -148,5 +148,116 @@ Statuts autorisés : `TODO`, `DOING`, `DONE`. Un bloc n'est `DONE` que lorsque s
 
 ## État du Bloc 8
 
-- Statut `TODO` : aucun travail du Bloc 8 n'a commencé.
-- PostgreSQL, FastAPI, SQLAlchemy, Alembic et Docker Compose restent hors du périmètre livré par le Bloc 7.
+- Statut `DONE` : livraison clôturée sur `codex/block-8-postgres-fastapi-docker` par le commit portant
+  le message `feat: complete Block 8 PostgreSQL API and Docker workflow`. La première revue
+  indépendante avait relevé 0 P0, 4 P1 et 3 P2 ; la seconde 0 P0, 2 P1 et 1 P2. Tous les constats
+  confirmés ont été corrigés et le rapport final de correction a été accepté.
+- Architecture ajoutée : Streamlit live → FastAPI → service transactionnel → repositories
+  SQLAlchemy 2 → PostgreSQL, avec modèles métier séparés des modèles ORM.
+- La migration Alembic pre-release finale porte le nouvel identifiant `20260924_0002` et est
+  appliquée depuis un volume PostgreSQL
+  jetable initialement vide. Le catalogue contient les douze tables métier minimales imposées :
+  `research_runs`, `market_snapshots`, `metric_records`, `source_documents`, `evidence_records`,
+  `generated_drafts`, `draft_claims`, `validation_issues`, `automated_assessments`,
+  `human_reviews`, `model_calls` et `evaluation_runs`, plus les deux tables d'association
+  `draft_claim_metric_refs` et `draft_claim_evidence_refs`.
+- L'identifiant antérieur `20260924_0001` était une révision éphémère, locale et jamais publiée ;
+  il n'est pas supporté comme prédécesseur dans le graphe final. Il n'est pas affirmé qu'aucun
+  consommateur externe n'a pu l'enregistrer. Une base portant cet ancien stamp doit être recréée
+  ou migrée explicitement avant usage ; elle échoue fermée et n'est jamais supprimée
+  automatiquement.
+- Les références acceptées de claims sont normalisées et ordonnées. Des clés étrangères composites imposent
+  le même run pour claim/draft et métrique ou preuve ; les références inconnues, cross-run,
+  dupliquées ou aux positions dupliquées sont rejetées par PostgreSQL. Les JSONB immuables
+  `declared_metric_ids` et `declared_evidence_ids` conservent séparément les déclarations d'audit,
+  y compris rejetées, sans constituer une preuve d'acceptation ni une seconde source de vérité pour
+  les associations actives. Les références délibérément invalides de la fixture bloquée ne
+  deviennent pas des associations ; elles sont exposées comme données déclarées non fiables avec
+  les vrais findings. Une correction peut remplacer explicitement ces déclarations dans une
+  nouvelle version sans muter la précédente.
+- Le schéma impose clés, appartenances au run, unicités métier, versions positives, statuts fermés
+  et timestamps timezone-aware. Les tests PostgreSQL réels vérifient aussi idempotence, rollback,
+  atomicité, contraintes, versions et append-only applicatif.
+- L'idempotence de `POST /analyses` utilise un verrou advisory PostgreSQL lié à la clé et une
+  transaction unique. Le premier appel retourne `201`, même clé/même payload retourne `200` avec
+  le même run sans doublon, et même clé/payload différent retourne `409` avec une erreur publique
+  stable ne contenant ni traceback ni donnée interne.
+- Les repositories n'exposent ni update ni delete pour les artefacts historiques. Cette garantie
+  append-only reste applicative : elle n'est ni réglementaire, ni cryptographique, ni résistante à
+  un administrateur PostgreSQL.
+- Le reviewer est un libellé saisi, non vérifié et non authentifié. Les revues sont append-only et
+  liées au run, au draft et à sa version courante. Les corrections verrouillent la ligne stable du
+  run avec `SELECT ... FOR UPDATE`, relisent la version courante sous verrou et retournent `409`
+  lorsque la précondition draft/version est devenue obsolète. Deux corrections concurrentes sur
+  v1 produisent exactement un `201`, un `409`, une seule v2 et une seule revue de correction.
+- Une correction reconstruit un `GeneratedDraft` versionné puis réutilise `validate_draft`,
+  `assess_draft` et `render_validated_draft`. Une correction admissible peut devenir
+  `eligible_for_review`, sans approbation automatique ; une approbation explicite ultérieure de la
+  version exacte reste nécessaire. Une correction invalide conserve ses vrais findings
+  déterministes et reste `review_required`. Tout échec rollbacke version, claims, références,
+  findings, assessment et revue.
+- Le chemin `APP_MODE=demo` demeure hors réseau, PostgreSQL, FastAPI et Anthropic ; un contrôle
+  isolé passe. La suite complète finale `APP_MODE=demo` avec PostgreSQL passe avec 367 tests réussis et un
+  test live sauté faute d'URL dans cette commande ; ce test est exécuté séparément avec 1 PASS.
+  Aucun import ni contact
+  PostgreSQL, FastAPI ou Anthropic n'est requis au démarrage demo.
+- `httpx` demeure déclaré directement dans le groupe de développement ; il apparaît aussi
+  transitivement dans le runtime via le SDK Anthropic, dont le chemin fournisseur reste distinct et
+  désactivé sans autorisation/configuration explicite. Le chemin `APP_MODE=live` du Bloc 8 persiste
+  la fixture `frozen_offline_fixture` sans clé Anthropic et sans appel fournisseur.
+- Contrôles uv : `uv lock --check` PASS avec 79 packages résolus et
+  `uv sync --frozen --all-groups` PASS. Le lockfile régénéré fait partie des modifications du Bloc 8.
+- Contrôles qualité après première revue : Ruff PASS ; 14 tests PostgreSQL P1/repositories PASS ;
+  contrats API/OpenAPI PASS ; suite demo complète avec PostgreSQL 361 PASS et 1 SKIP expliqué ;
+  test live Streamlit → FastAPI → PostgreSQL 1 PASS ; `alembic check` sans dérive.
+- Docker CLI 29.8.0, Engine 29.8.0 et Compose v5.5.1 ont été vérifiés. `docker compose config`,
+  `build` et `up -d` passent avec le projet jetable `ai-quant-block8-test-run2`, les services API,
+  PostgreSQL et Streamlit sont devenus healthy, et la migration one-shot s'est terminée avec le
+  code 0. API, migration et Streamlit s'exécutent sous l'utilisateur non-root `app`.
+- Les six routes attendues ont été exercées réellement. Le smoke HTTP a obtenu `201`, `200` et
+  `409` pour les trois cas d'idempotence, `200` pour la lecture d'analyse, des preuves et de la
+  dernière évaluation, puis `201` pour une revue liée à la version courante. Les healthchecks API,
+  PostgreSQL et Streamlit ont réussi ; le smoke Streamlit live a traversé FastAPI et PostgreSQL.
+- Trois défauts révélés par l'exécution réelle ont été corrigés : projection des références de la
+  fixture sur le run créé par le serveur, ordre explicite des flush SQLAlchemy pour respecter les
+  clés étrangères tout en conservant une transaction atomique, et acceptation stricte des tableaux
+  JSON de corrections avant conversion immédiate en tuple métier immuable.
+- Les quatre P1 reproduits avant correction étaient : acceptation d'une référence cross-run JSONB,
+  résultats concurrents `201/500`, correction valide forcée en `missing_required_field`, et
+  acceptation de valeurs invalides dans quatre vocabulaires SQL. Les P2 corrigent les contrats
+  OpenAPI fermés, l'image runtime et la documentation live/psycopg.
+- Les vocabulaires SQL fermés couvrent scénario, état du run, origine des données, type de document,
+  statut de preuve, type de claim, code et sévérité de finding, statut et reason code d'assessment,
+  disposition de revue, statut et origine de réponse des model calls.
+- La contrainte `ck_assessment_status_reason_exact` couple exactement les trois statuts aux trois
+  listes unitaires de raisons autorisées. Les trois couples valides passent ; les six couples
+  croisés ainsi que les listes vide, multiple et inconnue sont rejetés. Le service reconstruit en
+  outre `AutomatedAssessment` avec le modèle métier avant toute autorisation de revue ou
+  d'approbation ; une ligne incohérente simulée échoue avec une erreur publique fermée.
+- Le target Docker `runtime` n'utilise pas `--all-groups`, ne contient ni pytest, Ruff, uv ni le
+  répertoire `tests/`. Il contient uniquement le virtualenv applicatif, `app.py`, Alembic/migrations,
+  les documents méthodologiques et les rapports versionnés nécessaires. Le target `test` séparé
+  porte les dépendances de développement.
+- Les logs applicatifs finaux ne contiennent aucune traceback. Les erreurs de contraintes présentes
+  dans l'historique PostgreSQL proviennent des tests de rollback/contraintes et des tentatives ayant
+  révélé l'ordre de flush désormais corrigé ; elles n'ont laissé aucun écrit partiel.
+- Le teardown Compose a été exécuté. Les trois conteneurs inactifs laissés par le premier essai ont
+  également été supprimés ; aucun conteneur, réseau ou volume portant le marqueur
+  `ai-quant-block8-test` ne subsiste. Seul le volume jetable exact
+  `ai-quant-block8-test-postgres-data` a été supprimé, sans `docker volume prune`, et les ports
+  18000/18501 ne répondent plus.
+- Le projet de correction `ai-quant-block8-fix` a lui aussi été arrêté. Le seul volume supprimé est
+  `ai-quant-block8-fix-postgres-data` après vérification exacte de son nom ; aucun conteneur, réseau
+  ou volume portant ce marqueur ne subsiste et les ports 18100/18601 sont arrêtés.
+- Aucun appel Anthropic ni réseau métier n'a été effectué. Les seuls téléchargements ont concerné
+  les dépendances techniques et les images Docker nécessaires à ces gates locaux.
+- La seconde revue indépendante a conclu `FAIL` avec 0 P0, 2 P1 et 1 P2. Les trois constats ciblés
+  sont corrigés localement. Le projet jetable `ai-quant-block8-finalfix` a confirmé : migration
+  vide vers `20260924_0002`, ancien stamp `20260924_0001` refusé sans suppression automatique,
+  `alembic check` sans dérive, 24 tests ciblés PASS, 367 tests complets PASS avec 1 SKIP live
+  attendu et 2 warnings tiers, smoke live séparé 1 PASS, et healthchecks des trois services PASS.
+  Le teardown a supprimé uniquement le volume exact `ai-quant-block8-finalfix-postgres-data` ;
+  aucun conteneur, réseau ou volume `ai-quant-block8-finalfix` ne subsiste et les ports
+  18108, 18608 et 55438 ne sont plus en écoute.
+  Aucune nouvelle revue indépendante n'a été lancée après cette dernière correction. Le Bloc 8 est
+  clôturé `DONE`. Le Bloc 9 reste `TODO` et n'a pas commencé.

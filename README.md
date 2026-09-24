@@ -61,8 +61,11 @@ leave the Secrets field empty for demo mode. Community Cloud reads the committed
 The historical live prototype remains available at `app/streamlit_app.py`; it is not the
 Community Cloud demo entry point and may perform live market and Anthropic calls.
 
-Copy `.env.example` to `.env` only for local configuration. A real Anthropic key is required
-only when explicitly selecting `APP_MODE=live`; live wiring is outside Block 1.
+Copy `.env.example` to `.env` only for the historical prototype configuration. In Block 8,
+`APP_MODE=live` selects the local Streamlit → FastAPI → PostgreSQL transport and can persist the
+labelled frozen fixture without any Anthropic key or provider call. A real Anthropic key is needed
+only for a separate provider path that is explicitly authorized and configured; selecting live
+persistence alone never enables Anthropic or market-network access.
 
 ---
 
@@ -321,6 +324,21 @@ uv sync --frozen --all-groups
 APP_MODE=demo uv run streamlit run app.py
 ```
 
+### Local persistent mode (Block 8, DONE)
+
+The completed Block 8 local stack adds Streamlit → FastAPI → SQLAlchemy repositories → PostgreSQL while
+leaving the public offline demo independent. Launch, migration, endpoint, reviewer-identity,
+append-only, and disposable empty-database instructions are documented in
+[`docs/block8_local_stack.md`](docs/block8_local_stack.md). `APP_MODE=live` currently persists an
+explicitly labelled frozen offline fixture without an Anthropic key; it does not imply live market
+data or a live model call. The `psycopg[binary]` dependency is a deliberate local/MVP convenience
+for reproducible setup, not a universal production recommendation. A production deployment must
+choose and operate its PostgreSQL driver packaging according to its platform and security policy.
+The pre-release schema head is `20260924_0002`. The earlier uncommitted
+`20260924_0001` identifier was ephemeral and local, is unsupported, and is deliberately absent
+from the final migration graph; a database stamped with it must be recreated or migrated
+explicitly before use and will fail closed rather than be treated as current.
+
 ## 🛠️ Tech Stack
 
 | Layer | Technology | Purpose |
@@ -330,8 +348,10 @@ APP_MODE=demo uv run streamlit run app.py
 | Market Data | yfinance | Live prices, returns, volume |
 | Data Processing | pandas, numpy | Metrics calculation, covariance matrix |
 | Interface | Streamlit | Web application |
+| Local API | FastAPI | Typed persistent-mode HTTP boundary |
+| Persistence | PostgreSQL + SQLAlchemy 2 + Alembic | Versioned local research artifacts |
 | PDF Reports | ReportLab | Institutional report generation |
-| Storage | SQLite standard library (historical prototype) | Conversation history |
+| Historical prototype storage | SQLite standard library | Legacy conversation history only |
 | Config | typed environment settings; python-dotenv in legacy code | Environment management |
 
 ---
@@ -343,6 +363,8 @@ ai-quant-research-assistant/
 ├── src/
 │   ├── ai_quant/                       # installable Block 1 package
 │   │   ├── config.py                   # typed startup configuration
+│   │   ├── api/                        # FastAPI public contracts and service
+│   │   ├── persistence/                # SQLAlchemy ORM and repositories
 │   │   ├── llm/                        # LLMClient + FakeLLM
 │   │   └── market_data/                # provider interface + frozen provider
 │   ├── agents/

@@ -1,0 +1,100 @@
+name: ai-quant-block8
+
+services:
+  postgres:
+    image: postgres:16.4-bookworm
+    environment:
+      POSTGRES_DB: ${BLOCK8_POSTGRES_DB:-ai_quant_local}
+      POSTGRES_USER: ${BLOCK8_POSTGRES_USER:-ai_quant_local}
+      POSTGRES_PASSWORD: ${BLOCK8_POSTGRES_PASSWORD:-block8-local-placeholder}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 2s
+      timeout: 3s
+      retries: 20
+    volumes:
+      - block8-postgres-data:/var/lib/postgresql/data
+    networks: [block8-private]
+    restart: unless-stopped
+    stop_grace_period: 10s
+
+  migrate:
+    build:
+      context: .
+    command: ["alembic", "upgrade", "head"]
+    environment:
+      DATABASE_URL: postgresql+psycopg://${BLOCK8_POSTGRES_USER:-ai_quant_local}:${BLOCK8_POSTGRES_PASSWORD:-block8-local-placeholder}@postgres:5432/${BLOCK8_POSTGRES_DB:-ai_quant_local}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks: [block8-private]
+    restart: "no"
+
+  api:
+    build:
+      context: .
+    command: ["uvicorn", "ai_quant.api.app:create_app", "--factory", "--host", "0.0.0.0", "--port", "8000"]
+    environment:
+      DATABASE_URL: postgresql+psycopg://${BLOCK8_POSTGRES_USER:-ai_quant_local}:${BLOCK8_POSTGRES_PASSWORD:-block8-local-placeholder}@postgres:5432/${BLOCK8_POSTGRES_DB:-ai_quant_local}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=2).read()",
+        ]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+    ports: ["127.0.0.1:${BLOCK8_API_PORT:-8000}:8000"]
+    networks: [block8-private]
+    restart: unless-stopped
+    stop_grace_period: 10s
+
+  streamlit:
+    build:
+      context: .
+    command:
+      [
+        "streamlit",
+        "run",
+        "app.py",
+        "--server.address=0.0.0.0",
+        "--server.port=8501",
+        "--server.headless=true",
+      ]
+    environment:
+      APP_MODE: live
+      API_BASE_URL: http://api:8000
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8501/_stcore/health', timeout=2).read()",
+        ]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+    ports: ["127.0.0.1:${BLOCK8_STREAMLIT_PORT:-8501}:8501"]
+    networks: [block8-private]
+    restart: unless-stopped
+    stop_grace_period: 10s
+
+networks:
+  block8-private:
+    driver: bridge
+
+volumes:
+  block8-postgres-data:
+    name: ai-quant-block8-postgres-data

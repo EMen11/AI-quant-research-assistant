@@ -1,0 +1,13 @@
+.git
+.venv
+.pytest_cache
+.ruff_cache
+.mypy_cache
+.env
+.env.*
+assets
+__pycache__
+*.pyc
+*.pyo
+*.log
+reports/block8-test

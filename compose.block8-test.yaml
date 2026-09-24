@@ -1,0 +1,21 @@
+name: ai-quant-block8-test
+
+services:
+  postgres:
+    environment:
+      POSTGRES_DB: ai_quant_block8_test
+      POSTGRES_USER: ai_quant_block8_test
+      POSTGRES_PASSWORD: block8-test-local-placeholder
+
+  migrate:
+    environment:
+      DATABASE_URL: postgresql+psycopg://ai_quant_block8_test:block8-test-local-placeholder@postgres:5432/ai_quant_block8_test
+
+  api:
+    environment:
+      DATABASE_URL: postgresql+psycopg://ai_quant_block8_test:block8-test-local-placeholder@postgres:5432/ai_quant_block8_test
+      BLOCK8_TEST_DATABASE_URL: postgresql+psycopg://ai_quant_block8_test:block8-test-local-placeholder@postgres:5432/ai_quant_block8_test
+
+volumes:
+  block8-postgres-data:
+    name: ai-quant-block8-test-postgres-data

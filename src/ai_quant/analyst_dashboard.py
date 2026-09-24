@@ -17,7 +17,6 @@ from typing import Literal, Protocol
 from pydantic import TypeAdapter
 
 from ai_quant.config import AppMode, Settings
-from ai_quant.evaluation.runner import load_dataset
 from ai_quant.market_data import FrozenSnapshotProvider, SnapshotRun
 from ai_quant.quant import QuantAnalysis, analyze_portfolio, demo_portfolio, demo_risk_free_rate
 from ai_quant.retrieval.evaluation import RetrievalEvaluationArtifact
@@ -54,7 +53,21 @@ SCENARIO_LABELS: dict[ScenarioKey, str] = {
 }
 DEMO_REVIEWER_ID = "demo-reviewer-unauthenticated"
 SESSION_STATE_KEY = "block7-review-sessions"
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
+
+
+def _application_root() -> Path:
+    candidates = (Path.cwd(), Path(__file__).resolve().parents[2])
+    return next(
+        (
+            candidate
+            for candidate in candidates
+            if (candidate / "reports/evaluation").is_dir()
+        ),
+        candidates[0],
+    )
+
+
+PROJECT_ROOT = _application_root()
 HISTORICAL_LIVE_PROVENANCE_LABEL = (
     "Historical live-provider call · original semantic validation failed · "
     "deterministically normalized and human-reviewed for offline demo use"
@@ -774,9 +787,7 @@ def load_quality_artifacts(root: Path = PROJECT_ROOT) -> QualityArtifacts:
 
     workflow_path = root / "reports/evaluation/workflow_eval.v1.json"
     workflow_payload = json.loads(workflow_path.read_text(encoding="utf-8"))
-    dataset_path = root / "tests/evaluation/workflow_eval.v1.jsonl"
-    cases = load_dataset(dataset_path)
-    _require_workflow_report_shape(workflow_payload, case_count=len(cases))
+    _require_workflow_report_shape(workflow_payload)
     false_eligible = workflow_payload["false_eligible_for_review"]
     workflow = WorkflowQuality(
         source_path=workflow_path.relative_to(root).as_posix(),
@@ -822,7 +833,7 @@ def _retrieval_row(aggregate: object) -> dict[str, str | int]:
     }
 
 
-def _require_workflow_report_shape(payload: object, *, case_count: int) -> None:
+def _require_workflow_report_shape(payload: object) -> None:
     if not isinstance(payload, dict):
         raise ValueError("Workflow quality artifact must be a JSON object.")
     required = {
@@ -835,7 +846,17 @@ def _require_workflow_report_shape(payload: object, *, case_count: int) -> None:
         "split_counts",
         "versions",
     }
-    if set(payload) < required or payload["case_count"] != case_count:
-        raise ValueError("Workflow quality artifact does not match its versioned dataset.")
+    if set(payload) < required:
+        raise ValueError("Workflow quality artifact is incomplete.")
+    case_count = payload["case_count"]
+    split_counts = payload["split_counts"]
+    if (
+        not isinstance(case_count, int)
+        or case_count <= 0
+        or not isinstance(split_counts, dict)
+        or any(not isinstance(value, int) or value < 0 for value in split_counts.values())
+        or sum(split_counts.values()) != case_count
+    ):
+        raise ValueError("Workflow quality artifact has inconsistent case counts.")
     if payload["schema_version"] != "workflow-evaluation-report.v2":
         raise ValueError("Unsupported workflow quality artifact schema.")

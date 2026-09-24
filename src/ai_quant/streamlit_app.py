@@ -63,10 +63,10 @@ def main() -> None:
     st.caption("Analyst review dashboard · traceable evidence · deterministic controls")
 
     if settings.app_mode is AppMode.LIVE:
-        st.warning(
-            "Live mode is not part of Block 7. No provider, database, or persistent review "
-            "repository is initialized here. Start with APP_MODE=demo."
-        )
+        # Deliberately lazy: demo startup imports neither the API client nor persistence code.
+        from ai_quant.live_dashboard import render_live_dashboard
+
+        render_live_dashboard(settings.api_base_url)
         return
 
     dashboard = build_demo_view(settings)

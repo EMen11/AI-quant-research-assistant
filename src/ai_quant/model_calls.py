@@ -8,6 +8,16 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
+ModelCallStatus = Literal[
+    "success", "provider_error", "timeout", "schema_error", "allowlist_error"
+]
+ModelResponseOrigin = Literal[
+    "deterministic_fake",
+    "synthetic_offline_fixture",
+    "mocked_provider",
+    "live_provider",
+]
+
 
 class ModelCallMetadata(BaseModel):
     """Audit metadata for a success or failure; prompts and secrets are excluded."""
@@ -24,7 +34,7 @@ class ModelCallMetadata(BaseModel):
     prompt_version: str = Field(
         min_length=1, max_length=160, pattern=r"^[A-Za-z0-9._:-]+$"
     )
-    status: Literal["success", "provider_error", "timeout", "schema_error", "allowlist_error"]
+    status: ModelCallStatus
     latency_ms: float = Field(ge=0)
     response_id: str | None = Field(
         default=None,
@@ -64,12 +74,7 @@ class ModelCallMetadata(BaseModel):
         pattern=r"^[A-Za-z0-9._:-]+$",
     )
     cost_unavailable_reason: str | None = Field(default=None, min_length=1, max_length=500)
-    response_origin: Literal[
-        "deterministic_fake",
-        "synthetic_offline_fixture",
-        "mocked_provider",
-        "live_provider",
-    ]
+    response_origin: ModelResponseOrigin
 
     @model_validator(mode="after")
     def pricing_fields_are_consistent(self) -> ModelCallMetadata:

@@ -156,6 +156,7 @@ class InMemoryTrustWorkflow:
         self,
         scenario: DemoScenario,
         *,
+        run_id: str | None = None,
         analysis: QuantAnalysis | None = None,
         generator: StructuredDraftGenerator | None = None,
         retriever: PassageRetriever | None = None,
@@ -171,7 +172,7 @@ class InMemoryTrustWorkflow:
         if scenario not in {"valid", "blocked"}:
             raise ValueError(f"Unsupported demo scenario: {scenario}.")
 
-        run_id = f"run-demo-{scenario}"
+        run_id = run_id or f"run-demo-{scenario}"
         steps: list[str] = ["validate_request"]
         state = RunStateMachine()
 

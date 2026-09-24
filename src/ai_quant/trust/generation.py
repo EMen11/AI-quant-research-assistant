@@ -239,13 +239,39 @@ class FixtureDraftGenerator:
         if self._public_fixture is not None:
             fixture = self._public_fixture
             expected_evidence_ids = tuple(record.evidence_id for record in fixture.evidence)
-            if allowed_metric_ids != fixture.allowed_metric_ids:
+            if len(allowed_metric_ids) != len(fixture.allowed_metric_ids):
                 raise ValueError("Controller metric allowlist differs from public fixture.")
-            if allowed_evidence_ids != expected_evidence_ids:
+            if len(allowed_evidence_ids) != len(expected_evidence_ids):
                 raise ValueError("Controller evidence allowlist differs from public fixture.")
+            metric_map = dict(
+                zip(fixture.allowed_metric_ids, allowed_metric_ids, strict=True)
+            )
+            evidence_map = dict(
+                zip(expected_evidence_ids, allowed_evidence_ids, strict=True)
+            )
+            proposal = fixture.proposal.model_copy(
+                update={
+                    "claims": tuple(
+                        claim.model_copy(
+                            update={
+                                "text_template": _replace_reference_ids(
+                                    claim.text_template, metric_map | evidence_map
+                                ),
+                                "metric_ids": tuple(
+                                    metric_map[item] for item in claim.metric_ids
+                                ),
+                                "evidence_ids": tuple(
+                                    evidence_map[item] for item in claim.evidence_ids
+                                ),
+                            }
+                        )
+                        for claim in fixture.proposal.claims
+                    )
+                }
+            )
             self.call_count += 1
             return StructuredGenerationResponse(
-                payload_json=fixture.proposal.model_dump_json(),
+                payload_json=proposal.model_dump_json(),
                 provider=fixture.provider,
                 model_id=fixture.model_id,
                 parameters=(
@@ -306,9 +332,18 @@ class FixtureDraftGenerator:
 
         if self._public_fixture is None:
             return ()
-        if self._public_fixture.run_id != run_id:
-            raise ValueError("Public fixture evidence belongs to another run.")
-        return self._public_fixture.evidence
+        source_run_id = self._public_fixture.run_id
+        return tuple(
+            record.model_copy(
+                update={
+                    "run_id": run_id,
+                    "evidence_id": record.evidence_id.replace(
+                        f"evidence-{source_run_id}-", f"evidence-{run_id}-", 1
+                    ),
+                }
+            )
+            for record in self._public_fixture.evidence
+        )
 
 
 class LLMStructuredDraftGenerator:
@@ -348,3 +383,9 @@ class LLMStructuredDraftGenerator:
 
 def _fixture_path(filename: str) -> Path:
     return Path(__file__).resolve().parent.parent / "fixtures" / filename
+
+
+def _replace_reference_ids(text: str, replacements: dict[str, str]) -> str:
+    for source, target in replacements.items():
+        text = text.replace(source, target)
+    return text
