@@ -23,7 +23,7 @@
     {
       "path": "src/ai_quant/fixtures/sustainability/coverage_report.v1.json",
       "schema_version": "climate-coverage-report.v1",
-      "sha256": "8c664dfeea767d834e57df858912804958dfc949c74a0bb9f7962c39bdd6f8a8"
+      "sha256": "ce1c49259274f9d2dbd36c9b5c1ccb05397c542f769d253e39ddf0e12897add1"
     }
   ],
   "corpus_size": 16,

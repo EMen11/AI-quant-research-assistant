@@ -29,6 +29,14 @@ def test_dashboard_renders_exactly_six_views_with_responsive_structure(monkeypat
     ]
     assert any("@media (max-width: 700px)" in item.value for item in app.markdown)
     assert any("stored only in the current Streamlit session" in item.value for item in app.info)
+    assert any(
+        "The two ClimateTarget records are separate from the 12 "
+        "SustainabilityObservation records and have passed the documented human review; "
+        "they represent issuer-published targets, not observations of achieved performance."
+        in item.value
+        for item in app.markdown
+    )
+    assert not any("remain to be reviewed" in item.value for item in app.markdown)
 
 
 def test_admissible_ui_displays_ids_units_pages_excerpts_and_separate_statuses(
