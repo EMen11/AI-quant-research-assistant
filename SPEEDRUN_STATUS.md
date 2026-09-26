@@ -1,7 +1,7 @@
 # Speedrun status
 
-- Dernière mise à jour : 2026-09-24
-- Branche courante : `codex/block-9-secure-demo-deployment`
+- Dernière mise à jour : 2026-09-26
+- Branche courante : `speedrun/application-ready`
 - Commit du Bloc 0 : `30c9db62b17685c5a0ed350c9780b08196b21f15`
 
 Statuts autorisés : `TODO`, `DOING`, `DONE`. Un bloc n'est `DONE` que lorsque ses contrôles sont passés et documentés. Les commandes des blocs futurs sont les gates prévues ; elles ne sont pas encore disponibles dans le dépôt actuel.
@@ -18,7 +18,7 @@ Statuts autorisés : `TODO`, `DOING`, `DONE`. Un bloc n'est `DONE` que lorsque s
 | 7 | Interface analyste et release publique R1 | DONE | `speedrun/application-ready` | `2f15f1fd426db312eb38a8c334746d8169ba1199` | PR #2 fusionnée en fast-forward<br>CI post-fusion réussie<br>application publique vérifiée sur desktop anonyme<br>contrôle mobile public 390×844 confirmé manuellement |
 | 8 | PostgreSQL, FastAPI et Docker Compose | DONE | `codex/block-8-postgres-fastapi-docker` | `23c4f9192aedf9899989a839ae53f3b80b99f6a2` | Deux revues indépendantes exécutées<br>tous les constats confirmés corrigés<br>tests ciblés : 24 PASS<br>suite locale et Docker : 367 PASS, 1 SKIP expliqué, 2 warnings tiers<br>smoke live : 1 PASS<br>migration vide, Alembic, healthchecks et teardown : PASS |
 | 9 | Préparation et vérification du déploiement final | DONE | `codex/block-9-secure-demo-deployment` | `a4ee5c0b6944ebe8432c6029f51e8b1be5556644` | CI du commit candidat : PASS<br>release locale hors ligne : PASS<br>scan masqué du candidat : PASS<br>URL publique desktop anonyme : PASS<br>viewport public émulé 390×844 : PASS |
-| 10 | README, preuves et release de candidature | DOING | `codex/block-9-secure-demo-deployment` | candidat documentaire construit sur `a4ee5c0b6944ebe8432c6029f51e8b1be5556644` | README professionnel et preuves : prêts<br>liens essentiels et cohérence des commandes : vérifiés dans le worktree courant<br>clone propre : en attente<br>revue indépendante finale : en attente |
+| 10 | README, preuves et release de candidature | DONE | `speedrun/application-ready` | candidat fonctionnel `0adf6c70e22153ada790a578d65fb3b4c5958306` | clone propre et installation verrouillée : PASS<br>Ruff et scan masqué : PASS<br>suite finale : 354 PASS, 20 SKIP expliqués, 2 warnings tiers<br>deux démonstrations publiques : PASS<br>revue finale : `GO WITH LIMITATIONS`, P0=0, P1=0 |
 
 ## État du Bloc 0
 
@@ -325,20 +325,30 @@ Statuts autorisés : `TODO`, `DOING`, `DONE`. Un bloc n'est `DONE` que lorsque s
 
 ## État du Bloc 10
 
-- Statut `DOING` : la documentation nécessaire à la candidature est prête, mais les autres gates
-  du bloc sont volontairement différés.
-- Le README anglais décrit l'objectif, la démo publique, le parcours court, les deux architectures
-  demo/live, les frontières de confiance, le statut réel des capacités, les résultats versionnés,
-  les commandes existantes et les limites connues.
-- Les résultats d'évaluation sont rattachés à leurs artefacts, datasets et commits. Les suites de
-  tests qui se recouvrent ne sont pas additionnées et ne sont pas présentées comme une mesure de
-  qualité analytique.
-- Le README indique explicitement que la démo publique utilise des fixtures figées et ne réalise
-  aucune génération LLM en direct. Il sépare les validations et assessments automatiques de la
-  décision humaine.
-- Les cibles des liens relatifs essentiels et les commandes documentées ont été comparées au
-  worktree et à la configuration actuels. Aucune campagne complète de tests n'a été relancée pour
-  cette modification strictement documentaire.
-- La vérification depuis un clone propre n'a pas été effectuée et n'est pas revendiquée. La revue
-  indépendante finale en lecture seule reste également en attente.
-- Aucun tag, release, merge dans `main` ou nouvelle fonctionnalité n'entre dans cette passe.
+- Statut `DONE` : le README, les preuves de candidature et la note de release proposée sont
+  alignés sur le candidat fonctionnel `0adf6c70e22153ada790a578d65fb3b4c5958306`.
+- Le candidat a été reproduit depuis un clone propre. `uv lock --check`, l'installation verrouillée,
+  Ruff et le scan de secrets à sortie masquée ont réussi.
+- La suite finale hors ligne a produit 354 tests réussis, 20 skips expliqués — 19 pour PostgreSQL
+  et un pour le smoke FastAPI/Streamlit live séparé — ainsi que deux warnings de dépréciation tiers.
+- Le serveur Streamlit local hors ligne, l'URL publique et deux démonstrations publiques complètes
+  et distinctes ont réussi. La démo publique utilise exclusivement des fixtures versionnées :
+  aucune génération fournisseur, donnée marché, base PostgreSQL ou persistance publique n'est
+  déclenchée lors d'une visite.
+- La CI du candidat documentaire
+  (https://github.com/EMen11/AI-quant-research-assistant/actions/runs/35949937599) puis la CI de
+  `speedrun/application-ready` ont réussi. La CI stable finale est le run
+  https://github.com/EMen11/AI-quant-research-assistant/actions/runs/36254458006.
+- La revue indépendante finale a conclu `GO WITH LIMITATIONS`, avec P0=0 et P1=0. Le constat
+  initial annonçant seulement deux tests demo/release a été rejeté : un test Bloc 8 plus deux tests
+  Bloc 9 donnent bien trois tests, tous réussis.
+- L'état de revue des deux `ClimateTarget` a été corrigé, protégé par une régression UI et propagé
+  honnêtement dans la provenance retrieval. Le rapport courant porte le SHA-256
+  `4edf1936d7932ab1270879dcfd7c376d957402ab508377bae43fafd24586ad6b`.
+- Les résultats restent bornés aux artefacts versionnés : gold retrieval réduit, holdout interne,
+  petit corpus climatique, viewport mobile émulé plutôt que téléphone physique, revues publiques
+  non authentifiées et non persistées, et stack FastAPI/PostgreSQL/Docker disponible localement
+  seulement. Le projet demeure un outil de recherche, pas un conseil d'investissement.
+- Après validation de ce commit documentaire, `main` doit être promue manuellement par
+  fast-forward. Le tag `v1.0.0-demo` et la release GitHub restent des décisions manuelles ; aucun
+  tag ni aucune release ne sont présentés comme existants.
