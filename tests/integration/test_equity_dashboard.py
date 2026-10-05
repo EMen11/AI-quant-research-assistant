@@ -41,6 +41,7 @@ def test_equity_research_smoke_and_visible_scope(monkeypatch) -> None:
         "Fondamentaux",
         "Valorisation",
         "ESG & sources",
+        "Research note",
     ]
     assert any(
         all(status in item.value for status in (
@@ -244,6 +245,76 @@ def test_esg_scope_two_methods_and_provenance_remain_separate() -> None:
     }
 
 
+def test_research_note_admissible_status_sources_limitations_and_monitoring(
+    monkeypatch,
+) -> None:
+    monkeypatch.setenv("APP_MODE", "demo")
+    app = _equity_app()
+
+    assert not app.exception
+    assert any("pending_human_review" in item.value for item in app.warning)
+    assert any("Validation automatique : PASSED" in item.value for item in app.success)
+    assert not any("approved" in item.value.casefold() for item in app.success)
+
+    subheaders = {item.value for item in app.subheader}
+    assert {
+        "Profils des sociétés et modèles économiques",
+        "Qualité de la croissance et de la rentabilité",
+        "Cash-flow bilan et allocation du capital",
+        "Valorisation relative et historique",
+        "Durabilité et limites de comparabilité",
+        "Arguments favorables",
+        "Risques et points d attention",
+        "Catalyseurs",
+        "Indicateurs à suivre",
+        "Conclusion comparative",
+        "Limitations",
+        "Sources autorisées",
+        "Monitoring FY2025",
+    } <= subheaders
+    captions = "\n".join(item.value for item in app.caption)
+    assert "Type : `sourced_fact`" in captions
+    assert "Type : `calculated_metric`" in captions
+    assert "Type : `analyst_interpretation`" in captions
+    assert "aucune décision finale" in captions
+
+    sources = next(
+        item.value
+        for item in app.dataframe
+        if "Source ouvrable" in item.value.columns
+    )
+    assert len(sources) == 3
+    assert sources["Source ouvrable"].str.len().gt(0).all()
+    monitoring = next(
+        item.value for item in app.dataframe if "Fraîcheur" in item.value.columns
+    )
+    assert {"available", "to_update"} == set(monitoring["Fraîcheur"])
+    assert monitoring["Source"].str.len().gt(0).all()
+
+    markdown = "\n".join(item.value for item in app.markdown)
+    assert "bachem-published-pe-unavailable" in markdown
+    assert "not invented" in markdown
+
+
+def test_research_note_blocked_scenario_never_appears_validated(monkeypatch) -> None:
+    monkeypatch.setenv("APP_MODE", "demo")
+    app = _equity_app()
+    scenario = next(
+        item for item in app.selectbox if item.label == "Research note scenario"
+    )
+
+    app = scenario.select("Bloqué").run()
+
+    assert not app.exception
+    assert any("BLOCKED" in item.value for item in app.error)
+    assert not any("Validation automatique : PASSED" in item.value for item in app.success)
+    assert not any("pending_human_review" in item.value for item in app.warning)
+    diagnostics = next(
+        item.value for item in app.dataframe if "Diagnostic" in item.value.columns
+    )
+    assert "prohibited_target_price" in set(diagnostics["Code"])
+
+
 def test_default_equity_view_has_no_network_or_historical_workbench_import() -> None:
     script = r"""
 import importlib.abc
@@ -270,7 +341,7 @@ app = AppTest.from_file('app.py', default_timeout=20).run()
 assert not app.exception
 assert app.title[0].value == 'Equity Research'
 assert [tab.label for tab in app.tabs] == [
-    'Snapshot', 'Fondamentaux', 'Valorisation', 'ESG & sources'
+    'Snapshot', 'Fondamentaux', 'Valorisation', 'ESG & sources', 'Research note'
 ]
 for name in BLOCKED:
     assert not any(module == name or module.startswith(name + '.') for module in sys.modules)

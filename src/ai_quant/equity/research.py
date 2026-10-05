@@ -570,10 +570,12 @@ def validate_research_note(
 
 def run_equity_research_note(
     scenario: Literal["admissible", "blocked"] = "admissible",
+    *,
+    context: ResearchNoteContext | None = None,
 ) -> EquityResearchResult:
     """Run the complete deterministic note flow and stop before human approval."""
 
-    context = build_research_note_context()
+    context = context or build_research_note_context()
     note = build_deterministic_analyst_note(context)
     draft = materialize_research_draft(note)
     if scenario == "blocked":

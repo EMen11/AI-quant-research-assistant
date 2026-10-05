@@ -11,7 +11,14 @@ from ai_quant.equity.analysis import build_fundamental_analysis
 from ai_quant.equity.climate import CLIMATE_FIXTURE_CUTOFF, build_climate_metrics
 from ai_quant.equity.formatting import format_metric
 from ai_quant.equity.models import FundamentalAnalysis, MetricValue, SourceReference
+from ai_quant.equity.monitoring import build_monitoring_rows, monitoring_table_rows
 from ai_quant.equity.repository import EquityRepository, load_equity_repository
+from ai_quant.equity.research import (
+    AuthorizedSource,
+    EquityResearchResult,
+    build_research_note_context,
+    run_equity_research_note,
+)
 from ai_quant.equity.valuation import ValuationAnalysis, build_valuation_analysis
 from ai_quant.sustainability import SustainabilityCorpus, load_corpus
 
@@ -177,13 +184,26 @@ _METRIC_LABELS = {
 
 
 def render_equity_dashboard() -> None:
-    """Render the four-tab Phase 4 scope from embedded offline fixtures only."""
+    """Render the complete offline Equity Research Copilot."""
 
     repository = load_equity_repository()
     analysis = build_fundamental_analysis(repository)
     valuation = build_valuation_analysis(repository, analysis)
     climate_corpus = load_corpus(CLIMATE_FIXTURE_CUTOFF)
     climate_metrics = build_climate_metrics(repository, climate_corpus)
+    research_context = build_research_note_context(
+        repository=repository,
+        fundamentals=analysis,
+        valuation=valuation,
+        climate_metrics=climate_metrics,
+        corpus=climate_corpus,
+    )
+    monitoring_rows = build_monitoring_rows(
+        repository=repository,
+        fundamentals=analysis,
+        valuation=valuation,
+        climate_metrics=climate_metrics,
+    )
 
     st.title("Equity Research")
     st.caption(
@@ -197,8 +217,14 @@ def render_equity_dashboard() -> None:
     )
     _render_valuation_limit(repository)
 
-    snapshot_tab, fundamentals_tab, valuation_tab, esg_tab = st.tabs(
-        ("Snapshot", "Fondamentaux", "Valorisation", "ESG & sources")
+    snapshot_tab, fundamentals_tab, valuation_tab, esg_tab, research_note_tab = st.tabs(
+        (
+            "Snapshot",
+            "Fondamentaux",
+            "Valorisation",
+            "ESG & sources",
+            "Research note",
+        )
     )
     with snapshot_tab:
         _render_snapshot(analysis)
@@ -208,6 +234,17 @@ def render_equity_dashboard() -> None:
         _render_valuation(valuation, repository)
     with esg_tab:
         _render_esg_and_sources(climate_metrics, climate_corpus)
+    with research_note_tab:
+        scenario_label = st.selectbox(
+            "Research note scenario",
+            options=("Admissible", "Bloqué"),
+            key="equity-research-note-scenario",
+        )
+        result = run_equity_research_note(
+            "admissible" if scenario_label == "Admissible" else "blocked",
+            context=research_context,
+        )
+        _render_research_note(result, monitoring_rows)
 
 
 def snapshot_rows(analysis: FundamentalAnalysis) -> tuple[dict[str, str], ...]:
@@ -273,6 +310,101 @@ def esg_metric_rows(metrics: tuple[MetricValue, ...]) -> tuple[dict[str, str], .
             row["Assurance"] = metric.assurance or "not_disclosed"
             rows.append(row)
     return tuple(rows)
+
+
+def research_source_rows(
+    sources: tuple[AuthorizedSource, ...],
+) -> tuple[dict[str, str | int], ...]:
+    """Build the source list displayed with the Research Note."""
+
+    return tuple(
+        {
+            "Evidence ID": source.evidence_id,
+            "Document": source.title,
+            "Page": source.page,
+            "Source ouvrable": source.source_uri,
+        }
+        for source in sources
+    )
+
+
+def _render_research_note(
+    result: EquityResearchResult,
+    monitoring_rows: tuple,
+) -> None:
+    st.header("Research Note — Bachem / Siegfried")
+    st.caption(
+        "Note structurée avec assistance IA hors ligne. Python fournit les chiffres et "
+        "valide les références ; l’IA ne calcule pas et ne prend aucune décision finale."
+    )
+    st.markdown(f"**Résumé exécutif.** {result.analyst_note.executive_summary}")
+
+    if result.review_status == "blocked":
+        st.error(
+            "Validation automatique : BLOCKED. La note n’est ni rendue comme fiable ni "
+            "présentée comme validée."
+        )
+        st.caption(f"Statut de revue humaine : `{result.review_status}`.")
+        st.dataframe(
+            tuple(
+                {
+                    "Code": issue.code,
+                    "Sévérité": issue.severity,
+                    "Diagnostic": issue.message,
+                }
+                for issue in result.validation_report.issues
+            ),
+            hide_index=True,
+            width="stretch",
+        )
+    else:
+        st.success(
+            "Validation automatique : PASSED — références, valeurs, unités, périodes et "
+            "citations autorisées."
+        )
+        st.warning(
+            "Statut de revue humaine : `pending_human_review`. Aucune approbation humaine "
+            "n’a été inventée."
+        )
+        rendered_claims = iter(result.rendered_draft.claims)
+        for section in result.analyst_note.sections.ordered():
+            st.subheader(section.title)
+            for statement in section.statements:
+                claim = next(rendered_claims)
+                st.caption(f"Type : `{statement.kind}`")
+                st.markdown(claim.text)
+                if statement.uncertainty:
+                    st.caption(f"Réserve : {statement.uncertainty}")
+
+    st.subheader("Limitations")
+    for limitation in result.analyst_note.limitations:
+        st.markdown(f"- `{limitation.limitation_id}` — {limitation.text}")
+
+    st.subheader("Sources autorisées")
+    st.dataframe(
+        research_source_rows(result.context.authorized_sources),
+        hide_index=True,
+        width="stretch",
+    )
+    for source in result.context.authorized_sources:
+        if source.source_uri.startswith("https://"):
+            st.link_button(
+                f"Ouvrir {source.title} · p. {source.page}",
+                source.source_uri,
+            )
+        else:
+            st.caption(f"Source locale : `{source.source_uri}`")
+
+    st.subheader("Monitoring FY2025")
+    st.caption(
+        "Suivi descriptif annuel, sans consensus, prévision ni donnée semestrielle. "
+        "Les absences restent visibles avec la fraîcheur `to_update`."
+    )
+    st.dataframe(
+        monitoring_table_rows(monitoring_rows),
+        hide_index=True,
+        width="stretch",
+    )
 
 
 def _render_snapshot(analysis: FundamentalAnalysis) -> None:
