@@ -48,6 +48,11 @@ IssueCode = Literal[
     "insufficient_coverage",
     "document_prompt_injection",
     "self_approval_attempt",
+    "prohibited_investment_recommendation",
+    "prohibited_target_price",
+    "prohibited_price_prediction",
+    "prohibited_personalized_recommendation",
+    "missing_required_limitation",
     "insufficient_trusted_inputs",
 ]
 IssueSeverity = Literal["info", "warning", "error", "critical"]

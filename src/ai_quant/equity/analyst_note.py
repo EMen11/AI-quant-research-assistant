@@ -215,11 +215,33 @@ class AnalystNoteV1(StrictModel):
 
 
 def _reject_prohibited_output(text: str) -> None:
-    if _PROHIBITED_RECOMMENDATION.search(text):
+    reason = prohibited_output_reason(text)
+    if reason == "recommendation":
         raise ValueError("BUY/SELL/HOLD-style recommendations are forbidden.")
-    if _TARGET_PRICE.search(text):
+    if reason == "target_price":
         raise ValueError("Target prices are forbidden.")
-    if _PREDICTION.search(text):
+    if reason == "prediction":
         raise ValueError("Share-price predictions are forbidden.")
-    if _PERSONALIZED_ADVICE.search(text):
+    if reason == "personalized_recommendation":
         raise ValueError("Personalized investment recommendations are forbidden.")
+
+
+def prohibited_output_reason(
+    text: str,
+) -> Literal[
+    "recommendation",
+    "target_price",
+    "prediction",
+    "personalized_recommendation",
+] | None:
+    """Return the first Equity-specific output-policy violation in text."""
+
+    if _PROHIBITED_RECOMMENDATION.search(text):
+        return "recommendation"
+    if _TARGET_PRICE.search(text):
+        return "target_price"
+    if _PREDICTION.search(text):
+        return "prediction"
+    if _PERSONALIZED_ADVICE.search(text):
+        return "personalized_recommendation"
+    return None
