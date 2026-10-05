@@ -123,7 +123,7 @@ def test_net_debt_leverage_and_roe_are_available_for_every_year(company_id: str)
     assert analysis.metric("siegfried", 2025, "net_debt").value == Decimal("472.118")
 
 
-def test_distribution_is_available_only_when_share_count_exists() -> None:
+def test_distribution_is_available_when_share_count_exists() -> None:
     analysis = build_fundamental_analysis()
 
     bachem_distribution = analysis.metric("bachem", 2025, "estimated_cash_distribution")
@@ -135,10 +135,8 @@ def test_distribution_is_available_only_when_share_count_exists() -> None:
 
     assert bachem_distribution.value == Decimal("67.441986")
     assert float(bachem_payout.value) == pytest.approx(67.441986 / 148.793 * 100)
-    assert siegfried_distribution.status == "unavailable"
-    assert siegfried_distribution.value is None
-    assert siegfried_payout.status == "unavailable"
-    assert "registered-shares" in siegfried_distribution.note
+    assert siegfried_distribution.value == Decimal("18.092")
+    assert float(siegfried_payout.value) == pytest.approx(18.092 / 168.659 * 100)
 
 
 def test_every_available_derived_metric_has_formula_inputs_and_field_provenance() -> None:

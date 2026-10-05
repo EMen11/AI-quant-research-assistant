@@ -14,18 +14,28 @@
     "BANB.SW FY2025: FY2025 source is official_company_source annual report PDF.",
     "Bachem completed a 1:5 share split between FY2021 and FY2022.",
     "Candidate snapshot only; no locked snapshot, product output, release, staging, or beta artifact was created or modified.",
-    "Comparative valuation remains blocked until Siegfried market fields are source-validated.",
     "FY2015-FY2021 share-level values are pre-split as reported in each annual report unless explicitly stated otherwise.",
     "FY2022-FY2025 share-level values are post-split.",
     "Missing 2020 and 2015 rows are explicit documented-missing rows because no validated allowed-phase extraction row was available.",
     "No manual split adjustment was applied.",
+    "Published market capitalization uses listed shares net of treasury shares and is never replaced by price times registered shares.",
     "SFZN.SW FY2021: Validated Phase 3B consolidated annual report row; values agree across JSON, raw CSV, and normalized CSV; EPS and DPS remain pre-2025 split basis.",
     "SFZN.SW FY2022: Validated Phase 3B consolidated annual report row; values agree across JSON, raw CSV, and normalized CSV; EPS and DPS remain pre-2025 split basis.",
     "SFZN.SW FY2023: Validated Phase 3B consolidated annual report row; values agree across JSON, raw CSV, and normalized CSV; EPS and DPS remain pre-2025 split basis.",
     "SFZN.SW FY2024: Validated Phase 2B consolidated annual report row; CHF reporting and market currency; EBITDA calculated; EPS and DPS remain pre-2025 split basis; proposed par value reduction preserved.",
     "SFZN.SW FY2025: Validated Phase 1B consolidated annual report row; CHF reporting and market currency; EBITDA calculated from statutory EBIT plus D&A; proposed par value repayment preserved as dividend_per_share note.",
-    "Source snapshots do not provide PDF page numbers; page-level provenance is unavailable.",
-    "capex_calculated is a negative cash outflow; free_cash_flow_calculated = operating_cf + capex_calculated; equity_ratio_pct = total_equity / total_assets; ebitda = ebit + da when statutory EBIT and D&A are both validated."
+    "capex_calculated is a negative cash outflow; free_cash_flow_calculated = operating_cf + capex_calculated; equity_ratio_pct = total_equity / total_assets; ebitda = ebit + da when statutory EBIT and D&A are both validated.",
+    "v2 adds only FY2021-FY2025 issuer-published historical market fields and explicit native/recalculated split audit fields."
+  ],
+  "companies": [
+    {
+      "company_name": "Bachem Holding AG",
+      "ticker": "BANB.SW"
+    },
+    {
+      "company_name": "Siegfried Holding AG",
+      "ticker": "SFZN.SW"
+    }
   ],
   "fields": [
     {
@@ -128,10 +138,10 @@
   "fixture_schema_version": "equity-fundamentals.v1",
   "formula_version": "equity-formulas.v1",
   "gates": {
-    "comparative_valuation": "blocked",
+    "comparative_valuation": "pass",
     "fundamentals": "pass"
   },
-  "generated_at": "2026-10-05T19:09:49Z",
+  "generated_at": "2026-10-06T00:00:00Z",
   "missing_values": [
     {
       "field": "current_assets",
@@ -336,140 +346,20 @@
       "fiscal_year": 2025,
       "reason": "market field absent from locked source",
       "ticker": "BANB.SW"
-    },
-    {
-      "field": "year_end_share_price",
-      "fiscal_year": 2021,
-      "reason": "missing_source_unavailable",
-      "ticker": "SFZN.SW"
-    },
-    {
-      "field": "registered_shares",
-      "fiscal_year": 2021,
-      "reason": "missing_source_unavailable",
-      "ticker": "SFZN.SW"
-    },
-    {
-      "field": "market_capitalization_published",
-      "fiscal_year": 2021,
-      "reason": "missing_source_unavailable",
-      "ticker": "SFZN.SW"
-    },
-    {
-      "field": "price_to_earnings_published",
-      "fiscal_year": 2021,
-      "reason": "missing_source_unavailable",
-      "ticker": "SFZN.SW"
-    },
-    {
-      "field": "year_end_share_price",
-      "fiscal_year": 2022,
-      "reason": "missing_source_unavailable",
-      "ticker": "SFZN.SW"
-    },
-    {
-      "field": "registered_shares",
-      "fiscal_year": 2022,
-      "reason": "missing_source_unavailable",
-      "ticker": "SFZN.SW"
-    },
-    {
-      "field": "market_capitalization_published",
-      "fiscal_year": 2022,
-      "reason": "missing_source_unavailable",
-      "ticker": "SFZN.SW"
-    },
-    {
-      "field": "price_to_earnings_published",
-      "fiscal_year": 2022,
-      "reason": "missing_source_unavailable",
-      "ticker": "SFZN.SW"
-    },
-    {
-      "field": "year_end_share_price",
-      "fiscal_year": 2023,
-      "reason": "missing_source_unavailable",
-      "ticker": "SFZN.SW"
-    },
-    {
-      "field": "registered_shares",
-      "fiscal_year": 2023,
-      "reason": "missing_source_unavailable",
-      "ticker": "SFZN.SW"
-    },
-    {
-      "field": "market_capitalization_published",
-      "fiscal_year": 2023,
-      "reason": "missing_source_unavailable",
-      "ticker": "SFZN.SW"
-    },
-    {
-      "field": "price_to_earnings_published",
-      "fiscal_year": 2023,
-      "reason": "missing_source_unavailable",
-      "ticker": "SFZN.SW"
-    },
-    {
-      "field": "year_end_share_price",
-      "fiscal_year": 2024,
-      "reason": "missing_source_unavailable",
-      "ticker": "SFZN.SW"
-    },
-    {
-      "field": "registered_shares",
-      "fiscal_year": 2024,
-      "reason": "missing_source_unavailable",
-      "ticker": "SFZN.SW"
-    },
-    {
-      "field": "market_capitalization_published",
-      "fiscal_year": 2024,
-      "reason": "missing_source_unavailable",
-      "ticker": "SFZN.SW"
-    },
-    {
-      "field": "price_to_earnings_published",
-      "fiscal_year": 2024,
-      "reason": "missing_source_unavailable",
-      "ticker": "SFZN.SW"
-    },
-    {
-      "field": "year_end_share_price",
-      "fiscal_year": 2025,
-      "reason": "missing_source_unavailable",
-      "ticker": "SFZN.SW"
-    },
-    {
-      "field": "registered_shares",
-      "fiscal_year": 2025,
-      "reason": "missing_source_unavailable",
-      "ticker": "SFZN.SW"
-    },
-    {
-      "field": "market_capitalization_published",
-      "fiscal_year": 2025,
-      "reason": "missing_source_unavailable",
-      "ticker": "SFZN.SW"
-    },
-    {
-      "field": "price_to_earnings_published",
-      "fiscal_year": 2025,
-      "reason": "missing_source_unavailable",
-      "ticker": "SFZN.SW"
     }
   ],
   "outputs": [
     {
       "file": "cdmo_fundamentals.v1.csv",
-      "sha256": "38a2cb37fd88672553c18f18f01c2a660ddfb680446dfa616771b822f466c9ab"
+      "sha256": "386ab07bb81073ac27156b7dbf4c87e4c6e22cbf6ae6fdd2732369fa0da27d08"
     },
     {
       "file": "cdmo_sources.v1.csv",
-      "sha256": "8eab1002cbffb70b3bc35bcd6b9372d7278ead19b0d843c6ffa90b4b23474ea5"
+      "sha256": "4ba50d0b5db3ae333a3b5564fe592db881d27dee5dfd17d8239c14c8ea52098f"
     },
     {
       "file": "valuation_diagnostic.v1.json",
-      "sha256": "1bb8f9a68e4f5e802b0a630eb1cc60923c77b23849d0ba675016020935742261"
+      "sha256": "01f31ee5c41d18591d2886011f48240426474f53437f588a0070e4d23e74902f"
     }
   ],
   "periods": [
@@ -481,6 +371,11 @@
   ],
   "runtime_external_dependency": false,
   "schema_version": "equity-snapshot-manifest.v1",
+  "source_repository": {
+    "commit_message": "feat(sfzn): promote split-adjusted valuation snapshot v2",
+    "commit_sha": "bc1c54eefd663a257aab71e58fd7953a6239a1fc",
+    "identifier": "SED/pdf.extractor"
+  },
   "sources": [
     {
       "authority": {
@@ -503,38 +398,71 @@
     {
       "authority": {
         "documented_locked_paths": [
-          "snapshots/locked/SFZN.SW/v1/SFZN.SW_2015_2025_locked_snapshot_v1.csv",
-          "snapshots/locked/SFZN.SW/v1/SFZN.SW_2015_2025_locked_snapshot_v1.json"
+          "snapshots/locked/SFZN.SW/v2/SFZN.SW_2015_2025_locked_snapshot_v2.csv",
+          "snapshots/locked/SFZN.SW/v2/SFZN.SW_2015_2025_locked_snapshot_v2.json"
         ],
         "mode": "external_verified_lock_and_promotion_chain",
         "reports": [
           {
-            "file": "SFZN.SW_phase_6A_locked_snapshot_creation_report.md",
-            "sha256": "c4b78b6543d37b8c3167701615035a66e71c632d2abd24a6cc10a569706cde4d"
+            "file": "SFZN.SW_phase_6A_locked_snapshot_v2_creation_report.md",
+            "sha256": "bc5f555488e0e4e74162359be72f51e2d0dbc73900e13ea971ce2e9bd63a9a3d"
           },
           {
-            "file": "SFZN.SW_phase_6B_regression_protection_report.md",
-            "sha256": "2499703348a0d2ca502e5a064634002dac082a5841980c1c863df66692b38f01"
+            "file": "SFZN.SW_phase_6B_snapshot_v2_regression_report.md",
+            "sha256": "0085ace9097d5828e5c1003c1b6e73195e3cbbf53efe795982f27096d5eded68"
           },
           {
-            "file": "SFZN.SW_phase_7B_product_data_v2_promotion_report.md",
-            "sha256": "47c68cee5f4eaf34347fe6b638c10623e92a7ae89c42e47c0e52746e074cb868"
+            "file": "SFZN.SW_phase_7B_product_data_v2_v2_promotion_report.md",
+            "sha256": "867b3cad1ab10a20d437ee04ee0a4b3f346e23524d6d4512bf9d6dae314cc08c"
           }
         ]
       },
       "csv": {
-        "file": "SFZN.SW_2015_2025_locked_snapshot_v1.csv",
-        "sha256": "0c879f1d1086427ab6ca8268f331fad82baeea967cbb5f315fd4ede5439c7d9d"
+        "file": "SFZN.SW_2015_2025_locked_snapshot_v2.csv",
+        "sha256": "63c3b46b8757687c187b129942e02b4f9a536140c0f2e4f5d311786bc4592ba1"
       },
       "internal_artifact_status": "candidate_snapshot_for_review",
       "json": {
-        "file": "SFZN.SW_2015_2025_locked_snapshot_v1.json",
-        "sha256": "60ccdef83691806ff8c5d8713cc1fa5e58cc905122c8b4de2e9136759419a7f1"
+        "file": "SFZN.SW_2015_2025_locked_snapshot_v2.json",
+        "sha256": "e696506e8927ada5d219bc6890723c12785f703fd492f74e596b64aab4991606"
       },
-      "source_schema_version": "v1",
+      "source_schema_version": "v2",
       "ticker": "SFZN.SW"
     }
   ],
+  "split_rules": {
+    "BANB.SW": {
+      "event": "1:5 share split between FY2021 and FY2022",
+      "manual_adjustment_applied": false,
+      "post_split_periods": [
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "pre_split_periods": [
+        2021
+      ],
+      "runtime_basis": "as_reported_by_fiscal_year"
+    },
+    "SFZN.SW": {
+      "event": "1:10 share split approved in 2025",
+      "first_split_adjusted_trading_date": "2025-04-28",
+      "historical_periods_adjusted_by_issuer": [
+        2021,
+        2022,
+        2023,
+        2024
+      ],
+      "native_and_recalculated_values_preserved_in_source": true,
+      "post_split_periods": [
+        2025
+      ],
+      "published_market_capitalization_method": "issuer_published_listed_shares_net_of_treasury_shares",
+      "published_market_capitalization_precedence": true,
+      "runtime_basis": "issuer_published_2025_post_split_comparative"
+    }
+  },
   "tickers": [
     "BANB.SW",
     "SFZN.SW"

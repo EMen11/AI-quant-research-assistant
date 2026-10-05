@@ -36,7 +36,7 @@ def row(ticker: str, year: int) -> dict[str, str]:
             "ebitda = ebit + da; free_cash_flow_calculated = operating_cf + "
             "capex_calculated; equity_ratio_pct = total_equity / total_assets."
         ),
-        "valuation_status": "missing_source_unavailable",
+        "valuation_status": "published_market_data_available",
         "revenue": "100",
         "ebit": "20",
         "da": "5",
@@ -57,6 +57,23 @@ def row(ticker: str, year: int) -> dict[str, str]:
         "free_cash_flow_reported": "30",
         "free_cash_flow_calculated": "30",
         "equity_ratio_pct": "60",
+        "year_end_share_price": "80",
+        "registered_shares": "1000000",
+        "market_capitalization_published": "75",
+        "pe_published": "20",
+        "market_data_basis": "issuer_published_test_value",
+        "market_data_method": "issuer_published_values_no_market_cap_substitution",
+        "market_data_source_file": f"{ticker}_2025.pdf",
+        "market_data_pdf_page": "10",
+        "market_data_report_page": "8",
+        "market_data_provenance_status": "official_annual_report_hash_verified",
+        "native_year_end_share_price": "800",
+        "native_registered_shares": "100000",
+        "native_market_capitalization_published": "75",
+        "native_pe_published": "20",
+        "recalculated_year_end_share_price": "80",
+        "recalculated_registered_shares": "1000000",
+        "recalculated_registered_share_capitalization": "80",
     }
 
 
@@ -70,7 +87,7 @@ def write_source(directory: Path, ticker: str, *, locked: bool) -> tuple[str, st
     payload: dict[str, object] = {
         "ticker": ticker,
         "company_name": MODULE.COMPANY_NAMES[ticker],
-        "snapshot_version": "v1",
+        "snapshot_version": "v2" if ticker == "SFZN.SW" else "v1",
         "row_count": 11,
         "locked": locked,
         "validation_status": "locked_snapshot" if locked else "candidate",
@@ -183,9 +200,26 @@ def test_import_projects_fundamentals_and_records_authority_hashes(tmp_path: Pat
     assert manifest["tickers"] == ["BANB.SW", "SFZN.SW"]
     assert manifest["periods"] == [2021, 2022, 2023, 2024, 2025]
     assert manifest["runtime_external_dependency"] is False
+    assert manifest["source_repository"] == MODULE.SOURCE_REPOSITORY
+    assert manifest["source_repository"]["commit_sha"] == (
+        "bc1c54eefd663a257aab71e58fd7953a6239a1fc"
+    )
+    assert manifest["companies"] == [
+        {"ticker": "BANB.SW", "company_name": "Bachem Holding AG"},
+        {"ticker": "SFZN.SW", "company_name": "Siegfried Holding AG"},
+    ]
+    assert manifest["split_rules"]["SFZN.SW"]["runtime_basis"] == (
+        "issuer_published_2025_post_split_comparative"
+    )
+    assert manifest["split_rules"]["SFZN.SW"][
+        "native_and_recalculated_values_preserved_in_source"
+    ] is True
+    assert manifest["split_rules"]["SFZN.SW"][
+        "published_market_capitalization_precedence"
+    ] is True
     assert manifest["gates"] == {
         "fundamentals": "pass",
-        "comparative_valuation": "blocked",
+        "comparative_valuation": "pass",
     }
     sfzn = next(item for item in manifest["sources"] if item["ticker"] == "SFZN.SW")
     assert sfzn["authority"]["mode"] == "external_verified_lock_and_promotion_chain"
@@ -209,9 +243,18 @@ def test_import_projects_fundamentals_and_records_authority_hashes(tmp_path: Pat
     assert ebitda["status"] == "calculated"
     assert ebitda["formula_version"] == "equity-formulas.v1"
     assert revenue["status"] == "reported"
+    sfzn_market_cap = next(
+        item
+        for item in fundamentals
+        if item["ticker"] == "SFZN.SW"
+        and item["fiscal_year"] == "2021"
+        and item["metric_name"] == "market_capitalization_published"
+    )
+    assert sfzn_market_cap["value"] == "75"
+    assert sfzn_market_cap["value"] != "80"
 
 
-def test_valuation_diagnostic_is_precise_and_does_not_backfill(tmp_path: Path) -> None:
+def test_valuation_diagnostic_passes_only_with_complete_historical_coverage(tmp_path: Path) -> None:
     source_dir = tmp_path / "source"
     source_dir.mkdir()
     source_set(source_dir)
@@ -219,10 +262,39 @@ def test_valuation_diagnostic_is_precise_and_does_not_backfill(tmp_path: Path) -
     build_fixtures(source_dir, output_dir)
 
     diagnostic = json.loads((output_dir / "valuation_diagnostic.v1.json").read_text())
-    assert diagnostic["status"] == "fundamentals_ready_comparative_valuation_blocked"
-    assert diagnostic["blocked_columns"]["SFZN.SW"] == list(MODULE.MARKET_METRICS)
+    assert diagnostic["status"] == "siegfried_valuation_inputs_ready"
+    assert diagnostic["gate"] == "pass"
+    assert diagnostic["blocked_columns"]["SFZN.SW"] == []
     assert diagnostic["phase_readiness"]["phase_3_fundamentals_engine"] == "ready"
-    assert diagnostic["phase_readiness"]["phase_4_comparative_valuation"] == "blocked"
+    assert diagnostic["phase_readiness"]["phase_4_comparative_valuation"] == "ready"
+
+
+def test_valuation_gate_fails_closed_when_one_market_value_is_missing(tmp_path: Path) -> None:
+    source_dir = tmp_path / "source"
+    source_dir.mkdir()
+    source_set(source_dir)
+    csv_path = source_dir / MODULE.SOURCE_FILES["SFZN.SW"]["csv"]
+    rows = list(csv.DictReader(csv_path.open(newline="", encoding="utf-8")))
+    rows[6]["market_capitalization_published"] = ""
+    with csv_path.open("w", newline="", encoding="utf-8") as handle:
+        writer = csv.DictWriter(handle, fieldnames=list(rows[0]), lineterminator="\n")
+        writer.writeheader()
+        writer.writerows(rows)
+    json_path = source_dir / MODULE.SOURCE_FILES["SFZN.SW"]["json"]
+    payload = json.loads(json_path.read_text(encoding="utf-8"))
+    payload["rows"] = rows
+    json_path.write_text(json.dumps(payload), encoding="utf-8")
+    write_sfzn_authority(
+        source_dir,
+        hashlib.sha256(csv_path.read_bytes()).hexdigest(),
+        hashlib.sha256(json_path.read_bytes()).hexdigest(),
+    )
+
+    output_dir = tmp_path / "output"
+    build_fixtures(source_dir, output_dir)
+    diagnostic = json.loads((output_dir / "valuation_diagnostic.v1.json").read_text())
+    assert diagnostic["gate"] == "blocked"
+    assert diagnostic["blocked_columns"]["SFZN.SW"] == ["market_capitalization_published"]
 
 
 def test_import_is_deterministic_for_same_inputs_and_generation_time(tmp_path: Path) -> None:

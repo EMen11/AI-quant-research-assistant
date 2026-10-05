@@ -3,6 +3,11 @@
     "BANB.SW": [
       "price_to_earnings_published"
     ],
+    "SFZN.SW": []
+  },
+  "blocking_reason": "",
+  "gate": "pass",
+  "gate_scope": {
     "SFZN.SW": [
       "year_end_share_price",
       "registered_shares",
@@ -10,7 +15,6 @@
       "price_to_earnings_published"
     ]
   },
-  "blocking_reason": "Siegfried locked FY2021–FY2025 rows contain no closing share price, registered shares, published market capitalization, or published P/E. Missing values were not inferred or backfilled.",
   "market_field_coverage": {
     "BANB.SW": {
       "market_capitalization_published": [
@@ -37,10 +41,34 @@
       ]
     },
     "SFZN.SW": {
-      "market_capitalization_published": [],
-      "price_to_earnings_published": [],
-      "registered_shares": [],
-      "year_end_share_price": []
+      "market_capitalization_published": [
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "price_to_earnings_published": [
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "registered_shares": [
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ],
+      "year_end_share_price": [
+        2021,
+        2022,
+        2023,
+        2024,
+        2025
+      ]
     }
   },
   "periods": [
@@ -54,9 +82,14 @@
     "phase_2_fundamentals_snapshot": "ready",
     "phase_3_fundamentals_engine": "ready",
     "phase_4_bachem_historical_valuation": "partially_ready",
-    "phase_4_comparative_valuation": "blocked",
+    "phase_4_comparative_valuation": "ready_with_source_limitations",
     "phase_4_snapshot_and_fundamentals_tabs": "ready"
   },
+  "remaining_source_limitations": {
+    "BANB.SW": [
+      "price_to_earnings_published"
+    ]
+  },
   "schema_version": "equity-valuation-diagnostic.v1",
-  "status": "fundamentals_ready_comparative_valuation_blocked"
+  "status": "siegfried_valuation_inputs_ready"
 }

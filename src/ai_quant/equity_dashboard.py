@@ -307,6 +307,8 @@ def _periods_for(spec: MetricSpec, analysis: FundamentalAnalysis) -> tuple[int, 
 
 def _render_valuation_limit(repository: EquityRepository) -> None:
     blocked = tuple(repository.valuation_diagnostic["blocked_columns"]["SFZN.SW"])
+    if repository.valuation_diagnostic.get("gate") == "pass" and not blocked:
+        return
     if blocked != BLOCKED_SIEGFRIED_VALUATION_FIELDS:
         raise ValueError("Unexpected Siegfried valuation gate in embedded diagnostic.")
     fields = ", ".join(f"`{field}`" for field in blocked)

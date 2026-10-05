@@ -22,18 +22,18 @@ SOURCE_FILES = {
         "json": "BANB.SW_2015_2025_locked_snapshot_v1.json",
     },
     "SFZN.SW": {
-        "csv": "SFZN.SW_2015_2025_locked_snapshot_v1.csv",
-        "json": "SFZN.SW_2015_2025_locked_snapshot_v1.json",
+        "csv": "SFZN.SW_2015_2025_locked_snapshot_v2.csv",
+        "json": "SFZN.SW_2015_2025_locked_snapshot_v2.json",
     },
 }
 SFZN_AUTHORITY_REPORTS = (
-    "SFZN.SW_phase_6A_locked_snapshot_creation_report.md",
-    "SFZN.SW_phase_6B_regression_protection_report.md",
-    "SFZN.SW_phase_7B_product_data_v2_promotion_report.md",
+    "SFZN.SW_phase_6A_locked_snapshot_v2_creation_report.md",
+    "SFZN.SW_phase_6B_snapshot_v2_regression_report.md",
+    "SFZN.SW_phase_7B_product_data_v2_v2_promotion_report.md",
 )
 SFZN_LOCKED_PATHS = (
-    "snapshots/locked/SFZN.SW/v1/SFZN.SW_2015_2025_locked_snapshot_v1.csv",
-    "snapshots/locked/SFZN.SW/v1/SFZN.SW_2015_2025_locked_snapshot_v1.json",
+    "snapshots/locked/SFZN.SW/v2/SFZN.SW_2015_2025_locked_snapshot_v2.csv",
+    "snapshots/locked/SFZN.SW/v2/SFZN.SW_2015_2025_locked_snapshot_v2.json",
 )
 COMPANY_NAMES = {
     "BANB.SW": "Bachem Holding AG",
@@ -45,6 +45,32 @@ MANIFEST_SCHEMA_VERSION = "equity-snapshot-manifest.v1"
 AUTHORITY_SCHEMA_VERSION = "sed-locked-authority-chain.v1"
 VALUATION_DIAGNOSTIC_VERSION = "equity-valuation-diagnostic.v1"
 FORMULA_VERSION = "equity-formulas.v1"
+SOURCE_REPOSITORY = {
+    "identifier": "SED/pdf.extractor",
+    "commit_sha": "bc1c54eefd663a257aab71e58fd7953a6239a1fc",
+    "commit_message": "feat(sfzn): promote split-adjusted valuation snapshot v2",
+}
+SPLIT_RULES = {
+    "BANB.SW": {
+        "event": "1:5 share split between FY2021 and FY2022",
+        "runtime_basis": "as_reported_by_fiscal_year",
+        "pre_split_periods": [2021],
+        "post_split_periods": [2022, 2023, 2024, 2025],
+        "manual_adjustment_applied": False,
+    },
+    "SFZN.SW": {
+        "event": "1:10 share split approved in 2025",
+        "first_split_adjusted_trading_date": "2025-04-28",
+        "runtime_basis": "issuer_published_2025_post_split_comparative",
+        "historical_periods_adjusted_by_issuer": [2021, 2022, 2023, 2024],
+        "post_split_periods": [2025],
+        "native_and_recalculated_values_preserved_in_source": True,
+        "published_market_capitalization_precedence": True,
+        "published_market_capitalization_method": (
+            "issuer_published_listed_shares_net_of_treasury_shares"
+        ),
+    },
+}
 
 
 @dataclass(frozen=True, slots=True)
@@ -84,7 +110,11 @@ METRICS = (
     MetricProjection(("year_end_share_price",), "year_end_share_price", "CHF_per_share"),
     MetricProjection(("shares_outstanding", "registered_shares"), "registered_shares", "shares"),
     MetricProjection(("market_cap", "market_capitalization_published"), "market_capitalization_published", "CHF_millions"),
-    MetricProjection(("pe_published",), "price_to_earnings_published", "multiple"),
+    MetricProjection(
+        ("pe_published", "price_to_earnings_published"),
+        "price_to_earnings_published",
+        "multiple",
+    ),
 )
 MARKET_METRICS = (
     "year_end_share_price",
@@ -243,11 +273,17 @@ def build_fixtures(
         "formula_version": FORMULA_VERSION,
         "generated_at": timestamp.astimezone(UTC).isoformat().replace("+00:00", "Z"),
         "runtime_external_dependency": False,
+        "source_repository": SOURCE_REPOSITORY,
         "tickers": list(SOURCE_FILES),
+        "companies": [
+            {"ticker": ticker, "company_name": COMPANY_NAMES[ticker]}
+            for ticker in SOURCE_FILES
+        ],
         "periods": list(EXPECTED_YEARS),
+        "split_rules": SPLIT_RULES,
         "gates": {
             "fundamentals": "pass",
-            "comparative_valuation": "blocked",
+            "comparative_valuation": valuation_diagnostic["gate"],
         },
         "sources": [_manifest_source(snapshot) for snapshot in snapshots],
         "outputs": [
@@ -402,10 +438,7 @@ def _project(
     fundamentals: list[dict[str, Any]] = []
     sources: list[dict[str, Any]] = []
     missing_values: list[dict[str, Any]] = []
-    caveats = {
-        "Source snapshots do not provide PDF page numbers; page-level provenance is unavailable.",
-        "Comparative valuation remains blocked until Siegfried market fields are source-validated.",
-    }
+    caveats: set[str] = set()
     for snapshot in snapshots:
         company_name = str(snapshot.payload.get("company_name", COMPANY_NAMES[snapshot.ticker]))
         for row in snapshot.rows:
@@ -424,6 +457,10 @@ def _project(
                     "authority_mode": snapshot.authority.mode,
                     "source_document": row.get("source_file") or f"{company_name} Annual Report {year}",
                     "pdf_page": "",
+                    "market_source_document": row.get("market_data_source_file", ""),
+                    "market_pdf_page": row.get("market_data_pdf_page", ""),
+                    "market_report_page": row.get("market_data_report_page", ""),
+                    "market_provenance_status": row.get("market_data_provenance_status", ""),
                     "row_status": row.get("validation_status") or row.get("candidate_row_status") or row.get("status", ""),
                     "validation_phase": row.get("validation_phase", ""),
                     "validation_report": row.get("validation_report", ""),
@@ -457,11 +494,30 @@ def _project(
                         ) from error
                     status = method
                     value = str(raw_value)
-                    note = (
-                        row.get("formula_note") or row.get("notes", "")
-                        if method == "calculated"
-                        else ""
-                    )
+                    if projection.metric_name in MARKET_METRICS:
+                        market_source = row.get("market_data_source_file", "")
+                        market_page = row.get("market_data_pdf_page", "")
+                        market_locator = (
+                            f"{market_source} PDF p.{market_page}"
+                            if market_source or market_page
+                            else ""
+                        )
+                        note = "; ".join(
+                            filter(
+                                None,
+                                (
+                                    row.get("market_data_basis", ""),
+                                    row.get("market_data_method", ""),
+                                    market_locator,
+                                ),
+                            )
+                        )
+                    else:
+                        note = (
+                            row.get("formula_note") or row.get("notes", "")
+                            if method == "calculated"
+                            else ""
+                        )
                 fundamentals.append(
                     {
                         "metric_id": _metric_id(snapshot.ticker, year, projection.metric_name),
@@ -520,23 +576,37 @@ def _valuation_diagnostic(fundamentals: list[dict[str, Any]]) -> dict[str, Any]:
         ticker: [field for field, years in fields.items() if years != list(EXPECTED_YEARS)]
         for ticker, fields in coverage.items()
     }
+    # This gate was opened specifically to validate Siegfried's four missing
+    # historical market fields. Other issuer-published fields remain explicit
+    # source limitations and are never backfilled merely to satisfy the gate.
+    ready = not blocked["SFZN.SW"]
+    other_limitations = {
+        ticker: fields for ticker, fields in blocked.items() if ticker != "SFZN.SW" and fields
+    }
     return {
         "schema_version": VALUATION_DIAGNOSTIC_VERSION,
-        "status": "fundamentals_ready_comparative_valuation_blocked",
+        "status": (
+            "siegfried_valuation_inputs_ready"
+            if ready
+            else "fundamentals_ready_comparative_valuation_blocked"
+        ),
+        "gate": "pass" if ready else "blocked",
+        "gate_scope": {"SFZN.SW": list(MARKET_METRICS)},
         "periods": list(EXPECTED_YEARS),
         "market_field_coverage": coverage,
         "blocked_columns": blocked,
-        "blocking_reason": (
-            "Siegfried locked FY2021–FY2025 rows contain no closing share price, registered "
-            "shares, published market capitalization, or published P/E. Missing values were "
-            "not inferred or backfilled."
-        ),
+        "blocking_reason": "" if ready else "One or more required historical market fields are unavailable for at least one expected period.",
+        "remaining_source_limitations": other_limitations,
         "phase_readiness": {
             "phase_2_fundamentals_snapshot": "ready",
             "phase_3_fundamentals_engine": "ready",
             "phase_4_snapshot_and_fundamentals_tabs": "ready",
             "phase_4_bachem_historical_valuation": "partially_ready",
-            "phase_4_comparative_valuation": "blocked",
+            "phase_4_comparative_valuation": (
+                "ready_with_source_limitations"
+                if ready and other_limitations
+                else ("ready" if ready else "blocked")
+            ),
         },
     }
 
@@ -546,10 +616,7 @@ def _manifest_source(snapshot: SourceSnapshot) -> dict[str, Any]:
         "ticker": snapshot.ticker,
         "csv": {"file": snapshot.csv_path.name, "sha256": snapshot.csv_sha256},
         "json": {"file": snapshot.json_path.name, "sha256": snapshot.json_sha256},
-        "source_schema_version": (
-            "v1" if snapshot.authority.mode == "external_verified_lock_and_promotion_chain"
-            else _source_schema_version(snapshot.payload)
-        ),
+        "source_schema_version": _source_schema_version(snapshot.payload),
         "internal_artifact_status": _artifact_status(snapshot.payload),
         "authority": {
             "mode": snapshot.authority.mode,

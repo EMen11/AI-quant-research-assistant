@@ -102,7 +102,7 @@ def test_equity_research_smoke_and_visible_scope(monkeypatch) -> None:
     assert all(row["Valeur source / non formatée"] == "—" for row in unavailable_rows)
 
 
-def test_every_visible_metric_is_traceable_and_valuation_stays_blocked(monkeypatch) -> None:
+def test_every_visible_metric_is_traceable_and_unlocked_gate_adds_no_warning(monkeypatch) -> None:
     monkeypatch.setenv("APP_MODE", "demo")
     app = _equity_app()
 
@@ -125,9 +125,7 @@ def test_every_visible_metric_is_traceable_and_valuation_stays_blocked(monkeypat
         } <= set(table.columns)
 
     warning_text = "\n".join(item.value for item in app.warning)
-    for field in BLOCKED_SIEGFRIED_VALUATION_FIELDS:
-        assert field in warning_text
-    assert "Aucune donnée de marché n’est inférée" in warning_text
+    assert not any(field in warning_text for field in BLOCKED_SIEGFRIED_VALUATION_FIELDS)
 
 
 def test_snapshot_and_fundamental_contracts_use_phase3_metrics_only() -> None:
