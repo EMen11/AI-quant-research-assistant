@@ -58,11 +58,16 @@ assert isinstance(client_from_settings(settings), FakeLLMClient)
 
 app = AppTest.from_file('app.py', default_timeout=20).run()
 assert not app.exception
+view = next(item for item in app.selectbox if item.label == 'View')
+assert view.value == 'Equity research'
+app = view.select('AI audit workbench').run()
+assert not app.exception
 assert [tab.label for tab in app.tabs] == [
     'Overview', 'Quant', 'Climate Evidence', 'Validation & Review', 'Quality', 'Methodology'
 ]
 assert any('no HumanReview' in warning.value for warning in app.warning)
-app.selectbox[0].select('blocked').run()
+scenario = next(item for item in app.selectbox if item.label == 'Demo scenario')
+scenario.select('blocked').run()
 assert not app.exception
 assert not app.get('download_button')
 assert any('Export blocked' in warning.value for warning in app.warning)

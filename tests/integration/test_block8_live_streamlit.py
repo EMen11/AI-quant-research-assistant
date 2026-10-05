@@ -21,6 +21,8 @@ def test_live_streamlit_calls_api_and_reads_persisted_analysis(monkeypatch) -> N
     monkeypatch.delenv("ANTHROPIC_MODEL", raising=False)
 
     app = AppTest.from_file(PROJECT_ROOT / "app.py", default_timeout=20).run()
+    view = next(item for item in app.selectbox if item.label == "View")
+    app = view.select("AI audit workbench").run()
     assert not app.exception
     assert any("API health: ok" in item.value for item in app.success)
     run_button = next(item for item in app.button if item.label == "Run and persist analysis")

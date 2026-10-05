@@ -50,6 +50,8 @@ def test_streamlit_entrypoint_starts_in_demo_without_secret(monkeypatch) -> None
     monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
 
     app = AppTest.from_file(PROJECT_ROOT / "app.py", default_timeout=10).run()
+    view = next(item for item in app.selectbox if item.label == "View")
+    app = view.select("AI audit workbench").run()
 
     assert not app.exception
     assert app.title[0].value == "AI Quant Research Workbench"

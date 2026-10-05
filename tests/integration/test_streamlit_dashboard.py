@@ -8,7 +8,9 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
 
 def _app() -> AppTest:
-    return AppTest.from_file(PROJECT_ROOT / "app.py", default_timeout=20).run()
+    app = AppTest.from_file(PROJECT_ROOT / "app.py", default_timeout=20).run()
+    view = next(item for item in app.selectbox if item.label == "View")
+    return view.select("AI audit workbench").run()
 
 
 def test_dashboard_renders_exactly_six_views_with_responsive_structure(monkeypatch) -> None:
@@ -66,7 +68,8 @@ def test_admissible_ui_displays_ids_units_pages_excerpts_and_separate_statuses(
 def test_blocked_ui_shows_findings_and_has_no_approval_or_export(monkeypatch) -> None:
     monkeypatch.setenv("APP_MODE", "demo")
     app = _app()
-    app.selectbox[0].select("blocked").run()
+    scenario = next(item for item in app.selectbox if item.label == "Demo scenario")
+    scenario.select("blocked").run()
 
     assert not app.exception
     finding_frames = [
@@ -147,7 +150,8 @@ def test_human_edited_revision_that_fails_validation_keeps_untrusted_banner(
 ) -> None:
     monkeypatch.setenv("APP_MODE", "demo")
     app = _app()
-    app.selectbox[0].select("blocked").run()
+    scenario = next(item for item in app.selectbox if item.label == "Demo scenario")
+    scenario.select("blocked").run()
     app.text_area[0].set_value(app.text_area[0].value + " Human edit remains blocked.")
     submit = next(
         item for item in app.button if item.label == "Record session-only review"

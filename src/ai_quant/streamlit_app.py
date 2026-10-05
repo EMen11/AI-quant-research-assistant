@@ -2,30 +2,28 @@
 
 from __future__ import annotations
 
+from types import ModuleType
+from typing import TYPE_CHECKING
+
 import streamlit as st
 
-from ai_quant.analyst_dashboard import (
-    DEMO_REVIEWER_ID,
-    HISTORICAL_LIVE_PROVENANCE_LABEL,
-    METHODOLOGY_LINKS,
-    SCENARIO_LABELS,
-    AnalystDashboard,
-    DraftRevision,
-    EvidenceView,
-    ScenarioKey,
-    ScenarioSession,
-    SessionReviewRepository,
-    add_human_review,
-    build_analyst_dashboard,
-    climate_evidence_groups,
-    create_corrected_revision,
-    decide_export,
-    metric_views,
-    validation_issue_path,
-    workflow_evidence_views,
-)
 from ai_quant.config import AppMode, Settings
-from ai_quant.trust import WorkflowResult
+
+if TYPE_CHECKING:
+    from ai_quant.analyst_dashboard import (
+        AnalystDashboard,
+        DraftRevision,
+        EvidenceView,
+        ScenarioKey,
+        ScenarioSession,
+        SessionReviewRepository,
+    )
+    from ai_quant.trust import WorkflowResult
+
+EQUITY_RESEARCH_VIEW = "Equity research"
+AI_AUDIT_WORKBENCH_VIEW = "AI audit workbench"
+VIEW_OPTIONS = (EQUITY_RESEARCH_VIEW, AI_AUDIT_WORKBENCH_VIEW)
+_AUDIT_MODULE: ModuleType | None = None
 
 _CONTENT_ORIGIN_LABELS = {
     "historical-live-provider-normalized-fixture": "Historical normalized demo fixture",
@@ -45,11 +43,21 @@ _UNTRUSTED_DRAFT_WARNING = (
 def build_demo_view(settings: Settings) -> AnalystDashboard:
     """Compatibility entry point for tests and non-Streamlit consumers."""
 
+    from ai_quant.analyst_dashboard import build_analyst_dashboard
+
     return build_analyst_dashboard(settings)
 
 
+def default_view_for_mode(app_mode: AppMode) -> str:
+    """Return the stable default without rendering or importing either view."""
+
+    if app_mode is AppMode.DEMO:
+        return EQUITY_RESEARCH_VIEW
+    return AI_AUDIT_WORKBENCH_VIEW
+
+
 def main() -> None:
-    """Validate startup configuration and render the offline analyst interface."""
+    """Render exactly one lazily selected research interface."""
 
     settings = Settings.from_env()
     st.set_page_config(
@@ -59,6 +67,33 @@ def main() -> None:
         initial_sidebar_state="collapsed",
     )
     _render_css()
+    default_view = default_view_for_mode(settings.app_mode)
+    selected_view = st.selectbox(
+        "View",
+        options=VIEW_OPTIONS,
+        index=VIEW_OPTIONS.index(default_view),
+        key="primary-view",
+    )
+    render_selected_view(settings, selected_view)
+
+
+def render_selected_view(settings: Settings, selected_view: str) -> None:
+    """Dispatch one view only; imports for the other view remain untouched."""
+
+    if selected_view == EQUITY_RESEARCH_VIEW:
+        from ai_quant.equity_dashboard import render_equity_dashboard
+
+        render_equity_dashboard()
+        return
+    if selected_view == AI_AUDIT_WORKBENCH_VIEW:
+        render_audit_workbench(settings)
+        return
+    raise ValueError(f"Unknown Streamlit view: {selected_view}")
+
+
+def render_audit_workbench(settings: Settings) -> None:
+    """Render the historical workbench behind the explicit router boundary."""
+
     st.title("AI Quant Research Workbench")
     st.caption("Analyst review dashboard · traceable evidence · deterministic controls")
 
@@ -69,12 +104,13 @@ def main() -> None:
         render_live_dashboard(settings.api_base_url)
         return
 
+    audit = _load_audit_module()
     dashboard = build_demo_view(settings)
-    repository = SessionReviewRepository(st.session_state, dashboard.scenarios)
+    repository = audit.SessionReviewRepository(st.session_state, dashboard.scenarios)
     scenario = st.selectbox(
         "Demo scenario",
         options=("admissible", "blocked"),
-        format_func=lambda value: SCENARIO_LABELS[value],
+        format_func=lambda value: audit.SCENARIO_LABELS[value],
         help="Both scenarios are deterministic and run entirely from versioned local artifacts.",
     )
     selected: ScenarioKey = scenario
@@ -114,11 +150,12 @@ def _render_overview(
     result: WorkflowResult,
     session: ScenarioSession,
 ) -> None:
+    audit = _load_audit_module()
     st.header("Overview")
     snapshot = result.analysis.snapshot
     current = session.current
     response_origin = (
-        HISTORICAL_LIVE_PROVENANCE_LABEL
+        audit.HISTORICAL_LIVE_PROVENANCE_LABEL
         if current.source_generation_origin
         == "historical-live-provider-normalized-fixture"
         else "Manifestly synthetic offline fixture · no provider call"
@@ -126,7 +163,7 @@ def _render_overview(
     current_review = session.current_review
     st.table(
         [
-            {"Field": "Scenario", "Value": SCENARIO_LABELS[scenario]},
+            {"Field": "Scenario", "Value": audit.SCENARIO_LABELS[scenario]},
             {"Field": "Run ID", "Value": result.run_id},
             {"Field": "Run state", "Value": result.state},
             {"Field": "Application mode", "Value": "demo · offline"},
@@ -170,6 +207,7 @@ def _render_overview(
 
 
 def _render_quant(result: WorkflowResult) -> None:
+    audit = _load_audit_module()
     st.header("Quant")
     analysis = result.analysis
     portfolio = analysis.portfolio
@@ -205,7 +243,7 @@ def _render_quant(result: WorkflowResult) -> None:
                 "Formula version": item.formula_version,
                 "Snapshot ID": item.snapshot_id,
             }
-            for item in metric_views(result)
+            for item in audit.metric_views(result)
         ],
         hide_index=True,
         width="stretch",
@@ -244,6 +282,7 @@ def _render_quant(result: WorkflowResult) -> None:
 
 
 def _render_climate(result: WorkflowResult, dashboard: AnalystDashboard) -> None:
+    audit = _load_audit_module()
     st.header("Climate Evidence")
     st.caption(
         "Financial metrics and climate evidence remain separate. The artifacts establish no "
@@ -251,7 +290,7 @@ def _render_climate(result: WorkflowResult, dashboard: AnalystDashboard) -> None
     )
     st.subheader("Evidence referenced by the selected run")
     _render_evidence_collection(
-        workflow_evidence_views(result, dashboard.climate_corpus)
+        audit.workflow_evidence_views(result, dashboard.climate_corpus)
     )
 
     st.subheader("Versioned official corpus")
@@ -259,7 +298,7 @@ def _render_climate(result: WorkflowResult, dashboard: AnalystDashboard) -> None
         f"Publication cutoff: {dashboard.climate_corpus.cutoff_date.isoformat()} · "
         "issuer reporting is evidence of disclosure, not proof of physical truth."
     )
-    groups = climate_evidence_groups(dashboard.climate_corpus)
+    groups = audit.climate_evidence_groups(dashboard.climate_corpus)
     labels = (
         ("Observed results · Scope 2 location-based", "observed_scope2_location"),
         ("Observed results · Scope 2 market-based", "observed_scope2_market"),
@@ -319,6 +358,7 @@ def _render_validation_and_review(
     session: ScenarioSession,
     repository: SessionReviewRepository,
 ) -> None:
+    audit = _load_audit_module()
     st.header("Validation & Review")
     revision_options = tuple(revision.version for revision in session.revisions)
     selected_version = st.selectbox(
@@ -341,7 +381,7 @@ def _render_validation_and_review(
 
     st.subheader("Human review · session-only")
     st.info(
-        f"Reviewer label: `{DEMO_REVIEWER_ID}` · unauthenticated. Reviews are stored only "
+        f"Reviewer label: `{audit.DEMO_REVIEWER_ID}` · unauthenticated. Reviews are stored only "
         "in the current Streamlit session. They are not persisted and may disappear after "
         "reload, disconnect, or a new browser session."
     )
@@ -372,7 +412,7 @@ def _render_validation_and_review(
     if submitted:
         try:
             if disposition == "corrected":
-                updated = create_corrected_revision(
+                updated = audit.create_corrected_revision(
                     session,
                     result,
                     summary=corrected_summary,
@@ -380,7 +420,7 @@ def _render_validation_and_review(
                     comment=comment,
                 )
             else:
-                updated = add_human_review(
+                updated = audit.add_human_review(
                     session,
                     disposition=disposition,
                     comment=comment,
@@ -392,7 +432,7 @@ def _render_validation_and_review(
             st.error(str(error))
 
     st.subheader("Approved export policy")
-    decision = decide_export(session)
+    decision = audit.decide_export(session)
     if decision.allowed:
         assert decision.payload is not None and decision.filename is not None
         st.download_button(
@@ -470,6 +510,7 @@ def _render_revision(revision: DraftRevision) -> None:
 
 
 def _render_validation_report(revision: DraftRevision) -> None:
+    audit = _load_audit_module()
     st.subheader("ValidationReport")
     report = revision.validation_report
     st.caption(
@@ -480,7 +521,7 @@ def _render_validation_report(revision: DraftRevision) -> None:
     if report.issues:
         st.markdown("**Full finding messages**")
         for issue in report.issues:
-            path = validation_issue_path(issue.claim_id)
+            path = audit.validation_issue_path(issue.claim_id)
             with st.expander(f"{issue.code} · {issue.severity} · {path}"):
                 st.code(path, language=None)
                 st.write(issue.message)
@@ -489,7 +530,7 @@ def _render_validation_report(revision: DraftRevision) -> None:
                 {
                     "Code": issue.code,
                     "Severity": issue.severity,
-                    "Path": validation_issue_path(issue.claim_id),
+                    "Path": audit.validation_issue_path(issue.claim_id),
                     "Message": issue.message,
                 }
                 for issue in report.issues
@@ -529,6 +570,7 @@ def _render_quality(
     dashboard: AnalystDashboard,
     session: ScenarioSession,
 ) -> None:
+    audit = _load_audit_module()
     st.header("Quality")
     retrieval = dashboard.quality.retrieval
     st.subheader("Retrieval evaluation")
@@ -594,7 +636,7 @@ def _render_quality(
     else:
         if call.response_origin == "live_provider":
             st.info(
-                f"{HISTORICAL_LIVE_PROVENANCE_LABEL}. Tokens, latency, cost and "
+                f"{audit.HISTORICAL_LIVE_PROVENANCE_LABEL}. Tokens, latency, cost and "
                 "`schema_error` below describe that historical call, not the current "
                 "offline demo run."
             )
@@ -643,6 +685,7 @@ def _render_quality(
 
 
 def _render_methodology() -> None:
+    audit = _load_audit_module()
     st.header("Methodology")
     st.subheader("Run architecture and authority")
     st.table(
@@ -665,7 +708,7 @@ def _render_methodology() -> None:
         "PostgreSQL, persist reviews, refresh market data, or establish production performance."
     )
     st.subheader("Versioned methods and evaluation")
-    for link in METHODOLOGY_LINKS:
+    for link in audit.METHODOLOGY_LINKS:
         st.markdown(f"- [{link.label}]({link.url})")
     st.caption(
         "The evaluations cover only their exact versioned datasets, corpus, rules and attack "
@@ -694,6 +737,17 @@ def _render_css() -> None:
         """,
         unsafe_allow_html=True,
     )
+
+
+def _load_audit_module() -> ModuleType:
+    """Import the historical workbench implementation only when it is selected."""
+
+    global _AUDIT_MODULE
+    if _AUDIT_MODULE is None:
+        from ai_quant import analyst_dashboard
+
+        _AUDIT_MODULE = analyst_dashboard
+    return _AUDIT_MODULE
 
 
 if __name__ == "__main__":
