@@ -41,37 +41,37 @@ class MetricSpec:
 
 
 SNAPSHOT_METRICS = (
-    MetricSpec("revenue", "Chiffre d’affaires"),
-    MetricSpec("revenue_yoy_growth", "Croissance annuelle du chiffre d’affaires"),
-    MetricSpec("revenue_cagr_2021_2025", "CAGR du chiffre d’affaires FY2021–FY2025"),
-    MetricSpec("ebitda_margin", "Marge EBITDA"),
-    MetricSpec("ebit_margin", "Marge EBIT"),
-    MetricSpec("net_margin", "Marge nette"),
+    MetricSpec("revenue", "Revenue"),
+    MetricSpec("revenue_yoy_growth", "Annual revenue growth"),
+    MetricSpec("revenue_cagr_2021_2025", "Revenue CAGR FY2021–FY2025"),
+    MetricSpec("ebitda_margin", "EBITDA margin"),
+    MetricSpec("ebit_margin", "EBIT margin"),
+    MetricSpec("net_margin", "Net margin"),
     MetricSpec("operating_cash_flow", "Operating cash flow"),
     MetricSpec("operating_cash_flow_to_revenue", "Operating cash flow / CA"),
-    MetricSpec("free_cash_flow_calculated", "FCF calculé dans la source"),
-    MetricSpec("calculated_fcf_cash_conversion", "Cash conversion du FCF calculé"),
-    MetricSpec("net_debt", "Dette nette"),
-    MetricSpec("net_debt_to_ebitda", "Dette nette / EBITDA"),
-    MetricSpec("return_on_period_end_equity", "ROE sur capitaux propres de clôture"),
-    MetricSpec("equity_ratio_recomputed", "Equity ratio recalculé"),
+    MetricSpec("free_cash_flow_calculated", "Source-calculated FCF"),
+    MetricSpec("calculated_fcf_cash_conversion", "Calculated FCF cash conversion"),
+    MetricSpec("net_debt", "Net debt"),
+    MetricSpec("net_debt_to_ebitda", "Net debt / EBITDA"),
+    MetricSpec("return_on_period_end_equity", "ROE on period-end equity"),
+    MetricSpec("equity_ratio_recomputed", "Recomputed equity ratio"),
 )
 
 FUNDAMENTAL_SECTIONS = (
     (
-        "Chiffre d’affaires et croissance",
+        "Revenue and growth",
         (
-            MetricSpec("revenue", "Chiffre d’affaires"),
-            MetricSpec("revenue_yoy_growth", "Croissance annuelle"),
+            MetricSpec("revenue", "Revenue"),
+            MetricSpec("revenue_yoy_growth", "Annual growth"),
             MetricSpec("revenue_cagr_2021_2025", "CAGR FY2021–FY2025"),
         ),
     ),
     (
-        "Marges",
+        "Margins",
         (
-            MetricSpec("ebitda_margin", "Marge EBITDA"),
-            MetricSpec("ebit_margin", "Marge EBIT"),
-            MetricSpec("net_margin", "Marge nette"),
+            MetricSpec("ebitda_margin", "EBITDA margin"),
+            MetricSpec("ebit_margin", "EBIT margin"),
+            MetricSpec("net_margin", "Net margin"),
         ),
     ),
     (
@@ -82,75 +82,75 @@ FUNDAMENTAL_SECTIONS = (
         ),
     ),
     (
-        "Capex / chiffre d’affaires",
+        "Capex / revenue",
         (
             MetricSpec("capex_reported_to_revenue", "Capex reported / CA"),
             MetricSpec("capex_calculated_to_revenue", "Capex calculated / CA"),
         ),
     ),
     (
-        "Free cash flow et cash conversion",
+        "Free cash flow and cash conversion",
         (
             MetricSpec("free_cash_flow_reported", "FCF reported"),
-            MetricSpec("free_cash_flow_calculated", "FCF calculated dans la source"),
-            MetricSpec("free_cash_flow_recomputed", "FCF recalculé par AI Quant"),
-            MetricSpec("reported_fcf_cash_conversion", "Cash conversion du FCF reported"),
+            MetricSpec("free_cash_flow_calculated", "Source-calculated FCF"),
+            MetricSpec("free_cash_flow_recomputed", "FCF recomputed by AI Quant"),
+            MetricSpec("reported_fcf_cash_conversion", "Reported FCF cash conversion"),
             MetricSpec(
                 "calculated_fcf_cash_conversion",
-                "Cash conversion du FCF calculated",
+                "Calculated FCF cash conversion",
             ),
         ),
     ),
     (
-        "Dette nette et levier",
+        "Net debt and leverage",
         (
-            MetricSpec("net_debt", "Dette nette"),
-            MetricSpec("net_debt_to_ebitda", "Dette nette / EBITDA"),
+            MetricSpec("net_debt", "Net debt"),
+            MetricSpec("net_debt_to_ebitda", "Net debt / EBITDA"),
         ),
     ),
     (
         "ROE",
-        (MetricSpec("return_on_period_end_equity", "ROE sur capitaux propres de clôture"),),
+        (MetricSpec("return_on_period_end_equity", "ROE on period-end equity"),),
     ),
     (
         "Equity ratio",
         (
-            MetricSpec("equity_ratio", "Equity ratio reported"),
-            MetricSpec("equity_ratio_recomputed", "Equity ratio recalculé"),
+            MetricSpec("equity_ratio", "Reported equity ratio"),
+            MetricSpec("equity_ratio_recomputed", "Recomputed equity ratio"),
         ),
     ),
 )
 
 VALUATION_SECTIONS = (
     (
-        "Données de marché historiques",
+        "Historical market data",
         (
-            MetricSpec("year_end_share_price", "Cours de clôture historique"),
-            MetricSpec("registered_shares", "Actions enregistrées"),
+            MetricSpec("year_end_share_price", "Historical closing share price"),
+            MetricSpec("registered_shares", "Registered shares"),
             MetricSpec(
                 "market_capitalization_published",
-                "Capitalisation boursière publiée",
+                "Published market capitalization",
             ),
             MetricSpec(
                 "market_capitalization_calculated",
-                "Capitalisation indicative cours × actions",
+                "Indicative price × shares market capitalization",
             ),
         ),
     ),
     (
-        "Enterprise Value et multiples historiques",
+        "Enterprise Value and historical multiples",
         (
             MetricSpec("enterprise_value", "Enterprise Value"),
             MetricSpec("enterprise_value_to_revenue", "EV / Revenue"),
             MetricSpec("enterprise_value_to_ebitda", "EV / EBITDA"),
             MetricSpec("enterprise_value_to_ebit", "EV / EBIT"),
-            MetricSpec("price_to_earnings_published", "P/E publié"),
-            MetricSpec("price_to_earnings_calculated", "P/E recalculé"),
-            MetricSpec("price_to_book", "P/B recalculé"),
+            MetricSpec("price_to_earnings_published", "Published P/E"),
+            MetricSpec("price_to_earnings_calculated", "Recalculated P/E"),
+            MetricSpec("price_to_book", "Recalculated P/B"),
         ),
     ),
     (
-        "Rendements historiques",
+        "Historical yields",
         (
             MetricSpec("free_cash_flow_yield", "FCF yield (FCF calculated)"),
             MetricSpec("dividend_yield", "Dividend yield"),
@@ -164,11 +164,11 @@ ESG_METRICS = (
     MetricSpec("scope_2_location_based_emissions", "Scope 2 · location-based"),
     MetricSpec(
         "scope_1_2_market_based_intensity",
-        "Intensité Scope 1+2 · market-based",
+        "Scope 1+2 intensity · market-based",
     ),
     MetricSpec(
         "scope_1_2_location_based_intensity",
-        "Intensité Scope 1+2 · location-based",
+        "Scope 1+2 intensity · location-based",
     ),
 )
 
@@ -208,20 +208,20 @@ def render_equity_dashboard() -> None:
     st.title("Equity Research")
     st.caption(
         "Bachem (BANB.SW) / Siegfried (SFZN.SW) · FY2021–FY2025 · "
-        "fixtures locales verrouillées"
+        "locked local fixtures"
     )
     st.info(
-        "Statuts : `reported` = publié dans la source ; `calculated` = calcul déterministe ; "
-        "`unavailable` = entrée absente ; `not_comparable` = base incompatible. "
-        "Une valeur manquante reste vide et n’est jamais remplacée par zéro."
+        "Statuses: `reported` = published by the source; `calculated` = deterministic "
+        "calculation; `unavailable` = missing input; `not_comparable` = incompatible basis. "
+        "A missing value remains empty and is never replaced with zero."
     )
     _render_valuation_limit(repository)
 
     snapshot_tab, fundamentals_tab, valuation_tab, esg_tab, research_note_tab = st.tabs(
         (
             "Snapshot",
-            "Fondamentaux",
-            "Valorisation",
+            "Fundamentals",
+            "Valuation",
             "ESG & sources",
             "Research note",
         )
@@ -237,11 +237,11 @@ def render_equity_dashboard() -> None:
     with research_note_tab:
         scenario_label = st.selectbox(
             "Research note scenario",
-            options=("Admissible", "Bloqué"),
+            options=("Valid", "Blocked"),
             key="equity-research-note-scenario",
         )
         result = run_equity_research_note(
-            "admissible" if scenario_label == "Admissible" else "blocked",
+            "admissible" if scenario_label == "Valid" else "blocked",
             context=research_context,
         )
         _render_research_note(result, monitoring_rows)
@@ -256,11 +256,11 @@ def snapshot_rows(analysis: FundamentalAnalysis) -> tuple[dict[str, str], ...]:
         siegfried = analysis.metric("siegfried", 2025, spec.name)
         rows.append(
             {
-                "Métrique": spec.label,
+                "Metric": spec.label,
                 "Bachem FY2025": format_metric(bachem),
-                "Statut Bachem": bachem.status,
+                "Bachem status": bachem.status,
                 "Siegfried FY2025": format_metric(siegfried),
-                "Statut Siegfried": siegfried.status,
+                "Siegfried status": siegfried.status,
             }
         )
     return tuple(rows)
@@ -306,7 +306,7 @@ def esg_metric_rows(metrics: tuple[MetricValue, ...]) -> tuple[dict[str, str], .
         for spec in ESG_METRICS:
             metric = by_coordinate[(company_id, spec.name)]
             row = _metric_row(metric, spec.label)
-            row["Méthode Scope 2"] = metric.scope2_method or "not_applicable"
+            row["Scope 2 method"] = metric.scope2_method or "not_applicable"
             row["Assurance"] = metric.assurance or "not_disclosed"
             rows.append(row)
     return tuple(rows)
@@ -322,7 +322,7 @@ def research_source_rows(
             "Evidence ID": source.evidence_id,
             "Document": source.title,
             "Page": source.page,
-            "Source ouvrable": source.source_uri,
+            "Openable source": source.source_uri,
         }
         for source in sources
     )
@@ -334,22 +334,22 @@ def _render_research_note(
 ) -> None:
     st.header("Research Note — Bachem / Siegfried")
     st.caption(
-        "Note structurée avec assistance IA hors ligne. Python fournit les chiffres et "
-        "valide les références ; l’IA ne calcule pas et ne prend aucune décision finale."
+        "Structured note with offline AI assistance. Python supplies the figures and validates "
+        "the references; AI does not calculate or make any final decision."
     )
-    st.markdown(f"**Résumé exécutif.** {result.analyst_note.executive_summary}")
+    st.markdown(f"**Executive summary.** {result.analyst_note.executive_summary}")
 
     if result.review_status == "blocked":
         st.error(
-            "Validation automatique : BLOCKED. La note n’est ni rendue comme fiable ni "
-            "présentée comme validée."
+            "Automated validation: BLOCKED. The note is neither rendered as reliable nor "
+            "presented as validated."
         )
-        st.caption(f"Statut de revue humaine : `{result.review_status}`.")
+        st.caption(f"Human-review status: `{result.review_status}`.")
         st.dataframe(
             tuple(
                 {
                     "Code": issue.code,
-                    "Sévérité": issue.severity,
+                    "Severity": issue.severity,
                     "Diagnostic": issue.message,
                 }
                 for issue in result.validation_report.issues
@@ -359,28 +359,28 @@ def _render_research_note(
         )
     else:
         st.success(
-            "Validation automatique : PASSED — références, valeurs, unités, périodes et "
-            "citations autorisées."
+            "Automated validation: PASSED — authorized references, values, units, periods, "
+            "and citations."
         )
         st.warning(
-            "Statut de revue humaine : `pending_human_review`. Aucune approbation humaine "
-            "n’a été inventée."
+            "Human-review status: `pending_human_review`. No human approval has been "
+            "fabricated."
         )
         rendered_claims = iter(result.rendered_draft.claims)
         for section in result.analyst_note.sections.ordered():
             st.subheader(section.title)
             for statement in section.statements:
                 claim = next(rendered_claims)
-                st.caption(f"Type : `{statement.kind}`")
+                st.caption(f"Type: `{statement.kind}`")
                 st.markdown(claim.text)
                 if statement.uncertainty:
-                    st.caption(f"Réserve : {statement.uncertainty}")
+                    st.caption(f"Caveat: {statement.uncertainty}")
 
     st.subheader("Limitations")
     for limitation in result.analyst_note.limitations:
         st.markdown(f"- `{limitation.limitation_id}` — {limitation.text}")
 
-    st.subheader("Sources autorisées")
+    st.subheader("Authorized sources")
     st.dataframe(
         research_source_rows(result.context.authorized_sources),
         hide_index=True,
@@ -389,16 +389,16 @@ def _render_research_note(
     for source in result.context.authorized_sources:
         if source.source_uri.startswith("https://"):
             st.link_button(
-                f"Ouvrir {source.title} · p. {source.page}",
+                f"Open {source.title} · p. {source.page}",
                 source.source_uri,
             )
         else:
-            st.caption(f"Source locale : `{source.source_uri}`")
+            st.caption(f"Local source: `{source.source_uri}`")
 
-    st.subheader("Monitoring FY2025")
+    st.subheader("FY2025 monitoring")
     st.caption(
-        "Suivi descriptif annuel, sans consensus, prévision ni donnée semestrielle. "
-        "Les absences restent visibles avec la fraîcheur `to_update`."
+        "Descriptive annual monitoring without consensus, forecasts, or interim data. "
+        "Missing data remains visible with `to_update` freshness."
     )
     st.dataframe(
         monitoring_table_rows(monitoring_rows),
@@ -410,8 +410,8 @@ def _render_research_note(
 def _render_snapshot(analysis: FundamentalAnalysis) -> None:
     st.header("Snapshot FY2025")
     st.caption(
-        "Comparaison descriptive des valeurs et ratios fondamentaux. Aucun classement, "
-        "signal d’investissement ou multiple de valorisation n’est produit."
+        "Descriptive comparison of fundamental values and ratios. No ranking, investment "
+        "signal, or valuation multiple is produced here."
     )
     st.dataframe(snapshot_rows(analysis), hide_index=True, width="stretch")
     metrics = tuple(
@@ -423,7 +423,7 @@ def _render_snapshot(analysis: FundamentalAnalysis) -> None:
 
 
 def _render_fundamentals(analysis: FundamentalAnalysis) -> None:
-    st.header("Fondamentaux FY2021–FY2025")
+    st.header("Fundamentals FY2021–FY2025")
     displayed: list[MetricValue] = []
     for section_label, specs in FUNDAMENTAL_SECTIONS:
         st.subheader(section_label)
@@ -445,25 +445,26 @@ def _render_valuation(
     analysis: ValuationAnalysis,
     repository: EquityRepository,
 ) -> None:
-    st.header("Valorisation historique FY2021–FY2025")
+    st.header("Historical valuation FY2021–FY2025")
     st.caption(
-        "Toutes les valeurs correspondent à la clôture de l’exercice indiqué ; aucune "
-        "donnée n’est présentée comme un cours ou une valorisation actuelle."
+        "Every value corresponds to the stated fiscal-year close; no figure is presented as "
+        "a current share price or valuation."
     )
     st.info(
-        "Capitalisation publiée et capitalisation indicative `cours × actions` restent "
-        "deux métriques distinctes. La capitalisation publiée est la seule base utilisée "
-        "pour l’Enterprise Value et les multiples recalculés."
+        "Published market capitalization and indicative `price × shares` capitalization "
+        "remain distinct metrics. Published market capitalization is the only basis used "
+        "for Enterprise Value and recalculated multiples."
     )
     st.warning(
-        "Splits : Bachem FY2021 est présenté sur sa base pré-split 1:5 et FY2022–FY2025 "
-        "sur la base post-split publiée. Pour SFZN, cours et actions FY2021–FY2025 sont "
-        "la série comparative publiée ajustée du split 1:10 ; le DPS FY2021–FY2024 "
-        "reste natif pré-split, donc le dividend yield correspondant est not_comparable."
+        "Splits: Bachem FY2021 is shown on its pre-split 1:5 basis and FY2022–FY2025 on "
+        "the published post-split basis. For SFZN, FY2021–FY2025 prices and shares use the "
+        "issuer-published comparative series adjusted for the 1:10 split; FY2021–FY2024 DPS "
+        "remains on its native pre-split basis, so the corresponding dividend yield is "
+        "not_comparable."
     )
     st.caption(
-        "Limitation source : le P/E publié Bachem est `unavailable` pour FY2021–FY2025. "
-        "Le P/E recalculé est affiché séparément et ne remplace pas ce champ publié."
+        "Source limitation: Bachem published P/E is `unavailable` for FY2021–FY2025. "
+        "The recalculated P/E is displayed separately and does not replace that published field."
     )
 
     displayed: list[MetricValue] = []
@@ -485,7 +486,7 @@ def _render_valuation(
     readiness = repository.valuation_diagnostic["phase_readiness"][
         "phase_4_comparative_valuation"
     ]
-    st.caption(f"Readiness du gate comparatif : `{readiness}`.")
+    st.caption(f"Comparative gate readiness: `{readiness}`.")
 
 
 def _render_esg_and_sources(
@@ -494,35 +495,35 @@ def _render_esg_and_sources(
 ) -> None:
     st.header("ESG & sources")
     st.caption(
-        "Données climat FY2025 déjà autorisées dans le corpus local. Aucun score ESG "
-        "n’est produit et aucune absence n’est imputée."
+        "FY2025 climate data already authorized in the local corpus. No ESG score is "
+        "produced and no missing value is inferred."
     )
     st.warning(
-        "Une preuve documente ce que l’émetteur publie ; elle ne certifie pas la réalité "
-        "physique de la donnée. Les méthodes Scope 2 market-based et location-based "
-        "restent strictement séparées."
+        "Evidence documents what the issuer publishes; it does not certify the physical "
+        "truth of the data. Market-based and location-based Scope 2 methods remain strictly "
+        "separate."
     )
 
-    st.subheader("Émissions et intensités descriptives")
+    st.subheader("Descriptive emissions and intensities")
     st.dataframe(esg_metric_rows(metrics), hide_index=True, width="stretch")
     st.caption(
-        "Les intensités combinent Scope 1 et Scope 2 d’une même méthode avec le chiffre "
-        "d’affaires FY2025 de la même société. Elles ne constituent pas un classement."
+        "Intensities combine Scope 1 and Scope 2 under the same method with FY2025 revenue "
+        "for the same company. They do not constitute a ranking."
     )
     _render_metric_inspector(metrics, key="esg-metric-inspector")
 
-    st.subheader("Objectifs climatiques publiés")
+    st.subheader("Published climate targets")
     st.dataframe(_target_rows(corpus), hide_index=True, width="stretch")
 
-    st.subheader("Assurance au niveau de la métrique")
+    st.subheader("Metric-level assurance")
     st.dataframe(_assurance_rows(corpus), hide_index=True, width="stretch")
 
-    st.subheader("Caveats de comparabilité")
+    st.subheader("Comparability caveats")
     st.dataframe(_comparison_rows(corpus), hide_index=True, width="stretch")
     for limitation in corpus.coverage_report.limitations:
-        st.caption(f"Limitation du corpus : {limitation}")
+        st.caption(f"Corpus limitation: {limitation}")
 
-    st.subheader("Documents sources autorisés")
+    st.subheader("Authorized source documents")
     st.dataframe(_document_rows(corpus), hide_index=True, width="stretch")
 
 
@@ -530,16 +531,16 @@ def _target_rows(corpus: SustainabilityCorpus) -> tuple[dict[str, str | int], ..
     documents = {document.document_id: document for document in corpus.documents}
     return tuple(
         {
-            "Société": _issuer_label(target.issuer_id),
-            "Objectif publié": f"{target.target_value}%",
-            "Période": f"{target.base_year} → {target.target_year}",
-            "Scopes couverts": ", ".join(target.covered_scopes),
-            "Statut": "reported",
-            "Validation déclarée": target.validation_status,
+            "Company": _issuer_label(target.issuer_id),
+            "Published target": f"{target.target_value}%",
+            "Period": f"{target.base_year} → {target.target_year}",
+            "Covered scopes": ", ".join(target.covered_scopes),
+            "Status": "reported",
+            "Declared validation": target.validation_status,
             "Assurance": target.assurance_status,
-            "Méthode / standard": target.methodology_or_standard,
+            "Method / standard": target.methodology_or_standard,
             "Document": documents[target.document_id].title,
-            "Page PDF": target.pdf_page,
+            "PDF page": target.pdf_page,
             "SHA-256": target.document_sha256,
         }
         for target in corpus.targets
@@ -553,13 +554,13 @@ def _assurance_rows(corpus: SustainabilityCorpus) -> tuple[dict[str, str | int],
     documents = {document.document_id: document for document in corpus.documents}
     return tuple(
         {
-            "Société": _issuer_label(observations[item.observation_id].issuer_id),
-            "Métrique": observations[item.observation_id].raw_metric_label,
-            "Statut d’assurance": item.status,
-            "Niveau": item.level,
-            "Portée confirmée": "oui" if item.assurance_scope_confirmed else "non",
+            "Company": _issuer_label(observations[item.observation_id].issuer_id),
+            "Metric": observations[item.observation_id].raw_metric_label,
+            "Assurance status": item.status,
+            "Level": item.level,
+            "Scope confirmed": "yes" if item.assurance_scope_confirmed else "no",
             "Document": documents[item.document_id].title,
-            "Page PDF": item.pdf_page,
+            "PDF page": item.pdf_page,
             "SHA-256": item.document_sha256,
             "Notes": item.notes,
         }
@@ -573,14 +574,14 @@ def _comparison_rows(corpus: SustainabilityCorpus) -> tuple[dict[str, str], ...]
     }
     return tuple(
         {
-            "Comparaison": item.comparison_id,
-            "Statut": item.status,
-            "Méthode Scope 2": observations[item.left_observation_id].scope_2_method,
-            "Unité": item.unit,
-            "Périmètre": item.organizational_boundary,
+            "Comparison": item.comparison_id,
+            "Status": item.status,
+            "Scope 2 method": observations[item.left_observation_id].scope_2_method,
+            "Unit": item.unit,
+            "Boundary": item.organizational_boundary,
             "Restatement": item.restatement,
             "Assurance": item.assurance,
-            "Justification": " ".join(item.reasons),
+            "Rationale": " ".join(item.reasons),
         }
         for item in corpus.comparison_assessments
     )
@@ -589,19 +590,19 @@ def _comparison_rows(corpus: SustainabilityCorpus) -> tuple[dict[str, str], ...]
 def _document_rows(corpus: SustainabilityCorpus) -> tuple[dict[str, str | int], ...]:
     return tuple(
         {
-            "Société": _issuer_label(document.issuer_id),
+            "Company": _issuer_label(document.issuer_id),
             "Document": document.title,
-            "Période": (
+            "Period": (
                 f"{document.reporting_period_start.isoformat()} → "
                 f"{document.reporting_period_end.isoformat()}"
             ),
             "Publication": (
                 document.publication_date.isoformat()
                 if document.publication_date is not None
-                else "indisponible"
+                else "unavailable"
             ),
-            "Chemin local": document.local_path,
-            "Page(s)": document.page_count,
+            "Local path": document.local_path,
+            "Pages": document.page_count,
             "SHA-256": document.sha256,
         }
         for document in corpus.documents
@@ -617,10 +618,10 @@ def _issuer_label(issuer_id: str) -> str:
 
 
 def _render_metric_inspector(metrics: tuple[MetricValue, ...], *, key: str) -> None:
-    st.subheader("Inspection d’une métrique")
+    st.subheader("Metric inspection")
     by_id = {metric.metric_id: metric for metric in metrics}
     selected_id = st.selectbox(
-        "Métrique à inspecter",
+        "Metric to inspect",
         options=tuple(by_id),
         format_func=lambda metric_id: _inspection_label(by_id[metric_id]),
         key=key,
@@ -630,25 +631,25 @@ def _render_metric_inspector(metrics: tuple[MetricValue, ...], *, key: str) -> N
     st.table(
         [
             {
-                "Société": COMPANY_LABELS[metric.company_id],
-                "Exercice": f"FY{metric.fiscal_year}",
-                "Métrique": _METRIC_LABELS.get(metric.name, metric.name),
-                "Valeur affichée": format_metric(metric),
-                "Valeur source / non formatée": (
+                "Company": COMPANY_LABELS[metric.company_id],
+                "Fiscal year": f"FY{metric.fiscal_year}",
+                "Metric": _METRIC_LABELS.get(metric.name, metric.name),
+                "Displayed value": format_metric(metric),
+                "Raw source value": (
                     str(metric.value) if metric.value is not None else "—"
                 ),
-                "Unité": metric.unit,
-                "Statut": metric.status,
-                "Formule": formula.expression if formula else "—",
+                "Unit": metric.unit,
+                "Status": metric.status,
+                "Formula": formula.expression if formula else "—",
                 "Version": formula.version if formula else "—",
-                "Entrées": ", ".join(metric.input_metric_ids) or "—",
-                "Méthode Scope 2": metric.scope2_method or "not_applicable",
+                "Inputs": ", ".join(metric.input_metric_ids) or "—",
+                "Scope 2 method": metric.scope2_method or "not_applicable",
                 "Assurance": metric.assurance or "not_disclosed",
                 "Note": metric.note or "—",
             }
         ]
     )
-    st.caption("Provenance des entrées")
+    st.caption("Input provenance")
     if metric.sources:
         st.dataframe(
             tuple(_source_row(source) for source in metric.sources),
@@ -656,20 +657,20 @@ def _render_metric_inspector(metrics: tuple[MetricValue, ...], *, key: str) -> N
             width="stretch",
         )
     else:
-        st.caption("Aucune provenance disponible pour cette métrique indisponible.")
+        st.caption("No provenance is available for this unavailable metric.")
 
 
 def _metric_row(metric: MetricValue, label: str) -> dict[str, str]:
     formula = metric.formula
     return {
-        "Société": COMPANY_LABELS[metric.company_id],
-        "Exercice": f"FY{metric.fiscal_year}",
-        "Métrique": label,
-        "Valeur": format_metric(metric),
-        "Valeur source / non formatée": str(metric.value) if metric.value is not None else "—",
-        "Unité": metric.unit,
-        "Statut": metric.status,
-        "Formule / version": (
+        "Company": COMPANY_LABELS[metric.company_id],
+        "Fiscal year": f"FY{metric.fiscal_year}",
+        "Metric": label,
+        "Value": format_metric(metric),
+        "Raw source value": str(metric.value) if metric.value is not None else "—",
+        "Unit": metric.unit,
+        "Status": metric.status,
+        "Formula / version": (
             f"{formula.expression} · {formula.version}" if formula is not None else "—"
         ),
         "Provenance": _provenance_summary(metric),
@@ -679,19 +680,19 @@ def _metric_row(metric: MetricValue, label: str) -> dict[str, str]:
 def _source_row(source: SourceReference) -> dict[str, str]:
     return {
         "Document": source.document,
-        "Exercice": f"FY{source.fiscal_year}",
-        "Champ source": source.field,
-        "Unité source": source.source_unit,
-        "Méthode": source.method,
-        "Page": str(source.page) if source.page is not None else "non disponible",
-        "URI source": source.source_uri,
+        "Fiscal year": f"FY{source.fiscal_year}",
+        "Source field": source.field,
+        "Source unit": source.source_unit,
+        "Method": source.method,
+        "Page": str(source.page) if source.page is not None else "unavailable",
+        "Source URI": source.source_uri,
         "SHA-256": source.document_sha256,
     }
 
 
 def _provenance_summary(metric: MetricValue) -> str:
     if not metric.sources:
-        return "indisponible"
+        return "unavailable"
     return " ; ".join(
         f"{source.document} · {source.field} · {source.method} · SHA-256 "
         f"{source.document_sha256}"
@@ -720,8 +721,8 @@ def _render_valuation_limit(repository: EquityRepository) -> None:
         raise ValueError("Unexpected Siegfried valuation gate in embedded diagnostic.")
     fields = ", ".join(f"`{field}`" for field in blocked)
     st.warning(
-        "Valorisation comparative Siegfried indisponible : le gate reste bloqué pour "
-        f"{fields}. Aucune donnée de marché n’est inférée, extrapolée ou affichée."
+        "Comparative Siegfried valuation is unavailable: the gate remains blocked for "
+        f"{fields}. No market data is inferred, extrapolated, or displayed."
     )
 
 

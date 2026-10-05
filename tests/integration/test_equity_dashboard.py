@@ -38,8 +38,8 @@ def test_equity_research_smoke_and_visible_scope(monkeypatch) -> None:
     assert app.title[0].value == "Equity Research"
     assert [tab.label for tab in app.tabs] == [
         "Snapshot",
-        "Fondamentaux",
-        "Valorisation",
+        "Fundamentals",
+        "Valuation",
         "ESG & sources",
         "Research note",
     ]
@@ -59,55 +59,55 @@ def test_equity_research_smoke_and_visible_scope(monkeypatch) -> None:
         if "Bachem FY2025" in item.value.columns
     )
     assert set(snapshot.columns) == {
-        "Métrique",
+        "Metric",
         "Bachem FY2025",
-        "Statut Bachem",
+        "Bachem status",
         "Siegfried FY2025",
-        "Statut Siegfried",
+        "Siegfried status",
     }
     assert {
-        "Chiffre d’affaires",
-        "Marge EBITDA",
+        "Revenue",
+        "EBITDA margin",
         "Operating cash flow",
-        "Dette nette / EBITDA",
-        "Equity ratio recalculé",
-    } <= set(snapshot["Métrique"])
+        "Net debt / EBITDA",
+        "Recomputed equity ratio",
+    } <= set(snapshot["Metric"])
 
     fundamental_frames = [
         item.value
         for item in app.dataframe
-        if {"Société", "Exercice", "Métrique", "Statut"} <= set(item.value.columns)
+        if {"Company", "Fiscal year", "Metric", "Status"} <= set(item.value.columns)
     ]
     visible_metrics = {
         metric
         for frame in fundamental_frames
-        for metric in frame["Métrique"].tolist()
+        for metric in frame["Metric"].tolist()
     }
     assert {
-        "Croissance annuelle",
-        "Marge EBIT",
-        "Marge nette",
+        "Annual growth",
+        "EBIT margin",
+        "Net margin",
         "Operating cash flow / CA",
         "Capex reported / CA",
         "Capex calculated / CA",
         "FCF reported",
-        "FCF calculated dans la source",
-        "FCF recalculé par AI Quant",
-        "Dette nette",
-        "ROE sur capitaux propres de clôture",
-        "Equity ratio reported",
+        "Source-calculated FCF",
+        "FCF recomputed by AI Quant",
+        "Net debt",
+        "ROE on period-end equity",
+        "Reported equity ratio",
     } <= visible_metrics
     assert {
-        "Cours de clôture historique",
-        "Capitalisation boursière publiée",
-        "Capitalisation indicative cours × actions",
+        "Historical closing share price",
+        "Published market capitalization",
+        "Indicative price × shares market capitalization",
         "Enterprise Value",
         "EV / Revenue",
         "EV / EBITDA",
         "EV / EBIT",
-        "P/E publié",
-        "P/E recalculé",
-        "P/B recalculé",
+        "Published P/E",
+        "Recalculated P/E",
+        "Recalculated P/B",
         "FCF yield (FCF calculated)",
         "Dividend yield",
         "Scope 1",
@@ -117,31 +117,31 @@ def test_equity_research_smoke_and_visible_scope(monkeypatch) -> None:
     calculated_rows = [
         row
         for frame in fundamental_frames
-        for _, row in frame.loc[frame["Statut"] == "calculated"].iterrows()
+        for _, row in frame.loc[frame["Status"] == "calculated"].iterrows()
     ]
     unavailable_rows = [
         row
         for frame in fundamental_frames
-        for _, row in frame.loc[frame["Statut"] == "unavailable"].iterrows()
+        for _, row in frame.loc[frame["Status"] == "unavailable"].iterrows()
     ]
     assert calculated_rows
-    assert all("equity-formulas.v1" in row["Formule / version"] for row in calculated_rows)
-    assert all(row["Provenance"] != "indisponible" for row in calculated_rows)
+    assert all("equity-formulas.v1" in row["Formula / version"] for row in calculated_rows)
+    assert all(row["Provenance"] != "unavailable" for row in calculated_rows)
     assert unavailable_rows
-    assert all(row["Valeur"] == "—" for row in unavailable_rows)
-    assert all(row["Valeur source / non formatée"] == "—" for row in unavailable_rows)
+    assert all(row["Value"] == "—" for row in unavailable_rows)
+    assert all(row["Raw source value"] == "—" for row in unavailable_rows)
     assert any(
-        {"Objectif publié", "Validation déclarée", "Page PDF", "SHA-256"}
+        {"Published target", "Declared validation", "PDF page", "SHA-256"}
         <= set(item.value.columns)
         for item in app.dataframe
     )
     assert any(
-        {"Statut d’assurance", "Niveau", "Portée confirmée", "SHA-256"}
+        {"Assurance status", "Level", "Scope confirmed", "SHA-256"}
         <= set(item.value.columns)
         for item in app.dataframe
     )
     captions = "\n".join(item.value for item in app.caption)
-    assert "aucune donnée n’est présentée comme un cours ou une valorisation actuelle" in captions
+    assert "no figure is presented as a current share price or valuation" in captions
 
 
 def test_every_visible_metric_is_traceable_and_unlocked_gate_adds_no_warning(monkeypatch) -> None:
@@ -152,18 +152,18 @@ def test_every_visible_metric_is_traceable_and_unlocked_gate_adds_no_warning(mon
     inspection_tables = [
         item.value
         for item in app.table
-        if "Valeur source / non formatée" in item.value.columns
+        if "Raw source value" in item.value.columns
     ]
     assert len(inspection_tables) == 4
     for table in inspection_tables:
         assert {
-            "Exercice",
-            "Valeur source / non formatée",
-            "Unité",
-            "Statut",
-            "Formule",
+            "Fiscal year",
+            "Raw source value",
+            "Unit",
+            "Status",
+            "Formula",
             "Version",
-            "Entrées",
+            "Inputs",
         } <= set(table.columns)
 
     warning_text = "\n".join(item.value for item in app.warning)
@@ -175,11 +175,11 @@ def test_snapshot_and_fundamental_contracts_use_phase3_metrics_only() -> None:
     rows = snapshot_rows(analysis)
 
     assert rows
-    assert all("valuation" not in row["Métrique"].lower() for row in rows)
+    assert all("valuation" not in row["Metric"].lower() for row in rows)
     assert all("price" not in name for name in displayed_fundamental_metric_names())
     assert all("market" not in name for name in displayed_fundamental_metric_names())
-    assert any(row["Statut Bachem"] == "reported" for row in rows)
-    assert any(row["Statut Bachem"] == "calculated" for row in rows)
+    assert any(row["Bachem status"] == "reported" for row in rows)
+    assert any(row["Bachem status"] == "calculated" for row in rows)
 
 
 def test_historical_valuation_scope_split_and_published_precedence() -> None:
@@ -188,7 +188,7 @@ def test_historical_valuation_scope_split_and_published_precedence() -> None:
     all_specs = tuple(spec for _, specs in VALUATION_SECTIONS for spec in specs)
     rows = valuation_rows(analysis, all_specs)
 
-    assert {row["Exercice"] for row in rows} == {
+    assert {row["Fiscal year"] for row in rows} == {
         "FY2021",
         "FY2022",
         "FY2023",
@@ -230,16 +230,16 @@ def test_esg_scope_two_methods_and_provenance_remain_separate() -> None:
     metrics = build_climate_metrics(repository, corpus)
     rows = esg_metric_rows(metrics)
 
-    scope_two = [row for row in rows if row["Métrique"].startswith("Scope 2")]
-    assert {row["Méthode Scope 2"] for row in scope_two} == {
+    scope_two = [row for row in rows if row["Metric"].startswith("Scope 2")]
+    assert {row["Scope 2 method"] for row in scope_two} == {
         "market_based",
         "location_based",
     }
-    assert all(row["Statut"] == "reported" for row in scope_two)
-    assert all(row["Provenance"] != "indisponible" for row in rows)
-    intensities = [row for row in rows if row["Métrique"].startswith("Intensité")]
-    assert all(row["Statut"] == "calculated" for row in intensities)
-    assert {row["Méthode Scope 2"] for row in intensities} == {
+    assert all(row["Status"] == "reported" for row in scope_two)
+    assert all(row["Provenance"] != "unavailable" for row in rows)
+    intensities = [row for row in rows if row["Metric"].startswith("Scope 1+2 intensity")]
+    assert all(row["Status"] == "calculated" for row in intensities)
+    assert {row["Scope 2 method"] for row in intensities} == {
         "market_based",
         "location_based",
     }
@@ -253,42 +253,42 @@ def test_research_note_admissible_status_sources_limitations_and_monitoring(
 
     assert not app.exception
     assert any("pending_human_review" in item.value for item in app.warning)
-    assert any("Validation automatique : PASSED" in item.value for item in app.success)
+    assert any("Automated validation: PASSED" in item.value for item in app.success)
     assert not any("approved" in item.value.casefold() for item in app.success)
 
     subheaders = {item.value for item in app.subheader}
     assert {
-        "Profils des sociétés et modèles économiques",
-        "Qualité de la croissance et de la rentabilité",
-        "Cash-flow bilan et allocation du capital",
-        "Valorisation relative et historique",
-        "Durabilité et limites de comparabilité",
-        "Arguments favorables",
-        "Risques et points d attention",
-        "Catalyseurs",
-        "Indicateurs à suivre",
-        "Conclusion comparative",
+        "Company profiles and business models",
+        "Growth and profitability quality",
+        "Cash flow, balance sheet, and capital allocation",
+        "Relative and historical valuation",
+        "Sustainability and comparability limitations",
+        "Favorable arguments",
+        "Risks and attention points",
+        "Catalysts",
+        "Monitoring indicators",
+        "Comparative conclusion",
         "Limitations",
-        "Sources autorisées",
-        "Monitoring FY2025",
+        "Authorized sources",
+        "FY2025 monitoring",
     } <= subheaders
     captions = "\n".join(item.value for item in app.caption)
-    assert "Type : `sourced_fact`" in captions
-    assert "Type : `calculated_metric`" in captions
-    assert "Type : `analyst_interpretation`" in captions
-    assert "aucune décision finale" in captions
+    assert "Type: `sourced_fact`" in captions
+    assert "Type: `calculated_metric`" in captions
+    assert "Type: `analyst_interpretation`" in captions
+    assert "does not calculate or make any final decision" in captions
 
     sources = next(
         item.value
         for item in app.dataframe
-        if "Source ouvrable" in item.value.columns
+        if "Openable source" in item.value.columns
     )
     assert len(sources) == 3
-    assert sources["Source ouvrable"].str.len().gt(0).all()
+    assert sources["Openable source"].str.len().gt(0).all()
     monitoring = next(
-        item.value for item in app.dataframe if "Fraîcheur" in item.value.columns
+        item.value for item in app.dataframe if "Freshness" in item.value.columns
     )
-    assert {"available", "to_update"} == set(monitoring["Fraîcheur"])
+    assert {"available", "to_update"} == set(monitoring["Freshness"])
     assert monitoring["Source"].str.len().gt(0).all()
 
     markdown = "\n".join(item.value for item in app.markdown)
@@ -303,11 +303,11 @@ def test_research_note_blocked_scenario_never_appears_validated(monkeypatch) -> 
         item for item in app.selectbox if item.label == "Research note scenario"
     )
 
-    app = scenario.select("Bloqué").run()
+    app = scenario.select("Blocked").run()
 
     assert not app.exception
     assert any("BLOCKED" in item.value for item in app.error)
-    assert not any("Validation automatique : PASSED" in item.value for item in app.success)
+    assert not any("Automated validation: PASSED" in item.value for item in app.success)
     assert not any("pending_human_review" in item.value for item in app.warning)
     diagnostics = next(
         item.value for item in app.dataframe if "Diagnostic" in item.value.columns
@@ -341,7 +341,7 @@ app = AppTest.from_file('app.py', default_timeout=20).run()
 assert not app.exception
 assert app.title[0].value == 'Equity Research'
 assert [tab.label for tab in app.tabs] == [
-    'Snapshot', 'Fondamentaux', 'Valorisation', 'ESG & sources', 'Research note'
+    'Snapshot', 'Fundamentals', 'Valuation', 'ESG & sources', 'Research note'
 ]
 for name in BLOCKED:
     assert not any(module == name or module.startswith(name + '.') for module in sys.modules)

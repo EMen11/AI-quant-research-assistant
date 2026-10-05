@@ -19,7 +19,7 @@ The application keeps AI-assisted prose separate from authoritative calculations
 records, automated validation, and human approval. It does not issue investment
 recommendations, target prices, consensus estimates, or price predictions.
 
-![Admissible research scenario showing frozen inputs, pending-review state, automated routing, and no human decision](docs/screenshots/block-7/admissible-overview.jpg)
+![Valid research scenario showing frozen inputs, pending-review state, automated routing, and no human decision](docs/screenshots/block-7/admissible-overview.jpg)
 
 ## Equity Research case
 
@@ -34,8 +34,8 @@ every quantitative statement remain traceable to an authorized record?
 The visible result is a five-tab Equity workflow:
 
 1. **Snapshot** — side-by-side FY2025 fundamentals;
-2. **Fondamentaux** — FY2021–FY2025 growth, profitability, cash, capex and balance sheet;
-3. **Valorisation** — historical fiscal-closing multiples, never presented as current prices;
+2. **Fundamentals** — FY2021–FY2025 growth, profitability, cash, capex and balance sheet;
+3. **Valuation** — historical fiscal-closing multiples, never presented as current prices;
 4. **ESG & sources** — climate metrics, method, assurance and provenance;
 5. **Research note** — comparative note, monitoring table, validation state and sources.
 

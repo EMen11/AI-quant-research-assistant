@@ -34,4 +34,4 @@ def test_monitoring_table_has_no_prediction_or_consensus_field() -> None:
     assert rows
     assert all("prediction" not in " ".join(row).casefold() for row in rows)
     assert all("consensus" not in " ".join(row).casefold() for row in rows)
-    assert {row["Fraîcheur"] for row in rows} == {"available", "to_update"}
+    assert {row["Freshness"] for row in rows} == {"available", "to_update"}

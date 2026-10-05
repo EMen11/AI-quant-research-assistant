@@ -252,7 +252,7 @@ def build_deterministic_analyst_note(context: ResearchNoteContext) -> AnalystNot
 
     sections = AnalystNoteSections(
         comparison_scope=_section(
-            "Objet de la comparaison et date des données",
+            "Comparison scope and data date",
             _statement(
                 "statement-equity-scope",
                 "sourced_fact",
@@ -262,7 +262,7 @@ def build_deterministic_analyst_note(context: ResearchNoteContext) -> AnalystNot
             ),
         ),
         company_profiles=_section(
-            "Profils des sociétés et modèles économiques",
+            "Company profiles and business models",
             _statement(
                 "statement-equity-profiles",
                 "analyst_interpretation",
@@ -273,7 +273,7 @@ def build_deterministic_analyst_note(context: ResearchNoteContext) -> AnalystNot
             ),
         ),
         growth_profitability=_section(
-            "Qualité de la croissance et de la rentabilité",
+            "Growth and profitability quality",
             _statement(
                 "statement-equity-growth-profitability",
                 "analyst_interpretation",
@@ -291,7 +291,7 @@ def build_deterministic_analyst_note(context: ResearchNoteContext) -> AnalystNot
             ),
         ),
         cash_balance_capital_allocation=_section(
-            "Cash-flow bilan et allocation du capital",
+            "Cash flow, balance sheet, and capital allocation",
             _statement(
                 "statement-equity-cash-balance",
                 "analyst_interpretation",
@@ -309,7 +309,7 @@ def build_deterministic_analyst_note(context: ResearchNoteContext) -> AnalystNot
             ),
         ),
         relative_historical_valuation=_section(
-            "Valorisation relative et historique",
+            "Relative and historical valuation",
             _statement(
                 "statement-equity-valuation",
                 "calculated_metric",
@@ -323,7 +323,7 @@ def build_deterministic_analyst_note(context: ResearchNoteContext) -> AnalystNot
             ),
         ),
         sustainability_comparability=_section(
-            "Durabilité et limites de comparabilité",
+            "Sustainability and comparability limitations",
             _statement(
                 "statement-equity-sustainability",
                 "analyst_interpretation",
@@ -341,7 +341,7 @@ def build_deterministic_analyst_note(context: ResearchNoteContext) -> AnalystNot
             ),
         ),
         favorable_arguments=_section(
-            "Arguments favorables",
+            "Favorable arguments",
             _statement(
                 "statement-equity-favorable",
                 "analyst_interpretation",
@@ -355,7 +355,7 @@ def build_deterministic_analyst_note(context: ResearchNoteContext) -> AnalystNot
             ),
         ),
         risks_attention=_section(
-            "Risques et points d attention",
+            "Risks and attention points",
             _statement(
                 "statement-equity-risks",
                 "analyst_interpretation",
@@ -369,7 +369,7 @@ def build_deterministic_analyst_note(context: ResearchNoteContext) -> AnalystNot
             ),
         ),
         catalysts=_section(
-            "Catalyseurs",
+            "Catalysts",
             _statement(
                 "statement-equity-catalysts",
                 "analyst_interpretation",
@@ -384,7 +384,7 @@ def build_deterministic_analyst_note(context: ResearchNoteContext) -> AnalystNot
             ),
         ),
         monitoring_indicators=_section(
-            "Indicateurs à suivre",
+            "Monitoring indicators",
             _statement(
                 "statement-equity-monitoring",
                 "calculated_metric",
@@ -395,7 +395,7 @@ def build_deterministic_analyst_note(context: ResearchNoteContext) -> AnalystNot
             ),
         ),
         comparative_conclusion=_section(
-            "Conclusion comparative",
+            "Comparative conclusion",
             _statement(
                 "statement-equity-conclusion",
                 "analyst_interpretation",

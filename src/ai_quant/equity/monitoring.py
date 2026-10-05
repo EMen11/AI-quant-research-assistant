@@ -132,17 +132,17 @@ def monitoring_table_rows(rows: tuple[MonitoringRow, ...]) -> tuple[dict[str, ob
 
     return tuple(
         {
-            "Société": row.company,
+            "Company": row.company,
             "KPI": row.kpi,
-            "Dernière valeur autorisée": row.display_value,
-            "Valeur brute": row.latest_value,
-            "Unité": row.unit,
-            "Exercice": f"FY{row.fiscal_year}",
-            "Direction / seuil descriptif": row.desired_direction_or_threshold,
-            "Raison du suivi": row.reason,
+            "Latest authorized value": row.display_value,
+            "Raw value": row.latest_value,
+            "Unit": row.unit,
+            "Fiscal year": f"FY{row.fiscal_year}",
+            "Descriptive direction / threshold": row.desired_direction_or_threshold,
+            "Monitoring rationale": row.reason,
             "Source": " · ".join(row.source_uris),
-            "Fréquence": row.update_frequency,
-            "Fraîcheur": row.freshness,
+            "Frequency": row.update_frequency,
+            "Freshness": row.freshness,
             "Assurance": row.assurance,
         }
         for row in rows

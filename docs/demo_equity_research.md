@@ -26,7 +26,7 @@ calculated, unavailable and non-comparable values are never merged.
 
 ### Next twenty seconds — history and valuation
 
-Open **Fondamentaux**, then **Valorisation**.
+Open **Fundamentals**, then **Valuation**.
 
 > The five-year view separates growth, profitability, cash flow, capex and balance-sheet
 > metrics. Valuation uses historical fiscal-closing data, not current prices. Published market
@@ -47,24 +47,23 @@ Open one metric inspector or source row to show unit, formula, inputs, page and 
 
 ### Final twenty to thirty seconds — note, controls and human review
 
-Open **Research note** with the **Admissible** scenario.
+Open **Research note** with the **Valid** scenario.
 
 > The note contract separates sourced facts, calculated metrics, analyst interpretation and
 > limitations. The generator sees only allowlisted metric and Evidence records. Independent
 > validators check IDs, values, units, periods, excerpts and prohibited output. Automation can
 > make the note eligible for review, but it cannot approve it.
 
-Show `pending_human_review`, the source links and monitoring freshness. Then select **Bloqué**.
+Show `pending_human_review`, the source links and monitoring freshness. Then select **Blocked**.
 
 > A forbidden target-price statement blocks reliable rendering and routes the result to review.
 > No valid-looking note and no human approval are fabricated.
 
 ## Interview pitch
 
-> J’ai construit un copilote de recherche actions qui transforme des rapports annuels en une
-> comparaison financière reproductible. Python calcule les métriques, chaque chiffre reste lié
-> à sa source, l’IA aide à structurer la note, puis des validateurs indépendants contrôlent ses
-> affirmations avant revue humaine.
+> I built an equity research copilot that turns annual reports into a reproducible financial
+> comparison. Python calculates the metrics, every figure remains linked to its source, AI
+> helps structure the note, and independent validators check its claims before human review.
 
 ## Claims to avoid
 
