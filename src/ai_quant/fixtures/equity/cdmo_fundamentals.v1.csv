@@ -1,0 +1,241 @@
+metric_id,ticker,company_name,fiscal_year,metric_name,value,unit,status,formula_id,formula_expression,formula_version,input_metric_ids,source_id,source_field,note
+banb-sw-2021-revenue,BANB.SW,Bachem Holding AG,2021,revenue,503.234,CHF_millions,reported,,,,,BANB.SW-2021,revenue,
+banb-sw-2021-ebit,BANB.SW,Bachem Holding AG,2021,ebit,128.927,CHF_millions,reported,,,,,BANB.SW-2021,ebit,
+banb-sw-2021-depreciation-amortization,BANB.SW,Bachem Holding AG,2021,depreciation_amortization,28.423,CHF_millions,reported,,,,,BANB.SW-2021,depreciation_amortization,
+banb-sw-2021-ebitda,BANB.SW,Bachem Holding AG,2021,ebitda,157.400,CHF_millions,reported,,,,,BANB.SW-2021,ebitda,
+banb-sw-2021-net-income,BANB.SW,Bachem Holding AG,2021,net_income,114.682,CHF_millions,reported,,,,,BANB.SW-2021,net_income,
+banb-sw-2021-eps-basic,BANB.SW,Bachem Holding AG,2021,eps_basic,8.090,CHF_per_share,reported,,,,,BANB.SW-2021,eps,
+banb-sw-2021-dividend-per-share,BANB.SW,Bachem Holding AG,2021,dividend_per_share,3.500,CHF_per_share,reported,,,,,BANB.SW-2021,dividend_per_share,
+banb-sw-2021-total-assets,BANB.SW,Bachem Holding AG,2021,total_assets,1298.496,CHF_millions,reported,,,,,BANB.SW-2021,total_assets,
+banb-sw-2021-current-assets,BANB.SW,Bachem Holding AG,2021,current_assets,,CHF_millions,unavailable,,,,,BANB.SW-2021,current_assets,field absent from locked source schema
+banb-sw-2021-total-equity,BANB.SW,Bachem Holding AG,2021,total_equity,1120.998,CHF_millions,reported,,,,,BANB.SW-2021,total_equity,
+banb-sw-2021-total-liabilities,BANB.SW,Bachem Holding AG,2021,total_liabilities,,CHF_millions,unavailable,,,,,BANB.SW-2021,total_liabilities,field absent from locked source schema
+banb-sw-2021-current-liabilities,BANB.SW,Bachem Holding AG,2021,current_liabilities,,CHF_millions,unavailable,,,,,BANB.SW-2021,current_liabilities,field absent from locked source schema
+banb-sw-2021-cash,BANB.SW,Bachem Holding AG,2021,cash,89.191,CHF_millions,reported,,,,,BANB.SW-2021,cash,
+banb-sw-2021-total-debt,BANB.SW,Bachem Holding AG,2021,total_debt,20.863,CHF_millions,reported,,,,,BANB.SW-2021,total_debt,
+banb-sw-2021-operating-cash-flow,BANB.SW,Bachem Holding AG,2021,operating_cash_flow,97.555,CHF_millions,reported,,,,,BANB.SW-2021,operating_cash_flow,
+banb-sw-2021-capex-reported,BANB.SW,Bachem Holding AG,2021,capex_reported,,CHF_millions,unavailable,,,,,BANB.SW-2021,capex_reported,documented missing in locked source
+banb-sw-2021-capex-calculated,BANB.SW,Bachem Holding AG,2021,capex_calculated,-116.826,CHF_millions,calculated,cash-flow-capex,sum(signed_cash_flow_capex_lines),equity-formulas.v1,banb-sw-2021-cash-flow-investment-lines,BANB.SW-2021,capex_calculated,Candidate snapshot row assembled from validated FY2021 extraction; capex_reported and free_cash_flow_reported remain missing where documented; reported/calculated fields remain separate.
+banb-sw-2021-free-cash-flow-reported,BANB.SW,Bachem Holding AG,2021,free_cash_flow_reported,,CHF_millions,unavailable,,,,,BANB.SW-2021,free_cash_flow_reported,documented missing in locked source
+banb-sw-2021-free-cash-flow-calculated,BANB.SW,Bachem Holding AG,2021,free_cash_flow_calculated,-19.271,CHF_millions,calculated,free-cash-flow-signed-capex,operating_cash_flow + signed_capex,equity-formulas.v1,banb-sw-2021-operating-cash-flow;banb-sw-2021-capex-calculated,BANB.SW-2021,free_cash_flow_calculated,Candidate snapshot row assembled from validated FY2021 extraction; capex_reported and free_cash_flow_reported remain missing where documented; reported/calculated fields remain separate.
+banb-sw-2021-equity-ratio,BANB.SW,Bachem Holding AG,2021,equity_ratio,,percent,unavailable,,,,,BANB.SW-2021,equity_ratio_pct,field absent from locked source schema
+banb-sw-2021-year-end-share-price,BANB.SW,Bachem Holding AG,2021,year_end_share_price,716.000,CHF_per_share,reported,,,,,BANB.SW-2021,year_end_share_price,
+banb-sw-2021-registered-shares,BANB.SW,Bachem Holding AG,2021,registered_shares,14746745,shares,reported,,,,,BANB.SW-2021,shares_outstanding,
+banb-sw-2021-market-capitalization-published,BANB.SW,Bachem Holding AG,2021,market_capitalization_published,10561.000,CHF_millions,reported,,,,,BANB.SW-2021,market_cap,
+banb-sw-2021-price-to-earnings-published,BANB.SW,Bachem Holding AG,2021,price_to_earnings_published,,multiple,unavailable,,,,,BANB.SW-2021,pe_published,market field absent from locked source
+banb-sw-2022-revenue,BANB.SW,Bachem Holding AG,2022,revenue,531.741,CHF_millions,reported,,,,,BANB.SW-2022,revenue,
+banb-sw-2022-ebit,BANB.SW,Bachem Holding AG,2022,ebit,127.224,CHF_millions,reported,,,,,BANB.SW-2022,ebit,
+banb-sw-2022-depreciation-amortization,BANB.SW,Bachem Holding AG,2022,depreciation_amortization,33.318,CHF_millions,reported,,,,,BANB.SW-2022,depreciation_amortization,
+banb-sw-2022-ebitda,BANB.SW,Bachem Holding AG,2022,ebitda,160.500,CHF_millions,reported,,,,,BANB.SW-2022,ebitda,
+banb-sw-2022-net-income,BANB.SW,Bachem Holding AG,2022,net_income,100.684,CHF_millions,reported,,,,,BANB.SW-2022,net_income,
+banb-sw-2022-eps-basic,BANB.SW,Bachem Holding AG,2022,eps_basic,1.370,CHF_per_share,reported,,,,,BANB.SW-2022,eps,
+banb-sw-2022-dividend-per-share,BANB.SW,Bachem Holding AG,2022,dividend_per_share,0.750,CHF_per_share,reported,,,,,BANB.SW-2022,dividend_per_share,
+banb-sw-2022-total-assets,BANB.SW,Bachem Holding AG,2022,total_assets,1383.869,CHF_millions,reported,,,,,BANB.SW-2022,total_assets,
+banb-sw-2022-current-assets,BANB.SW,Bachem Holding AG,2022,current_assets,,CHF_millions,unavailable,,,,,BANB.SW-2022,current_assets,field absent from locked source schema
+banb-sw-2022-total-equity,BANB.SW,Bachem Holding AG,2022,total_equity,1169.661,CHF_millions,reported,,,,,BANB.SW-2022,total_equity,
+banb-sw-2022-total-liabilities,BANB.SW,Bachem Holding AG,2022,total_liabilities,,CHF_millions,unavailable,,,,,BANB.SW-2022,total_liabilities,field absent from locked source schema
+banb-sw-2022-current-liabilities,BANB.SW,Bachem Holding AG,2022,current_liabilities,,CHF_millions,unavailable,,,,,BANB.SW-2022,current_liabilities,field absent from locked source schema
+banb-sw-2022-cash,BANB.SW,Bachem Holding AG,2022,cash,31.451,CHF_millions,reported,,,,,BANB.SW-2022,cash,
+banb-sw-2022-total-debt,BANB.SW,Bachem Holding AG,2022,total_debt,0.691,CHF_millions,reported,,,,,BANB.SW-2022,total_debt,
+banb-sw-2022-operating-cash-flow,BANB.SW,Bachem Holding AG,2022,operating_cash_flow,92.648,CHF_millions,reported,,,,,BANB.SW-2022,operating_cash_flow,
+banb-sw-2022-capex-reported,BANB.SW,Bachem Holding AG,2022,capex_reported,,CHF_millions,unavailable,,,,,BANB.SW-2022,capex_reported,documented missing in locked source
+banb-sw-2022-capex-calculated,BANB.SW,Bachem Holding AG,2022,capex_calculated,-142.344,CHF_millions,calculated,cash-flow-capex,sum(signed_cash_flow_capex_lines),equity-formulas.v1,banb-sw-2022-cash-flow-investment-lines,BANB.SW-2022,capex_calculated,Candidate snapshot row assembled from validated FY2022 extraction; capex_reported and free_cash_flow_reported remain missing where documented; reported/calculated fields remain separate.
+banb-sw-2022-free-cash-flow-reported,BANB.SW,Bachem Holding AG,2022,free_cash_flow_reported,,CHF_millions,unavailable,,,,,BANB.SW-2022,free_cash_flow_reported,documented missing in locked source
+banb-sw-2022-free-cash-flow-calculated,BANB.SW,Bachem Holding AG,2022,free_cash_flow_calculated,-49.696,CHF_millions,calculated,free-cash-flow-signed-capex,operating_cash_flow + signed_capex,equity-formulas.v1,banb-sw-2022-operating-cash-flow;banb-sw-2022-capex-calculated,BANB.SW-2022,free_cash_flow_calculated,Candidate snapshot row assembled from validated FY2022 extraction; capex_reported and free_cash_flow_reported remain missing where documented; reported/calculated fields remain separate.
+banb-sw-2022-equity-ratio,BANB.SW,Bachem Holding AG,2022,equity_ratio,,percent,unavailable,,,,,BANB.SW-2022,equity_ratio_pct,field absent from locked source schema
+banb-sw-2022-year-end-share-price,BANB.SW,Bachem Holding AG,2022,year_end_share_price,79.850,CHF_per_share,reported,,,,,BANB.SW-2022,year_end_share_price,
+banb-sw-2022-registered-shares,BANB.SW,Bachem Holding AG,2022,registered_shares,73721200,shares,reported,,,,,BANB.SW-2022,shares_outstanding,
+banb-sw-2022-market-capitalization-published,BANB.SW,Bachem Holding AG,2022,market_capitalization_published,5889.000,CHF_millions,reported,,,,,BANB.SW-2022,market_cap,
+banb-sw-2022-price-to-earnings-published,BANB.SW,Bachem Holding AG,2022,price_to_earnings_published,,multiple,unavailable,,,,,BANB.SW-2022,pe_published,market field absent from locked source
+banb-sw-2023-revenue,BANB.SW,Bachem Holding AG,2023,revenue,577.316,CHF_millions,reported,,,,,BANB.SW-2023,revenue,
+banb-sw-2023-ebit,BANB.SW,Bachem Holding AG,2023,ebit,129.380,CHF_millions,reported,,,,,BANB.SW-2023,ebit,
+banb-sw-2023-depreciation-amortization,BANB.SW,Bachem Holding AG,2023,depreciation_amortization,37.356,CHF_millions,reported,,,,,BANB.SW-2023,depreciation_amortization,
+banb-sw-2023-ebitda,BANB.SW,Bachem Holding AG,2023,ebitda,166.700,CHF_millions,reported,,,,,BANB.SW-2023,ebitda,
+banb-sw-2023-net-income,BANB.SW,Bachem Holding AG,2023,net_income,111.859,CHF_millions,reported,,,,,BANB.SW-2023,net_income,
+banb-sw-2023-eps-basic,BANB.SW,Bachem Holding AG,2023,eps_basic,1.500,CHF_per_share,reported,,,,,BANB.SW-2023,eps,
+banb-sw-2023-dividend-per-share,BANB.SW,Bachem Holding AG,2023,dividend_per_share,0.800,CHF_per_share,reported,,,,,BANB.SW-2023,dividend_per_share,
+banb-sw-2023-total-assets,BANB.SW,Bachem Holding AG,2023,total_assets,1682.880,CHF_millions,reported,,,,,BANB.SW-2023,total_assets,
+banb-sw-2023-current-assets,BANB.SW,Bachem Holding AG,2023,current_assets,,CHF_millions,unavailable,,,,,BANB.SW-2023,current_assets,field absent from locked source schema
+banb-sw-2023-total-equity,BANB.SW,Bachem Holding AG,2023,total_equity,1320.523,CHF_millions,reported,,,,,BANB.SW-2023,total_equity,
+banb-sw-2023-total-liabilities,BANB.SW,Bachem Holding AG,2023,total_liabilities,,CHF_millions,unavailable,,,,,BANB.SW-2023,total_liabilities,field absent from locked source schema
+banb-sw-2023-current-liabilities,BANB.SW,Bachem Holding AG,2023,current_liabilities,,CHF_millions,unavailable,,,,,BANB.SW-2023,current_liabilities,field absent from locked source schema
+banb-sw-2023-cash,BANB.SW,Bachem Holding AG,2023,cash,157.725,CHF_millions,reported,,,,,BANB.SW-2023,cash,
+banb-sw-2023-total-debt,BANB.SW,Bachem Holding AG,2023,total_debt,0.401,CHF_millions,reported,,,,,BANB.SW-2023,total_debt,
+banb-sw-2023-operating-cash-flow,BANB.SW,Bachem Holding AG,2023,operating_cash_flow,249.864,CHF_millions,reported,,,,,BANB.SW-2023,operating_cash_flow,
+banb-sw-2023-capex-reported,BANB.SW,Bachem Holding AG,2023,capex_reported,,CHF_millions,unavailable,,,,,BANB.SW-2023,capex_reported,documented missing in locked source
+banb-sw-2023-capex-calculated,BANB.SW,Bachem Holding AG,2023,capex_calculated,-268.402,CHF_millions,calculated,cash-flow-capex,sum(signed_cash_flow_capex_lines),equity-formulas.v1,banb-sw-2023-cash-flow-investment-lines,BANB.SW-2023,capex_calculated,Candidate snapshot row assembled from validated FY2023 extraction; capex_reported and free_cash_flow_reported remain missing where documented; reported/calculated fields remain separate.
+banb-sw-2023-free-cash-flow-reported,BANB.SW,Bachem Holding AG,2023,free_cash_flow_reported,,CHF_millions,unavailable,,,,,BANB.SW-2023,free_cash_flow_reported,documented missing in locked source
+banb-sw-2023-free-cash-flow-calculated,BANB.SW,Bachem Holding AG,2023,free_cash_flow_calculated,-18.538,CHF_millions,calculated,free-cash-flow-signed-capex,operating_cash_flow + signed_capex,equity-formulas.v1,banb-sw-2023-operating-cash-flow;banb-sw-2023-capex-calculated,BANB.SW-2023,free_cash_flow_calculated,Candidate snapshot row assembled from validated FY2023 extraction; capex_reported and free_cash_flow_reported remain missing where documented; reported/calculated fields remain separate.
+banb-sw-2023-equity-ratio,BANB.SW,Bachem Holding AG,2023,equity_ratio,,percent,unavailable,,,,,BANB.SW-2023,equity_ratio_pct,field absent from locked source schema
+banb-sw-2023-year-end-share-price,BANB.SW,Bachem Holding AG,2023,year_end_share_price,65.000,CHF_per_share,reported,,,,,BANB.SW-2023,year_end_share_price,
+banb-sw-2023-registered-shares,BANB.SW,Bachem Holding AG,2023,registered_shares,74973645,shares,reported,,,,,BANB.SW-2023,shares_outstanding,
+banb-sw-2023-market-capitalization-published,BANB.SW,Bachem Holding AG,2023,market_capitalization_published,4875.000,CHF_millions,reported,,,,,BANB.SW-2023,market_cap,
+banb-sw-2023-price-to-earnings-published,BANB.SW,Bachem Holding AG,2023,price_to_earnings_published,,multiple,unavailable,,,,,BANB.SW-2023,pe_published,market field absent from locked source
+banb-sw-2024-revenue,BANB.SW,Bachem Holding AG,2024,revenue,605.259,CHF_millions,reported,,,,,BANB.SW-2024,revenue,
+banb-sw-2024-ebit,BANB.SW,Bachem Holding AG,2024,ebit,133.048,CHF_millions,reported,,,,,BANB.SW-2024,ebit,
+banb-sw-2024-depreciation-amortization,BANB.SW,Bachem Holding AG,2024,depreciation_amortization,43.262,CHF_millions,reported,,,,,BANB.SW-2024,depreciation_amortization,
+banb-sw-2024-ebitda,BANB.SW,Bachem Holding AG,2024,ebitda,176.300,CHF_millions,reported,,,,,BANB.SW-2024,ebitda,
+banb-sw-2024-net-income,BANB.SW,Bachem Holding AG,2024,net_income,120.248,CHF_millions,reported,,,,,BANB.SW-2024,net_income,
+banb-sw-2024-eps-basic,BANB.SW,Bachem Holding AG,2024,eps_basic,1.600,CHF_per_share,reported,,,,,BANB.SW-2024,eps,
+banb-sw-2024-dividend-per-share,BANB.SW,Bachem Holding AG,2024,dividend_per_share,0.850,CHF_per_share,reported,,,,,BANB.SW-2024,dividend_per_share,
+banb-sw-2024-total-assets,BANB.SW,Bachem Holding AG,2024,total_assets,1922.971,CHF_millions,reported,,,,,BANB.SW-2024,total_assets,
+banb-sw-2024-current-assets,BANB.SW,Bachem Holding AG,2024,current_assets,,CHF_millions,unavailable,,,,,BANB.SW-2024,current_assets,field absent from locked source schema
+banb-sw-2024-total-equity,BANB.SW,Bachem Holding AG,2024,total_equity,1391.089,CHF_millions,reported,,,,,BANB.SW-2024,total_equity,
+banb-sw-2024-total-liabilities,BANB.SW,Bachem Holding AG,2024,total_liabilities,,CHF_millions,unavailable,,,,,BANB.SW-2024,total_liabilities,field absent from locked source schema
+banb-sw-2024-current-liabilities,BANB.SW,Bachem Holding AG,2024,current_liabilities,,CHF_millions,unavailable,,,,,BANB.SW-2024,current_liabilities,field absent from locked source schema
+banb-sw-2024-cash,BANB.SW,Bachem Holding AG,2024,cash,95.197,CHF_millions,reported,,,,,BANB.SW-2024,cash,
+banb-sw-2024-total-debt,BANB.SW,Bachem Holding AG,2024,total_debt,0.290,CHF_millions,reported,,,,,BANB.SW-2024,total_debt,
+banb-sw-2024-operating-cash-flow,BANB.SW,Bachem Holding AG,2024,operating_cash_flow,146.322,CHF_millions,reported,,,,,BANB.SW-2024,operating_cash_flow,
+banb-sw-2024-capex-reported,BANB.SW,Bachem Holding AG,2024,capex_reported,,CHF_millions,unavailable,,,,,BANB.SW-2024,capex_reported,documented missing in locked source
+banb-sw-2024-capex-calculated,BANB.SW,Bachem Holding AG,2024,capex_calculated,-284.618,CHF_millions,calculated,cash-flow-capex,sum(signed_cash_flow_capex_lines),equity-formulas.v1,banb-sw-2024-cash-flow-investment-lines,BANB.SW-2024,capex_calculated,Candidate snapshot row assembled from validated FY2024 extraction; capex_reported and free_cash_flow_reported remain missing where documented; reported/calculated fields remain separate.
+banb-sw-2024-free-cash-flow-reported,BANB.SW,Bachem Holding AG,2024,free_cash_flow_reported,,CHF_millions,unavailable,,,,,BANB.SW-2024,free_cash_flow_reported,documented missing in locked source
+banb-sw-2024-free-cash-flow-calculated,BANB.SW,Bachem Holding AG,2024,free_cash_flow_calculated,-138.296,CHF_millions,calculated,free-cash-flow-signed-capex,operating_cash_flow + signed_capex,equity-formulas.v1,banb-sw-2024-operating-cash-flow;banb-sw-2024-capex-calculated,BANB.SW-2024,free_cash_flow_calculated,Candidate snapshot row assembled from validated FY2024 extraction; capex_reported and free_cash_flow_reported remain missing where documented; reported/calculated fields remain separate.
+banb-sw-2024-equity-ratio,BANB.SW,Bachem Holding AG,2024,equity_ratio,,percent,unavailable,,,,,BANB.SW-2024,equity_ratio_pct,field absent from locked source schema
+banb-sw-2024-year-end-share-price,BANB.SW,Bachem Holding AG,2024,year_end_share_price,57.900,CHF_per_share,reported,,,,,BANB.SW-2024,year_end_share_price,
+banb-sw-2024-registered-shares,BANB.SW,Bachem Holding AG,2024,registered_shares,74971893,shares,reported,,,,,BANB.SW-2024,shares_outstanding,
+banb-sw-2024-market-capitalization-published,BANB.SW,Bachem Holding AG,2024,market_capitalization_published,4343.000,CHF_millions,reported,,,,,BANB.SW-2024,market_cap,
+banb-sw-2024-price-to-earnings-published,BANB.SW,Bachem Holding AG,2024,price_to_earnings_published,,multiple,unavailable,,,,,BANB.SW-2024,pe_published,market field absent from locked source
+banb-sw-2025-revenue,BANB.SW,Bachem Holding AG,2025,revenue,695.070,CHF_millions,reported,,,,,BANB.SW-2025,revenue,
+banb-sw-2025-ebit,BANB.SW,Bachem Holding AG,2025,ebit,167.303,CHF_millions,reported,,,,,BANB.SW-2025,ebit,
+banb-sw-2025-depreciation-amortization,BANB.SW,Bachem Holding AG,2025,depreciation_amortization,47.440,CHF_millions,reported,,,,,BANB.SW-2025,depreciation_amortization,
+banb-sw-2025-ebitda,BANB.SW,Bachem Holding AG,2025,ebitda,214.700,CHF_millions,reported,,,,,BANB.SW-2025,ebitda,
+banb-sw-2025-net-income,BANB.SW,Bachem Holding AG,2025,net_income,148.793,CHF_millions,reported,,,,,BANB.SW-2025,net_income,
+banb-sw-2025-eps-basic,BANB.SW,Bachem Holding AG,2025,eps_basic,1.980,CHF_per_share,reported,,,,,BANB.SW-2025,eps,
+banb-sw-2025-dividend-per-share,BANB.SW,Bachem Holding AG,2025,dividend_per_share,0.900,CHF_per_share,reported,,,,,BANB.SW-2025,dividend_per_share,
+banb-sw-2025-total-assets,BANB.SW,Bachem Holding AG,2025,total_assets,2108.725,CHF_millions,reported,,,,,BANB.SW-2025,total_assets,
+banb-sw-2025-current-assets,BANB.SW,Bachem Holding AG,2025,current_assets,,CHF_millions,unavailable,,,,,BANB.SW-2025,current_assets,field absent from locked source schema
+banb-sw-2025-total-equity,BANB.SW,Bachem Holding AG,2025,total_equity,1458.317,CHF_millions,reported,,,,,BANB.SW-2025,total_equity,
+banb-sw-2025-total-liabilities,BANB.SW,Bachem Holding AG,2025,total_liabilities,,CHF_millions,unavailable,,,,,BANB.SW-2025,total_liabilities,field absent from locked source schema
+banb-sw-2025-current-liabilities,BANB.SW,Bachem Holding AG,2025,current_liabilities,,CHF_millions,unavailable,,,,,BANB.SW-2025,current_liabilities,field absent from locked source schema
+banb-sw-2025-cash,BANB.SW,Bachem Holding AG,2025,cash,30.988,CHF_millions,reported,,,,,BANB.SW-2025,cash,
+banb-sw-2025-total-debt,BANB.SW,Bachem Holding AG,2025,total_debt,57.392,CHF_millions,reported,,,,,BANB.SW-2025,total_debt,
+banb-sw-2025-operating-cash-flow,BANB.SW,Bachem Holding AG,2025,operating_cash_flow,271.573,CHF_millions,reported,,,,,BANB.SW-2025,operating_cash_flow,
+banb-sw-2025-capex-reported,BANB.SW,Bachem Holding AG,2025,capex_reported,-332.600,CHF_millions,reported,,,,,BANB.SW-2025,capex_reported,
+banb-sw-2025-capex-calculated,BANB.SW,Bachem Holding AG,2025,capex_calculated,-329.396,CHF_millions,calculated,cash-flow-capex,sum(signed_cash_flow_capex_lines),equity-formulas.v1,banb-sw-2025-cash-flow-investment-lines,BANB.SW-2025,capex_calculated,Candidate snapshot row assembled from validated FY2025 reference extraction; capex_reported is preserved from reported total investment KPI; free_cash_flow_reported remains missing.
+banb-sw-2025-free-cash-flow-reported,BANB.SW,Bachem Holding AG,2025,free_cash_flow_reported,,CHF_millions,unavailable,,,,,BANB.SW-2025,free_cash_flow_reported,documented missing in locked source
+banb-sw-2025-free-cash-flow-calculated,BANB.SW,Bachem Holding AG,2025,free_cash_flow_calculated,-57.823,CHF_millions,calculated,free-cash-flow-signed-capex,operating_cash_flow + signed_capex,equity-formulas.v1,banb-sw-2025-operating-cash-flow;banb-sw-2025-capex-calculated,BANB.SW-2025,free_cash_flow_calculated,Candidate snapshot row assembled from validated FY2025 reference extraction; capex_reported is preserved from reported total investment KPI; free_cash_flow_reported remains missing.
+banb-sw-2025-equity-ratio,BANB.SW,Bachem Holding AG,2025,equity_ratio,,percent,unavailable,,,,,BANB.SW-2025,equity_ratio_pct,field absent from locked source schema
+banb-sw-2025-year-end-share-price,BANB.SW,Bachem Holding AG,2025,year_end_share_price,59.900,CHF_per_share,reported,,,,,BANB.SW-2025,year_end_share_price,
+banb-sw-2025-registered-shares,BANB.SW,Bachem Holding AG,2025,registered_shares,74935540,shares,reported,,,,,BANB.SW-2025,shares_outstanding,
+banb-sw-2025-market-capitalization-published,BANB.SW,Bachem Holding AG,2025,market_capitalization_published,4493.000,CHF_millions,reported,,,,,BANB.SW-2025,market_cap,
+banb-sw-2025-price-to-earnings-published,BANB.SW,Bachem Holding AG,2025,price_to_earnings_published,,multiple,unavailable,,,,,BANB.SW-2025,pe_published,market field absent from locked source
+sfzn-sw-2021-revenue,SFZN.SW,Siegfried Holding AG,2021,revenue,1102.423,CHF_millions,reported,,,,,SFZN.SW-2021,revenue,
+sfzn-sw-2021-ebit,SFZN.SW,Siegfried Holding AG,2021,ebit,131.953,CHF_millions,reported,,,,,SFZN.SW-2021,ebit,
+sfzn-sw-2021-depreciation-amortization,SFZN.SW,Siegfried Holding AG,2021,depreciation_amortization,82.816,CHF_millions,reported,,,,,SFZN.SW-2021,da,
+sfzn-sw-2021-ebitda,SFZN.SW,Siegfried Holding AG,2021,ebitda,214.8,CHF_millions,calculated,ebit-plus-depreciation-amortization,ebit + depreciation_amortization,equity-formulas.v1,sfzn-sw-2021-ebit;sfzn-sw-2021-depreciation-amortization,SFZN.SW-2021,ebitda,capex_calculated is a negative cash outflow; free_cash_flow_calculated = operating_cf + capex_calculated; equity_ratio_pct = total_equity / total_assets; ebitda = ebit + da when statutory EBIT and D&A are both validated.
+sfzn-sw-2021-net-income,SFZN.SW,Siegfried Holding AG,2021,net_income,95.6,CHF_millions,reported,,,,,SFZN.SW-2021,net_income,
+sfzn-sw-2021-eps-basic,SFZN.SW,Siegfried Holding AG,2021,eps_basic,22.73,CHF_per_share,reported,,,,,SFZN.SW-2021,eps_basic,
+sfzn-sw-2021-dividend-per-share,SFZN.SW,Siegfried Holding AG,2021,dividend_per_share,3.2,CHF_per_share,reported,,,,,SFZN.SW-2021,dividend_per_share,
+sfzn-sw-2021-total-assets,SFZN.SW,Siegfried Holding AG,2021,total_assets,1669.158,CHF_millions,reported,,,,,SFZN.SW-2021,total_assets,
+sfzn-sw-2021-current-assets,SFZN.SW,Siegfried Holding AG,2021,current_assets,826.166,CHF_millions,reported,,,,,SFZN.SW-2021,current_assets,
+sfzn-sw-2021-total-equity,SFZN.SW,Siegfried Holding AG,2021,total_equity,688.217,CHF_millions,reported,,,,,SFZN.SW-2021,total_equity,
+sfzn-sw-2021-total-liabilities,SFZN.SW,Siegfried Holding AG,2021,total_liabilities,980.941,CHF_millions,reported,,,,,SFZN.SW-2021,total_liabilities,
+sfzn-sw-2021-current-liabilities,SFZN.SW,Siegfried Holding AG,2021,current_liabilities,270.792,CHF_millions,reported,,,,,SFZN.SW-2021,current_liabilities,
+sfzn-sw-2021-cash,SFZN.SW,Siegfried Holding AG,2021,cash,72.621,CHF_millions,reported,,,,,SFZN.SW-2021,cash,
+sfzn-sw-2021-total-debt,SFZN.SW,Siegfried Holding AG,2021,total_debt,480.0,CHF_millions,reported,,,,,SFZN.SW-2021,total_debt,
+sfzn-sw-2021-operating-cash-flow,SFZN.SW,Siegfried Holding AG,2021,operating_cash_flow,119.749,CHF_millions,reported,,,,,SFZN.SW-2021,operating_cf,
+sfzn-sw-2021-capex-reported,SFZN.SW,Siegfried Holding AG,2021,capex_reported,113.4,CHF_millions,reported,,,,,SFZN.SW-2021,capex_reported,
+sfzn-sw-2021-capex-calculated,SFZN.SW,Siegfried Holding AG,2021,capex_calculated,-113.397,CHF_millions,calculated,cash-flow-capex,sum(signed_cash_flow_capex_lines),equity-formulas.v1,sfzn-sw-2021-cash-flow-investment-lines,SFZN.SW-2021,capex_calculated,capex_calculated is a negative cash outflow; free_cash_flow_calculated = operating_cf + capex_calculated; equity_ratio_pct = total_equity / total_assets; ebitda = ebit + da when statutory EBIT and D&A are both validated.
+sfzn-sw-2021-free-cash-flow-reported,SFZN.SW,Siegfried Holding AG,2021,free_cash_flow_reported,6.5,CHF_millions,reported,,,,,SFZN.SW-2021,free_cash_flow_reported,
+sfzn-sw-2021-free-cash-flow-calculated,SFZN.SW,Siegfried Holding AG,2021,free_cash_flow_calculated,6.352,CHF_millions,calculated,free-cash-flow-signed-capex,operating_cash_flow + signed_capex,equity-formulas.v1,sfzn-sw-2021-operating-cash-flow;sfzn-sw-2021-capex-calculated,SFZN.SW-2021,free_cash_flow_calculated,capex_calculated is a negative cash outflow; free_cash_flow_calculated = operating_cf + capex_calculated; equity_ratio_pct = total_equity / total_assets; ebitda = ebit + da when statutory EBIT and D&A are both validated.
+sfzn-sw-2021-equity-ratio,SFZN.SW,Siegfried Holding AG,2021,equity_ratio,41.23,percent,calculated,period-end-equity-to-total-assets,total_equity / total_assets * 100,equity-formulas.v1,sfzn-sw-2021-total-equity;sfzn-sw-2021-total-assets,SFZN.SW-2021,equity_ratio_pct,capex_calculated is a negative cash outflow; free_cash_flow_calculated = operating_cf + capex_calculated; equity_ratio_pct = total_equity / total_assets; ebitda = ebit + da when statutory EBIT and D&A are both validated.
+sfzn-sw-2021-year-end-share-price,SFZN.SW,Siegfried Holding AG,2021,year_end_share_price,,CHF_per_share,unavailable,,,,,SFZN.SW-2021,year_end_share_price,missing_source_unavailable
+sfzn-sw-2021-registered-shares,SFZN.SW,Siegfried Holding AG,2021,registered_shares,,shares,unavailable,,,,,SFZN.SW-2021,shares_outstanding,missing_source_unavailable
+sfzn-sw-2021-market-capitalization-published,SFZN.SW,Siegfried Holding AG,2021,market_capitalization_published,,CHF_millions,unavailable,,,,,SFZN.SW-2021,market_cap,missing_source_unavailable
+sfzn-sw-2021-price-to-earnings-published,SFZN.SW,Siegfried Holding AG,2021,price_to_earnings_published,,multiple,unavailable,,,,,SFZN.SW-2021,pe_published,missing_source_unavailable
+sfzn-sw-2022-revenue,SFZN.SW,Siegfried Holding AG,2022,revenue,1229.518,CHF_millions,reported,,,,,SFZN.SW-2022,revenue,
+sfzn-sw-2022-ebit,SFZN.SW,Siegfried Holding AG,2022,ebit,230.777,CHF_millions,reported,,,,,SFZN.SW-2022,ebit,
+sfzn-sw-2022-depreciation-amortization,SFZN.SW,Siegfried Holding AG,2022,depreciation_amortization,81.748,CHF_millions,reported,,,,,SFZN.SW-2022,da,
+sfzn-sw-2022-ebitda,SFZN.SW,Siegfried Holding AG,2022,ebitda,312.5,CHF_millions,calculated,ebit-plus-depreciation-amortization,ebit + depreciation_amortization,equity-formulas.v1,sfzn-sw-2022-ebit;sfzn-sw-2022-depreciation-amortization,SFZN.SW-2022,ebitda,capex_calculated is a negative cash outflow; free_cash_flow_calculated = operating_cf + capex_calculated; equity_ratio_pct = total_equity / total_assets; ebitda = ebit + da when statutory EBIT and D&A are both validated.
+sfzn-sw-2022-net-income,SFZN.SW,Siegfried Holding AG,2022,net_income,156.49,CHF_millions,reported,,,,,SFZN.SW-2022,net_income,
+sfzn-sw-2022-eps-basic,SFZN.SW,Siegfried Holding AG,2022,eps_basic,37.07,CHF_per_share,reported,,,,,SFZN.SW-2022,eps_basic,
+sfzn-sw-2022-dividend-per-share,SFZN.SW,Siegfried Holding AG,2022,dividend_per_share,3.4,CHF_per_share,reported,,,,,SFZN.SW-2022,dividend_per_share,
+sfzn-sw-2022-total-assets,SFZN.SW,Siegfried Holding AG,2022,total_assets,1793.2,CHF_millions,reported,,,,,SFZN.SW-2022,total_assets,
+sfzn-sw-2022-current-assets,SFZN.SW,Siegfried Holding AG,2022,current_assets,944.887,CHF_millions,reported,,,,,SFZN.SW-2022,current_assets,
+sfzn-sw-2022-total-equity,SFZN.SW,Siegfried Holding AG,2022,total_equity,790.928,CHF_millions,reported,,,,,SFZN.SW-2022,total_equity,
+sfzn-sw-2022-total-liabilities,SFZN.SW,Siegfried Holding AG,2022,total_liabilities,1002.272,CHF_millions,reported,,,,,SFZN.SW-2022,total_liabilities,
+sfzn-sw-2022-current-liabilities,SFZN.SW,Siegfried Holding AG,2022,current_liabilities,317.594,CHF_millions,reported,,,,,SFZN.SW-2022,current_liabilities,
+sfzn-sw-2022-cash,SFZN.SW,Siegfried Holding AG,2022,cash,91.483,CHF_millions,reported,,,,,SFZN.SW-2022,cash,
+sfzn-sw-2022-total-debt,SFZN.SW,Siegfried Holding AG,2022,total_debt,510.0,CHF_millions,reported,,,,,SFZN.SW-2022,total_debt,
+sfzn-sw-2022-operating-cash-flow,SFZN.SW,Siegfried Holding AG,2022,operating_cash_flow,142.34,CHF_millions,reported,,,,,SFZN.SW-2022,operating_cf,
+sfzn-sw-2022-capex-reported,SFZN.SW,Siegfried Holding AG,2022,capex_reported,115.2,CHF_millions,reported,,,,,SFZN.SW-2022,capex_reported,
+sfzn-sw-2022-capex-calculated,SFZN.SW,Siegfried Holding AG,2022,capex_calculated,-115.208,CHF_millions,calculated,cash-flow-capex,sum(signed_cash_flow_capex_lines),equity-formulas.v1,sfzn-sw-2022-cash-flow-investment-lines,SFZN.SW-2022,capex_calculated,capex_calculated is a negative cash outflow; free_cash_flow_calculated = operating_cf + capex_calculated; equity_ratio_pct = total_equity / total_assets; ebitda = ebit + da when statutory EBIT and D&A are both validated.
+sfzn-sw-2022-free-cash-flow-reported,SFZN.SW,Siegfried Holding AG,2022,free_cash_flow_reported,27.2,CHF_millions,reported,,,,,SFZN.SW-2022,free_cash_flow_reported,
+sfzn-sw-2022-free-cash-flow-calculated,SFZN.SW,Siegfried Holding AG,2022,free_cash_flow_calculated,27.132,CHF_millions,calculated,free-cash-flow-signed-capex,operating_cash_flow + signed_capex,equity-formulas.v1,sfzn-sw-2022-operating-cash-flow;sfzn-sw-2022-capex-calculated,SFZN.SW-2022,free_cash_flow_calculated,capex_calculated is a negative cash outflow; free_cash_flow_calculated = operating_cf + capex_calculated; equity_ratio_pct = total_equity / total_assets; ebitda = ebit + da when statutory EBIT and D&A are both validated.
+sfzn-sw-2022-equity-ratio,SFZN.SW,Siegfried Holding AG,2022,equity_ratio,44.11,percent,calculated,period-end-equity-to-total-assets,total_equity / total_assets * 100,equity-formulas.v1,sfzn-sw-2022-total-equity;sfzn-sw-2022-total-assets,SFZN.SW-2022,equity_ratio_pct,capex_calculated is a negative cash outflow; free_cash_flow_calculated = operating_cf + capex_calculated; equity_ratio_pct = total_equity / total_assets; ebitda = ebit + da when statutory EBIT and D&A are both validated.
+sfzn-sw-2022-year-end-share-price,SFZN.SW,Siegfried Holding AG,2022,year_end_share_price,,CHF_per_share,unavailable,,,,,SFZN.SW-2022,year_end_share_price,missing_source_unavailable
+sfzn-sw-2022-registered-shares,SFZN.SW,Siegfried Holding AG,2022,registered_shares,,shares,unavailable,,,,,SFZN.SW-2022,shares_outstanding,missing_source_unavailable
+sfzn-sw-2022-market-capitalization-published,SFZN.SW,Siegfried Holding AG,2022,market_capitalization_published,,CHF_millions,unavailable,,,,,SFZN.SW-2022,market_cap,missing_source_unavailable
+sfzn-sw-2022-price-to-earnings-published,SFZN.SW,Siegfried Holding AG,2022,price_to_earnings_published,,multiple,unavailable,,,,,SFZN.SW-2022,pe_published,missing_source_unavailable
+sfzn-sw-2023-revenue,SFZN.SW,Siegfried Holding AG,2023,revenue,1271.494,CHF_millions,reported,,,,,SFZN.SW-2023,revenue,
+sfzn-sw-2023-ebit,SFZN.SW,Siegfried Holding AG,2023,ebit,172.068,CHF_millions,reported,,,,,SFZN.SW-2023,ebit,
+sfzn-sw-2023-depreciation-amortization,SFZN.SW,Siegfried Holding AG,2023,depreciation_amortization,81.353,CHF_millions,reported,,,,,SFZN.SW-2023,da,
+sfzn-sw-2023-ebitda,SFZN.SW,Siegfried Holding AG,2023,ebitda,253.4,CHF_millions,calculated,ebit-plus-depreciation-amortization,ebit + depreciation_amortization,equity-formulas.v1,sfzn-sw-2023-ebit;sfzn-sw-2023-depreciation-amortization,SFZN.SW-2023,ebitda,capex_calculated is a negative cash outflow; free_cash_flow_calculated = operating_cf + capex_calculated; equity_ratio_pct = total_equity / total_assets; ebitda = ebit + da when statutory EBIT and D&A are both validated.
+sfzn-sw-2023-net-income,SFZN.SW,Siegfried Holding AG,2023,net_income,112.774,CHF_millions,reported,,,,,SFZN.SW-2023,net_income,
+sfzn-sw-2023-eps-basic,SFZN.SW,Siegfried Holding AG,2023,eps_basic,26.61,CHF_per_share,reported,,,,,SFZN.SW-2023,eps_basic,
+sfzn-sw-2023-dividend-per-share,SFZN.SW,Siegfried Holding AG,2023,dividend_per_share,3.6,CHF_per_share,reported,,,,,SFZN.SW-2023,dividend_per_share,
+sfzn-sw-2023-total-assets,SFZN.SW,Siegfried Holding AG,2023,total_assets,1861.505,CHF_millions,reported,,,,,SFZN.SW-2023,total_assets,
+sfzn-sw-2023-current-assets,SFZN.SW,Siegfried Holding AG,2023,current_assets,983.164,CHF_millions,reported,,,,,SFZN.SW-2023,current_assets,
+sfzn-sw-2023-total-equity,SFZN.SW,Siegfried Holding AG,2023,total_equity,838.133,CHF_millions,reported,,,,,SFZN.SW-2023,total_equity,
+sfzn-sw-2023-total-liabilities,SFZN.SW,Siegfried Holding AG,2023,total_liabilities,1023.372,CHF_millions,reported,,,,,SFZN.SW-2023,total_liabilities,
+sfzn-sw-2023-current-liabilities,SFZN.SW,Siegfried Holding AG,2023,current_liabilities,397.8,CHF_millions,reported,,,,,SFZN.SW-2023,current_liabilities,
+sfzn-sw-2023-cash,SFZN.SW,Siegfried Holding AG,2023,cash,56.363,CHF_millions,reported,,,,,SFZN.SW-2023,cash,
+sfzn-sw-2023-total-debt,SFZN.SW,Siegfried Holding AG,2023,total_debt,445.0,CHF_millions,reported,,,,,SFZN.SW-2023,total_debt,
+sfzn-sw-2023-operating-cash-flow,SFZN.SW,Siegfried Holding AG,2023,operating_cash_flow,208.608,CHF_millions,reported,,,,,SFZN.SW-2023,operating_cf,
+sfzn-sw-2023-capex-reported,SFZN.SW,Siegfried Holding AG,2023,capex_reported,137.1,CHF_millions,reported,,,,,SFZN.SW-2023,capex_reported,
+sfzn-sw-2023-capex-calculated,SFZN.SW,Siegfried Holding AG,2023,capex_calculated,-137.094,CHF_millions,calculated,cash-flow-capex,sum(signed_cash_flow_capex_lines),equity-formulas.v1,sfzn-sw-2023-cash-flow-investment-lines,SFZN.SW-2023,capex_calculated,capex_calculated is a negative cash outflow; free_cash_flow_calculated = operating_cf + capex_calculated; equity_ratio_pct = total_equity / total_assets; ebitda = ebit + da when statutory EBIT and D&A are both validated.
+sfzn-sw-2023-free-cash-flow-reported,SFZN.SW,Siegfried Holding AG,2023,free_cash_flow_reported,71.8,CHF_millions,reported,,,,,SFZN.SW-2023,free_cash_flow_reported,
+sfzn-sw-2023-free-cash-flow-calculated,SFZN.SW,Siegfried Holding AG,2023,free_cash_flow_calculated,71.514,CHF_millions,calculated,free-cash-flow-signed-capex,operating_cash_flow + signed_capex,equity-formulas.v1,sfzn-sw-2023-operating-cash-flow;sfzn-sw-2023-capex-calculated,SFZN.SW-2023,free_cash_flow_calculated,capex_calculated is a negative cash outflow; free_cash_flow_calculated = operating_cf + capex_calculated; equity_ratio_pct = total_equity / total_assets; ebitda = ebit + da when statutory EBIT and D&A are both validated.
+sfzn-sw-2023-equity-ratio,SFZN.SW,Siegfried Holding AG,2023,equity_ratio,45.02,percent,calculated,period-end-equity-to-total-assets,total_equity / total_assets * 100,equity-formulas.v1,sfzn-sw-2023-total-equity;sfzn-sw-2023-total-assets,SFZN.SW-2023,equity_ratio_pct,capex_calculated is a negative cash outflow; free_cash_flow_calculated = operating_cf + capex_calculated; equity_ratio_pct = total_equity / total_assets; ebitda = ebit + da when statutory EBIT and D&A are both validated.
+sfzn-sw-2023-year-end-share-price,SFZN.SW,Siegfried Holding AG,2023,year_end_share_price,,CHF_per_share,unavailable,,,,,SFZN.SW-2023,year_end_share_price,missing_source_unavailable
+sfzn-sw-2023-registered-shares,SFZN.SW,Siegfried Holding AG,2023,registered_shares,,shares,unavailable,,,,,SFZN.SW-2023,shares_outstanding,missing_source_unavailable
+sfzn-sw-2023-market-capitalization-published,SFZN.SW,Siegfried Holding AG,2023,market_capitalization_published,,CHF_millions,unavailable,,,,,SFZN.SW-2023,market_cap,missing_source_unavailable
+sfzn-sw-2023-price-to-earnings-published,SFZN.SW,Siegfried Holding AG,2023,price_to_earnings_published,,multiple,unavailable,,,,,SFZN.SW-2023,pe_published,missing_source_unavailable
+sfzn-sw-2024-revenue,SFZN.SW,Siegfried Holding AG,2024,revenue,1294.573,CHF_millions,reported,,,,,SFZN.SW-2024,revenue,
+sfzn-sw-2024-ebit,SFZN.SW,Siegfried Holding AG,2024,ebit,199.26,CHF_millions,reported,,,,,SFZN.SW-2024,ebit,
+sfzn-sw-2024-depreciation-amortization,SFZN.SW,Siegfried Holding AG,2024,depreciation_amortization,84.726,CHF_millions,reported,,,,,SFZN.SW-2024,da,
+sfzn-sw-2024-ebitda,SFZN.SW,Siegfried Holding AG,2024,ebitda,284.0,CHF_millions,calculated,ebit-plus-depreciation-amortization,ebit + depreciation_amortization,equity-formulas.v1,sfzn-sw-2024-ebit;sfzn-sw-2024-depreciation-amortization,SFZN.SW-2024,ebitda,capex_calculated is a negative cash outflow; free_cash_flow_calculated = operating_cf + capex_calculated; equity_ratio_pct = total_equity / total_assets; ebitda = ebit + da when statutory EBIT and D&A are both validated.
+sfzn-sw-2024-net-income,SFZN.SW,Siegfried Holding AG,2024,net_income,160.064,CHF_millions,reported,,,,,SFZN.SW-2024,net_income,
+sfzn-sw-2024-eps-basic,SFZN.SW,Siegfried Holding AG,2024,eps_basic,37.14,CHF_per_share,reported,,,,,SFZN.SW-2024,eps_basic,
+sfzn-sw-2024-dividend-per-share,SFZN.SW,Siegfried Holding AG,2024,dividend_per_share,3.8,CHF_per_share,reported,,,,,SFZN.SW-2024,dividend_per_share,
+sfzn-sw-2024-total-assets,SFZN.SW,Siegfried Holding AG,2024,total_assets,1933.722,CHF_millions,reported,,,,,SFZN.SW-2024,total_assets,
+sfzn-sw-2024-current-assets,SFZN.SW,Siegfried Holding AG,2024,current_assets,939.375,CHF_millions,reported,,,,,SFZN.SW-2024,current_assets,
+sfzn-sw-2024-total-equity,SFZN.SW,Siegfried Holding AG,2024,total_equity,979.907,CHF_millions,reported,,,,,SFZN.SW-2024,total_equity,
+sfzn-sw-2024-total-liabilities,SFZN.SW,Siegfried Holding AG,2024,total_liabilities,953.815,CHF_millions,reported,,,,,SFZN.SW-2024,total_liabilities,
+sfzn-sw-2024-current-liabilities,SFZN.SW,Siegfried Holding AG,2024,current_liabilities,306.599,CHF_millions,reported,,,,,SFZN.SW-2024,current_liabilities,
+sfzn-sw-2024-cash,SFZN.SW,Siegfried Holding AG,2024,cash,38.756,CHF_millions,reported,,,,,SFZN.SW-2024,cash,
+sfzn-sw-2024-total-debt,SFZN.SW,Siegfried Holding AG,2024,total_debt,490.1,CHF_millions,reported,,,,,SFZN.SW-2024,total_debt,
+sfzn-sw-2024-operating-cash-flow,SFZN.SW,Siegfried Holding AG,2024,operating_cash_flow,168.777,CHF_millions,reported,,,,,SFZN.SW-2024,operating_cf,
+sfzn-sw-2024-capex-reported,SFZN.SW,Siegfried Holding AG,2024,capex_reported,180.8,CHF_millions,reported,,,,,SFZN.SW-2024,capex_reported,
+sfzn-sw-2024-capex-calculated,SFZN.SW,Siegfried Holding AG,2024,capex_calculated,-180.847,CHF_millions,calculated,cash-flow-capex,sum(signed_cash_flow_capex_lines),equity-formulas.v1,sfzn-sw-2024-cash-flow-investment-lines,SFZN.SW-2024,capex_calculated,capex_calculated is a negative cash outflow; free_cash_flow_calculated = operating_cf + capex_calculated; equity_ratio_pct = total_equity / total_assets; ebitda = ebit + da when statutory EBIT and D&A are both validated.
+sfzn-sw-2024-free-cash-flow-reported,SFZN.SW,Siegfried Holding AG,2024,free_cash_flow_reported,-11.6,CHF_millions,reported,,,,,SFZN.SW-2024,free_cash_flow_reported,
+sfzn-sw-2024-free-cash-flow-calculated,SFZN.SW,Siegfried Holding AG,2024,free_cash_flow_calculated,-12.07,CHF_millions,calculated,free-cash-flow-signed-capex,operating_cash_flow + signed_capex,equity-formulas.v1,sfzn-sw-2024-operating-cash-flow;sfzn-sw-2024-capex-calculated,SFZN.SW-2024,free_cash_flow_calculated,capex_calculated is a negative cash outflow; free_cash_flow_calculated = operating_cf + capex_calculated; equity_ratio_pct = total_equity / total_assets; ebitda = ebit + da when statutory EBIT and D&A are both validated.
+sfzn-sw-2024-equity-ratio,SFZN.SW,Siegfried Holding AG,2024,equity_ratio,50.67,percent,calculated,period-end-equity-to-total-assets,total_equity / total_assets * 100,equity-formulas.v1,sfzn-sw-2024-total-equity;sfzn-sw-2024-total-assets,SFZN.SW-2024,equity_ratio_pct,capex_calculated is a negative cash outflow; free_cash_flow_calculated = operating_cf + capex_calculated; equity_ratio_pct = total_equity / total_assets; ebitda = ebit + da when statutory EBIT and D&A are both validated.
+sfzn-sw-2024-year-end-share-price,SFZN.SW,Siegfried Holding AG,2024,year_end_share_price,,CHF_per_share,unavailable,,,,,SFZN.SW-2024,year_end_share_price,missing_source_unavailable
+sfzn-sw-2024-registered-shares,SFZN.SW,Siegfried Holding AG,2024,registered_shares,,shares,unavailable,,,,,SFZN.SW-2024,shares_outstanding,missing_source_unavailable
+sfzn-sw-2024-market-capitalization-published,SFZN.SW,Siegfried Holding AG,2024,market_capitalization_published,,CHF_millions,unavailable,,,,,SFZN.SW-2024,market_cap,missing_source_unavailable
+sfzn-sw-2024-price-to-earnings-published,SFZN.SW,Siegfried Holding AG,2024,price_to_earnings_published,,multiple,unavailable,,,,,SFZN.SW-2024,pe_published,missing_source_unavailable
+sfzn-sw-2025-revenue,SFZN.SW,Siegfried Holding AG,2025,revenue,1327.834,CHF_millions,reported,,,,,SFZN.SW-2025,revenue,
+sfzn-sw-2025-ebit,SFZN.SW,Siegfried Holding AG,2025,ebit,223.764,CHF_millions,reported,,,,,SFZN.SW-2025,ebit,
+sfzn-sw-2025-depreciation-amortization,SFZN.SW,Siegfried Holding AG,2025,depreciation_amortization,94.763,CHF_millions,reported,,,,,SFZN.SW-2025,da,
+sfzn-sw-2025-ebitda,SFZN.SW,Siegfried Holding AG,2025,ebitda,318.5,CHF_millions,calculated,ebit-plus-depreciation-amortization,ebit + depreciation_amortization,equity-formulas.v1,sfzn-sw-2025-ebit;sfzn-sw-2025-depreciation-amortization,SFZN.SW-2025,ebitda,capex_calculated is a negative cash outflow; free_cash_flow_calculated = operating_cf + capex_calculated; equity_ratio_pct = total_equity / total_assets; ebitda = ebit + da when statutory EBIT and D&A are both validated.
+sfzn-sw-2025-net-income,SFZN.SW,Siegfried Holding AG,2025,net_income,168.659,CHF_millions,reported,,,,,SFZN.SW-2025,net_income,
+sfzn-sw-2025-eps-basic,SFZN.SW,Siegfried Holding AG,2025,eps_basic,3.85,CHF_per_share,reported,,,,,SFZN.SW-2025,eps_basic,
+sfzn-sw-2025-dividend-per-share,SFZN.SW,Siegfried Holding AG,2025,dividend_per_share,0.4,CHF_per_share,reported,,,,,SFZN.SW-2025,dividend_per_share,
+sfzn-sw-2025-total-assets,SFZN.SW,Siegfried Holding AG,2025,total_assets,2153.543,CHF_millions,reported,,,,,SFZN.SW-2025,total_assets,
+sfzn-sw-2025-current-assets,SFZN.SW,Siegfried Holding AG,2025,current_assets,1048.74,CHF_millions,reported,,,,,SFZN.SW-2025,current_assets,
+sfzn-sw-2025-total-equity,SFZN.SW,Siegfried Holding AG,2025,total_equity,1127.555,CHF_millions,reported,,,,,SFZN.SW-2025,total_equity,
+sfzn-sw-2025-total-liabilities,SFZN.SW,Siegfried Holding AG,2025,total_liabilities,1025.989,CHF_millions,reported,,,,,SFZN.SW-2025,total_liabilities,
+sfzn-sw-2025-current-liabilities,SFZN.SW,Siegfried Holding AG,2025,current_liabilities,524.726,CHF_millions,reported,,,,,SFZN.SW-2025,current_liabilities,
+sfzn-sw-2025-cash,SFZN.SW,Siegfried Holding AG,2025,cash,103.082,CHF_millions,reported,,,,,SFZN.SW-2025,cash,
+sfzn-sw-2025-total-debt,SFZN.SW,Siegfried Holding AG,2025,total_debt,575.2,CHF_millions,reported,,,,,SFZN.SW-2025,total_debt,
+sfzn-sw-2025-operating-cash-flow,SFZN.SW,Siegfried Holding AG,2025,operating_cash_flow,228.159,CHF_millions,reported,,,,,SFZN.SW-2025,operating_cf,
+sfzn-sw-2025-capex-reported,SFZN.SW,Siegfried Holding AG,2025,capex_reported,231.5,CHF_millions,reported,,,,,SFZN.SW-2025,capex_reported,
+sfzn-sw-2025-capex-calculated,SFZN.SW,Siegfried Holding AG,2025,capex_calculated,-231.469,CHF_millions,calculated,cash-flow-capex,sum(signed_cash_flow_capex_lines),equity-formulas.v1,sfzn-sw-2025-cash-flow-investment-lines,SFZN.SW-2025,capex_calculated,capex_calculated is a negative cash outflow; free_cash_flow_calculated = operating_cf + capex_calculated; equity_ratio_pct = total_equity / total_assets; ebitda = ebit + da when statutory EBIT and D&A are both validated.
+sfzn-sw-2025-free-cash-flow-reported,SFZN.SW,Siegfried Holding AG,2025,free_cash_flow_reported,-3.1,CHF_millions,reported,,,,,SFZN.SW-2025,free_cash_flow_reported,
+sfzn-sw-2025-free-cash-flow-calculated,SFZN.SW,Siegfried Holding AG,2025,free_cash_flow_calculated,-3.31,CHF_millions,calculated,free-cash-flow-signed-capex,operating_cash_flow + signed_capex,equity-formulas.v1,sfzn-sw-2025-operating-cash-flow;sfzn-sw-2025-capex-calculated,SFZN.SW-2025,free_cash_flow_calculated,capex_calculated is a negative cash outflow; free_cash_flow_calculated = operating_cf + capex_calculated; equity_ratio_pct = total_equity / total_assets; ebitda = ebit + da when statutory EBIT and D&A are both validated.
+sfzn-sw-2025-equity-ratio,SFZN.SW,Siegfried Holding AG,2025,equity_ratio,52.36,percent,calculated,period-end-equity-to-total-assets,total_equity / total_assets * 100,equity-formulas.v1,sfzn-sw-2025-total-equity;sfzn-sw-2025-total-assets,SFZN.SW-2025,equity_ratio_pct,capex_calculated is a negative cash outflow; free_cash_flow_calculated = operating_cf + capex_calculated; equity_ratio_pct = total_equity / total_assets; ebitda = ebit + da when statutory EBIT and D&A are both validated.
+sfzn-sw-2025-year-end-share-price,SFZN.SW,Siegfried Holding AG,2025,year_end_share_price,,CHF_per_share,unavailable,,,,,SFZN.SW-2025,year_end_share_price,missing_source_unavailable
+sfzn-sw-2025-registered-shares,SFZN.SW,Siegfried Holding AG,2025,registered_shares,,shares,unavailable,,,,,SFZN.SW-2025,shares_outstanding,missing_source_unavailable
+sfzn-sw-2025-market-capitalization-published,SFZN.SW,Siegfried Holding AG,2025,market_capitalization_published,,CHF_millions,unavailable,,,,,SFZN.SW-2025,market_cap,missing_source_unavailable
+sfzn-sw-2025-price-to-earnings-published,SFZN.SW,Siegfried Holding AG,2025,price_to_earnings_published,,multiple,unavailable,,,,,SFZN.SW-2025,pe_published,missing_source_unavailable

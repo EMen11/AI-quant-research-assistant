@@ -1,0 +1,542 @@
+{
+  "authority_schema_version": "sed-locked-authority-chain.v1",
+  "caveats": [
+    "2019 preserves the Phase 4B source caveat and leaves statutory EBIT, EPS, and EBITDA blank.",
+    "BANB.SW FY2021: FY2021 share-level fields are pre-split values as reported in the annual report; no manual split adjustment was applied.",
+    "BANB.SW FY2021: FY2021 source is official_company_source annual report PDF.",
+    "BANB.SW FY2022: FY2022 share-level fields are post-split values after Bachem 1:5 share split; no manual split adjustment was applied.",
+    "BANB.SW FY2022: FY2022 source is official_company_source annual report PDF.",
+    "BANB.SW FY2023: FY2023 share-level fields are post-split values after Bachem 1:5 share split; no manual split adjustment was applied.",
+    "BANB.SW FY2023: FY2023 source is official_company_source annual report PDF.",
+    "BANB.SW FY2024: FY2024 share-level fields are post-split values after Bachem 1:5 share split; no manual split adjustment was applied.",
+    "BANB.SW FY2024: FY2024 source is official_company_source annual report PDF.",
+    "BANB.SW FY2025: FY2025 share-level fields are post-split values after Bachem 1:5 share split; no manual split adjustment was applied.",
+    "BANB.SW FY2025: FY2025 source is official_company_source annual report PDF.",
+    "Bachem completed a 1:5 share split between FY2021 and FY2022.",
+    "Candidate snapshot only; no locked snapshot, product output, release, staging, or beta artifact was created or modified.",
+    "Comparative valuation remains blocked until Siegfried market fields are source-validated.",
+    "FY2015-FY2021 share-level values are pre-split as reported in each annual report unless explicitly stated otherwise.",
+    "FY2022-FY2025 share-level values are post-split.",
+    "Missing 2020 and 2015 rows are explicit documented-missing rows because no validated allowed-phase extraction row was available.",
+    "No manual split adjustment was applied.",
+    "SFZN.SW FY2021: Validated Phase 3B consolidated annual report row; values agree across JSON, raw CSV, and normalized CSV; EPS and DPS remain pre-2025 split basis.",
+    "SFZN.SW FY2022: Validated Phase 3B consolidated annual report row; values agree across JSON, raw CSV, and normalized CSV; EPS and DPS remain pre-2025 split basis.",
+    "SFZN.SW FY2023: Validated Phase 3B consolidated annual report row; values agree across JSON, raw CSV, and normalized CSV; EPS and DPS remain pre-2025 split basis.",
+    "SFZN.SW FY2024: Validated Phase 2B consolidated annual report row; CHF reporting and market currency; EBITDA calculated; EPS and DPS remain pre-2025 split basis; proposed par value reduction preserved.",
+    "SFZN.SW FY2025: Validated Phase 1B consolidated annual report row; CHF reporting and market currency; EBITDA calculated from statutory EBIT plus D&A; proposed par value repayment preserved as dividend_per_share note.",
+    "Source snapshots do not provide PDF page numbers; page-level provenance is unavailable.",
+    "capex_calculated is a negative cash outflow; free_cash_flow_calculated = operating_cf + capex_calculated; equity_ratio_pct = total_equity / total_assets; ebitda = ebit + da when statutory EBIT and D&A are both validated."
+  ],
+  "fields": [
+    {
+      "name": "revenue",
+      "unit": "CHF_millions"
+    },
+    {
+      "name": "ebit",
+      "unit": "CHF_millions"
+    },
+    {
+      "name": "depreciation_amortization",
+      "unit": "CHF_millions"
+    },
+    {
+      "name": "ebitda",
+      "unit": "CHF_millions"
+    },
+    {
+      "name": "net_income",
+      "unit": "CHF_millions"
+    },
+    {
+      "name": "eps_basic",
+      "unit": "CHF_per_share"
+    },
+    {
+      "name": "dividend_per_share",
+      "unit": "CHF_per_share"
+    },
+    {
+      "name": "total_assets",
+      "unit": "CHF_millions"
+    },
+    {
+      "name": "current_assets",
+      "unit": "CHF_millions"
+    },
+    {
+      "name": "total_equity",
+      "unit": "CHF_millions"
+    },
+    {
+      "name": "total_liabilities",
+      "unit": "CHF_millions"
+    },
+    {
+      "name": "current_liabilities",
+      "unit": "CHF_millions"
+    },
+    {
+      "name": "cash",
+      "unit": "CHF_millions"
+    },
+    {
+      "name": "total_debt",
+      "unit": "CHF_millions"
+    },
+    {
+      "name": "operating_cash_flow",
+      "unit": "CHF_millions"
+    },
+    {
+      "name": "capex_reported",
+      "unit": "CHF_millions"
+    },
+    {
+      "name": "capex_calculated",
+      "unit": "CHF_millions"
+    },
+    {
+      "name": "free_cash_flow_reported",
+      "unit": "CHF_millions"
+    },
+    {
+      "name": "free_cash_flow_calculated",
+      "unit": "CHF_millions"
+    },
+    {
+      "name": "equity_ratio",
+      "unit": "percent"
+    },
+    {
+      "name": "year_end_share_price",
+      "unit": "CHF_per_share"
+    },
+    {
+      "name": "registered_shares",
+      "unit": "shares"
+    },
+    {
+      "name": "market_capitalization_published",
+      "unit": "CHF_millions"
+    },
+    {
+      "name": "price_to_earnings_published",
+      "unit": "multiple"
+    }
+  ],
+  "fixture_schema_version": "equity-fundamentals.v1",
+  "formula_version": "equity-formulas.v1",
+  "gates": {
+    "comparative_valuation": "blocked",
+    "fundamentals": "pass"
+  },
+  "generated_at": "2026-10-05T19:09:49Z",
+  "missing_values": [
+    {
+      "field": "current_assets",
+      "fiscal_year": 2021,
+      "reason": "field absent from locked source schema",
+      "ticker": "BANB.SW"
+    },
+    {
+      "field": "total_liabilities",
+      "fiscal_year": 2021,
+      "reason": "field absent from locked source schema",
+      "ticker": "BANB.SW"
+    },
+    {
+      "field": "current_liabilities",
+      "fiscal_year": 2021,
+      "reason": "field absent from locked source schema",
+      "ticker": "BANB.SW"
+    },
+    {
+      "field": "capex_reported",
+      "fiscal_year": 2021,
+      "reason": "documented missing in locked source",
+      "ticker": "BANB.SW"
+    },
+    {
+      "field": "free_cash_flow_reported",
+      "fiscal_year": 2021,
+      "reason": "documented missing in locked source",
+      "ticker": "BANB.SW"
+    },
+    {
+      "field": "equity_ratio",
+      "fiscal_year": 2021,
+      "reason": "field absent from locked source schema",
+      "ticker": "BANB.SW"
+    },
+    {
+      "field": "price_to_earnings_published",
+      "fiscal_year": 2021,
+      "reason": "market field absent from locked source",
+      "ticker": "BANB.SW"
+    },
+    {
+      "field": "current_assets",
+      "fiscal_year": 2022,
+      "reason": "field absent from locked source schema",
+      "ticker": "BANB.SW"
+    },
+    {
+      "field": "total_liabilities",
+      "fiscal_year": 2022,
+      "reason": "field absent from locked source schema",
+      "ticker": "BANB.SW"
+    },
+    {
+      "field": "current_liabilities",
+      "fiscal_year": 2022,
+      "reason": "field absent from locked source schema",
+      "ticker": "BANB.SW"
+    },
+    {
+      "field": "capex_reported",
+      "fiscal_year": 2022,
+      "reason": "documented missing in locked source",
+      "ticker": "BANB.SW"
+    },
+    {
+      "field": "free_cash_flow_reported",
+      "fiscal_year": 2022,
+      "reason": "documented missing in locked source",
+      "ticker": "BANB.SW"
+    },
+    {
+      "field": "equity_ratio",
+      "fiscal_year": 2022,
+      "reason": "field absent from locked source schema",
+      "ticker": "BANB.SW"
+    },
+    {
+      "field": "price_to_earnings_published",
+      "fiscal_year": 2022,
+      "reason": "market field absent from locked source",
+      "ticker": "BANB.SW"
+    },
+    {
+      "field": "current_assets",
+      "fiscal_year": 2023,
+      "reason": "field absent from locked source schema",
+      "ticker": "BANB.SW"
+    },
+    {
+      "field": "total_liabilities",
+      "fiscal_year": 2023,
+      "reason": "field absent from locked source schema",
+      "ticker": "BANB.SW"
+    },
+    {
+      "field": "current_liabilities",
+      "fiscal_year": 2023,
+      "reason": "field absent from locked source schema",
+      "ticker": "BANB.SW"
+    },
+    {
+      "field": "capex_reported",
+      "fiscal_year": 2023,
+      "reason": "documented missing in locked source",
+      "ticker": "BANB.SW"
+    },
+    {
+      "field": "free_cash_flow_reported",
+      "fiscal_year": 2023,
+      "reason": "documented missing in locked source",
+      "ticker": "BANB.SW"
+    },
+    {
+      "field": "equity_ratio",
+      "fiscal_year": 2023,
+      "reason": "field absent from locked source schema",
+      "ticker": "BANB.SW"
+    },
+    {
+      "field": "price_to_earnings_published",
+      "fiscal_year": 2023,
+      "reason": "market field absent from locked source",
+      "ticker": "BANB.SW"
+    },
+    {
+      "field": "current_assets",
+      "fiscal_year": 2024,
+      "reason": "field absent from locked source schema",
+      "ticker": "BANB.SW"
+    },
+    {
+      "field": "total_liabilities",
+      "fiscal_year": 2024,
+      "reason": "field absent from locked source schema",
+      "ticker": "BANB.SW"
+    },
+    {
+      "field": "current_liabilities",
+      "fiscal_year": 2024,
+      "reason": "field absent from locked source schema",
+      "ticker": "BANB.SW"
+    },
+    {
+      "field": "capex_reported",
+      "fiscal_year": 2024,
+      "reason": "documented missing in locked source",
+      "ticker": "BANB.SW"
+    },
+    {
+      "field": "free_cash_flow_reported",
+      "fiscal_year": 2024,
+      "reason": "documented missing in locked source",
+      "ticker": "BANB.SW"
+    },
+    {
+      "field": "equity_ratio",
+      "fiscal_year": 2024,
+      "reason": "field absent from locked source schema",
+      "ticker": "BANB.SW"
+    },
+    {
+      "field": "price_to_earnings_published",
+      "fiscal_year": 2024,
+      "reason": "market field absent from locked source",
+      "ticker": "BANB.SW"
+    },
+    {
+      "field": "current_assets",
+      "fiscal_year": 2025,
+      "reason": "field absent from locked source schema",
+      "ticker": "BANB.SW"
+    },
+    {
+      "field": "total_liabilities",
+      "fiscal_year": 2025,
+      "reason": "field absent from locked source schema",
+      "ticker": "BANB.SW"
+    },
+    {
+      "field": "current_liabilities",
+      "fiscal_year": 2025,
+      "reason": "field absent from locked source schema",
+      "ticker": "BANB.SW"
+    },
+    {
+      "field": "free_cash_flow_reported",
+      "fiscal_year": 2025,
+      "reason": "documented missing in locked source",
+      "ticker": "BANB.SW"
+    },
+    {
+      "field": "equity_ratio",
+      "fiscal_year": 2025,
+      "reason": "field absent from locked source schema",
+      "ticker": "BANB.SW"
+    },
+    {
+      "field": "price_to_earnings_published",
+      "fiscal_year": 2025,
+      "reason": "market field absent from locked source",
+      "ticker": "BANB.SW"
+    },
+    {
+      "field": "year_end_share_price",
+      "fiscal_year": 2021,
+      "reason": "missing_source_unavailable",
+      "ticker": "SFZN.SW"
+    },
+    {
+      "field": "registered_shares",
+      "fiscal_year": 2021,
+      "reason": "missing_source_unavailable",
+      "ticker": "SFZN.SW"
+    },
+    {
+      "field": "market_capitalization_published",
+      "fiscal_year": 2021,
+      "reason": "missing_source_unavailable",
+      "ticker": "SFZN.SW"
+    },
+    {
+      "field": "price_to_earnings_published",
+      "fiscal_year": 2021,
+      "reason": "missing_source_unavailable",
+      "ticker": "SFZN.SW"
+    },
+    {
+      "field": "year_end_share_price",
+      "fiscal_year": 2022,
+      "reason": "missing_source_unavailable",
+      "ticker": "SFZN.SW"
+    },
+    {
+      "field": "registered_shares",
+      "fiscal_year": 2022,
+      "reason": "missing_source_unavailable",
+      "ticker": "SFZN.SW"
+    },
+    {
+      "field": "market_capitalization_published",
+      "fiscal_year": 2022,
+      "reason": "missing_source_unavailable",
+      "ticker": "SFZN.SW"
+    },
+    {
+      "field": "price_to_earnings_published",
+      "fiscal_year": 2022,
+      "reason": "missing_source_unavailable",
+      "ticker": "SFZN.SW"
+    },
+    {
+      "field": "year_end_share_price",
+      "fiscal_year": 2023,
+      "reason": "missing_source_unavailable",
+      "ticker": "SFZN.SW"
+    },
+    {
+      "field": "registered_shares",
+      "fiscal_year": 2023,
+      "reason": "missing_source_unavailable",
+      "ticker": "SFZN.SW"
+    },
+    {
+      "field": "market_capitalization_published",
+      "fiscal_year": 2023,
+      "reason": "missing_source_unavailable",
+      "ticker": "SFZN.SW"
+    },
+    {
+      "field": "price_to_earnings_published",
+      "fiscal_year": 2023,
+      "reason": "missing_source_unavailable",
+      "ticker": "SFZN.SW"
+    },
+    {
+      "field": "year_end_share_price",
+      "fiscal_year": 2024,
+      "reason": "missing_source_unavailable",
+      "ticker": "SFZN.SW"
+    },
+    {
+      "field": "registered_shares",
+      "fiscal_year": 2024,
+      "reason": "missing_source_unavailable",
+      "ticker": "SFZN.SW"
+    },
+    {
+      "field": "market_capitalization_published",
+      "fiscal_year": 2024,
+      "reason": "missing_source_unavailable",
+      "ticker": "SFZN.SW"
+    },
+    {
+      "field": "price_to_earnings_published",
+      "fiscal_year": 2024,
+      "reason": "missing_source_unavailable",
+      "ticker": "SFZN.SW"
+    },
+    {
+      "field": "year_end_share_price",
+      "fiscal_year": 2025,
+      "reason": "missing_source_unavailable",
+      "ticker": "SFZN.SW"
+    },
+    {
+      "field": "registered_shares",
+      "fiscal_year": 2025,
+      "reason": "missing_source_unavailable",
+      "ticker": "SFZN.SW"
+    },
+    {
+      "field": "market_capitalization_published",
+      "fiscal_year": 2025,
+      "reason": "missing_source_unavailable",
+      "ticker": "SFZN.SW"
+    },
+    {
+      "field": "price_to_earnings_published",
+      "fiscal_year": 2025,
+      "reason": "missing_source_unavailable",
+      "ticker": "SFZN.SW"
+    }
+  ],
+  "outputs": [
+    {
+      "file": "cdmo_fundamentals.v1.csv",
+      "sha256": "38a2cb37fd88672553c18f18f01c2a660ddfb680446dfa616771b822f466c9ab"
+    },
+    {
+      "file": "cdmo_sources.v1.csv",
+      "sha256": "8eab1002cbffb70b3bc35bcd6b9372d7278ead19b0d843c6ffa90b4b23474ea5"
+    },
+    {
+      "file": "valuation_diagnostic.v1.json",
+      "sha256": "1bb8f9a68e4f5e802b0a630eb1cc60923c77b23849d0ba675016020935742261"
+    }
+  ],
+  "periods": [
+    2021,
+    2022,
+    2023,
+    2024,
+    2025
+  ],
+  "runtime_external_dependency": false,
+  "schema_version": "equity-snapshot-manifest.v1",
+  "sources": [
+    {
+      "authority": {
+        "documented_locked_paths": [],
+        "mode": "internal_locked_snapshot",
+        "reports": []
+      },
+      "csv": {
+        "file": "BANB.SW_2015_2025_locked_snapshot_v1.csv",
+        "sha256": "cf6077a32d26001d7919e4cd194f171e8b667419254257b4ee8f40c7b49aae72"
+      },
+      "internal_artifact_status": "locked_snapshot",
+      "json": {
+        "file": "BANB.SW_2015_2025_locked_snapshot_v1.json",
+        "sha256": "9a3c1df90c5cfcfd82a7c247d16326dd4f488e246dc21b7b8f3afdc034e43066"
+      },
+      "source_schema_version": "v1",
+      "ticker": "BANB.SW"
+    },
+    {
+      "authority": {
+        "documented_locked_paths": [
+          "snapshots/locked/SFZN.SW/v1/SFZN.SW_2015_2025_locked_snapshot_v1.csv",
+          "snapshots/locked/SFZN.SW/v1/SFZN.SW_2015_2025_locked_snapshot_v1.json"
+        ],
+        "mode": "external_verified_lock_and_promotion_chain",
+        "reports": [
+          {
+            "file": "SFZN.SW_phase_6A_locked_snapshot_creation_report.md",
+            "sha256": "c4b78b6543d37b8c3167701615035a66e71c632d2abd24a6cc10a569706cde4d"
+          },
+          {
+            "file": "SFZN.SW_phase_6B_regression_protection_report.md",
+            "sha256": "2499703348a0d2ca502e5a064634002dac082a5841980c1c863df66692b38f01"
+          },
+          {
+            "file": "SFZN.SW_phase_7B_product_data_v2_promotion_report.md",
+            "sha256": "47c68cee5f4eaf34347fe6b638c10623e92a7ae89c42e47c0e52746e074cb868"
+          }
+        ]
+      },
+      "csv": {
+        "file": "SFZN.SW_2015_2025_locked_snapshot_v1.csv",
+        "sha256": "0c879f1d1086427ab6ca8268f331fad82baeea967cbb5f315fd4ede5439c7d9d"
+      },
+      "internal_artifact_status": "candidate_snapshot_for_review",
+      "json": {
+        "file": "SFZN.SW_2015_2025_locked_snapshot_v1.json",
+        "sha256": "60ccdef83691806ff8c5d8713cc1fa5e58cc905122c8b4de2e9136759419a7f1"
+      },
+      "source_schema_version": "v1",
+      "ticker": "SFZN.SW"
+    }
+  ],
+  "tickers": [
+    "BANB.SW",
+    "SFZN.SW"
+  ]
+}
