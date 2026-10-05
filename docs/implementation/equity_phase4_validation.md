@@ -13,17 +13,20 @@ Only the selected route is rendered. The Equity route does not import the histor
 workbench or live dashboard and performs no network access. The historical demo and live
 workbench implementations remain behind the existing router.
 
-The Equity dashboard now contains four offline tabs:
+The Equity dashboard now opens with an Executive Investment View and contains six offline tabs:
 
-- `Snapshot`: descriptive FY2025 Bachem/Siegfried comparison;
-- `Fondamentaux`: traceable FY2021–FY2025 fundamental series;
-- `Valorisation`: historical closing-date market data, Enterprise Value, multiples and yields;
-- `ESG & sources`: FY2025 climate observations, method-specific intensities, targets,
+- `Snapshot`: eight headline FY2025 Bachem/Siegfried KPIs;
+- `Research Note`: financial comparison, company cases, risks, catalysts and limitations;
+- `Fundamentals`: FY2021–FY2025 growth, profitability, cash, balance sheet and returns;
+- `Valuation`: historical closing-date market data, Enterprise Value, multiples and yields;
+- `Monitoring`: latest annual KPI, research relevance and update status;
+- `ESG & Sources`: FY2025 climate observations, method-specific intensities, targets,
   metric-level assurance, comparability caveats and source documents.
 
-Every financial row retains its raw value, unit, status, formula/version when applicable,
-input metric IDs and locked-source provenance. Missing inputs remain `unavailable`; invalid or
-incompatible bases remain `not_comparable`; neither is converted to zero.
+The primary tables emphasize financial values and interpretation. Expanders and inspectors retain
+every raw value, unit, status, formula/version, input metric ID and locked-source provenance.
+Missing inputs remain `unavailable`; invalid or incompatible bases remain `not_comparable`;
+neither is converted to zero.
 
 ## Valuation controls
 

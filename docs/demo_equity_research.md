@@ -11,59 +11,65 @@ APP_MODE=demo uv run --frozen streamlit run app.py
 The app opens **Equity research** by default. No network, secret, provider call, database or
 adjacent SED checkout is required.
 
-## Demo path
+## Finance-first demo path
 
-### First fifteen seconds — business question
+### 1. Open Equity Research and orient the audience
 
-Open **Snapshot**.
+Start at the **Executive Investment View**.
 
 > This is a reproducible comparison of Bachem and Siegfried, two Swiss CDMOs, using annual
-> FY2021–FY2025 data. Python calculates the metrics and every displayed number retains its
-> status and provenance.
+> FY2021–FY2025 data. The first view summarizes growth, profitability, cash generation,
+> balance-sheet leverage, returns and historical valuation.
 
-Point to FY2025 revenue, EBITDA margin, cash conversion and leverage. Explain that published,
-calculated, unavailable and non-comparable values are never merged.
+### 2. Show the Research Note
 
-### Next twenty seconds — history and valuation
+Open **Research Note** with the **Valid** scenario. Point to the Executive Summary and the
+eight-KPI Financial Comparison before the company investment cases.
 
-Open **Fundamentals**, then **Valuation**.
+> The note gives the finance view first: the main comparison, company cases, risks, catalysts,
+> valuation context, sustainability considerations and honest limitations.
 
-> The five-year view separates growth, profitability, cash flow, capex and balance-sheet
-> metrics. Valuation uses historical fiscal-closing data, not current prices. Published market
-> capitalization remains separate from the indicative price-times-shares calculation.
+### 3. Explain one important difference
 
-Point out the visible Bachem limitation: published P/E is unavailable; the recalculated P/E is
-shown separately and never substituted for the missing source field.
+Use the displayed EBITDA margin and cash-conversion values to explain one supported Bachem vs
+Siegfried difference. Keep the language descriptive: the data shows different margin, cash and
+leverage profiles, not a recommendation.
 
-### Next fifteen seconds — sustainability and provenance
+### 4. Open Valuation
 
-Open **ESG & sources**.
+Show the **Historical FY-end data — not current market data** banner and the EV / EBITDA rows.
+Point out that Bachem published P/E is unavailable and that Calculated P/E remains a separate
+field rather than replacing the missing published figure.
 
-> Scope two methods remain separate, assurance is attached at metric level, and documentary
-> evidence shows what the issuer published rather than claiming physical verification. No
-> finance-climate causality or ESG score is inferred.
+### 5. Show a risk, catalyst or monitoring KPI
 
-Open one metric inspector or source row to show unit, formula, inputs, page and source hash.
+Return to **Research Note** and point to **Key risks** and **Catalysts / What to watch**, or open
+**Monitoring** to show one KPI, its latest value, why it matters and whether it is available or
+needs an update.
 
-### Final twenty to thirty seconds — note, controls and human review
+### 6. Open one source and provenance example
 
-Open **Research note** with the **Valid** scenario.
+Open **Inspect source, calculation & technical provenance** for one metric. Show its source,
+raw value, formula and page. Explain that technical IDs, versions and SHA-256 fingerprints are
+available without dominating the finance view.
 
-> The note contract separates sourced facts, calculated metrics, analyst interpretation and
-> limitations. The generator sees only allowlisted metric and Evidence records. Independent
-> validators check IDs, values, units, periods, excerpts and prohibited output. Automation can
-> make the note eligible for review, but it cannot approve it.
+### 7. Demonstrate the blocked AI scenario
 
-Show `pending_human_review`, the source links and monitoring freshness. Then select **Blocked**.
+In **Research Note**, select **Blocked**.
 
-> A forbidden target-price statement blocks reliable rendering and routes the result to review.
-> No valid-looking note and no human approval are fabricated.
+> A forbidden target-price statement blocks reliable rendering. The application shows the
+> validation issue and cannot fabricate either a valid-looking note or a human approval.
+
+### 8. Close with the operating model
+
+> Python owns the numbers, AI structures the research, validators check the claims, and the
+> analyst remains responsible for the final view.
 
 ## Interview pitch
 
 > I built an equity research copilot that turns annual reports into a reproducible financial
-> comparison. Python calculates the metrics, every figure remains linked to its source, AI
-> helps structure the note, and independent validators check its claims before human review.
+> comparison. It lets a finance reader understand the investment case in under a minute while
+> keeping every figure, calculation and validation path inspectable on demand.
 
 ## Claims to avoid
 

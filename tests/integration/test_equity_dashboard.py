@@ -9,6 +9,7 @@ from streamlit.testing.v1 import AppTest
 
 from ai_quant.equity.analysis import build_fundamental_analysis
 from ai_quant.equity.climate import CLIMATE_FIXTURE_CUTOFF, build_climate_metrics
+from ai_quant.equity.monitoring import build_monitoring_rows
 from ai_quant.equity.repository import load_equity_repository
 from ai_quant.equity.valuation import build_valuation_analysis
 from ai_quant.equity_dashboard import (
@@ -16,6 +17,9 @@ from ai_quant.equity_dashboard import (
     VALUATION_SECTIONS,
     displayed_fundamental_metric_names,
     esg_metric_rows,
+    executive_investment_rows,
+    primary_monitoring_rows,
+    research_comparison_rows,
     snapshot_rows,
     valuation_rows,
 )
@@ -38,40 +42,46 @@ def test_equity_research_smoke_and_visible_scope(monkeypatch) -> None:
     assert app.title[0].value == "Equity Research"
     assert [tab.label for tab in app.tabs] == [
         "Snapshot",
+        "Research Note",
         "Fundamentals",
         "Valuation",
-        "ESG & sources",
-        "Research note",
+        "Monitoring",
+        "ESG & Sources",
     ]
-    assert any(
-        all(status in item.value for status in (
-            "reported",
-            "calculated",
-            "unavailable",
-            "not_comparable",
-        ))
-        for item in app.info
-    )
+    assert app.header[0].value == "Executive Investment View"
 
     snapshot = next(
         item.value
         for item in app.dataframe
-        if "Bachem FY2025" in item.value.columns
+        if set(item.value.columns)
+        == {"Metric", "Bachem FY2025", "Siegfried FY2025"}
     )
-    assert set(snapshot.columns) == {
-        "Metric",
-        "Bachem FY2025",
-        "Bachem status",
-        "Siegfried FY2025",
-        "Siegfried status",
-    }
+    assert len(snapshot) == 8
     assert {
         "Revenue",
+        "Revenue CAGR FY2021–FY2025",
         "EBITDA margin",
-        "Operating cash flow",
+        "Calculated FCF cash conversion",
         "Net debt / EBITDA",
-        "Recomputed equity ratio",
+        "Historical EV / EBITDA",
     } <= set(snapshot["Metric"])
+
+    expander_labels = {item.label for item in app.expander}
+    assert {
+        "Show detailed metrics",
+        "View calculation details",
+        "View valuation methodology & detailed fields",
+        "Monitoring details & provenance",
+        "Source & technical provenance",
+        "How validation works",
+        "Inspect source, calculation & technical provenance",
+    } <= expander_labels
+    technical = next(
+        item
+        for item in app.expander
+        if item.label == "Inspect source, calculation & technical provenance"
+    )
+    assert technical.proto.expanded is False
 
     fundamental_frames = [
         item.value
@@ -106,7 +116,7 @@ def test_equity_research_smoke_and_visible_scope(monkeypatch) -> None:
         "EV / EBITDA",
         "EV / EBIT",
         "Published P/E",
-        "Recalculated P/E",
+        "Calculated P/E",
         "Recalculated P/B",
         "FCF yield (FCF calculated)",
         "Dividend yield",
@@ -140,8 +150,8 @@ def test_equity_research_smoke_and_visible_scope(monkeypatch) -> None:
         <= set(item.value.columns)
         for item in app.dataframe
     )
-    captions = "\n".join(item.value for item in app.caption)
-    assert "no figure is presented as a current share price or valuation" in captions
+    warnings = "\n".join(item.value for item in app.warning)
+    assert "Historical FY-end data — not current market data" in warnings
 
 
 def test_every_visible_metric_is_traceable_and_unlocked_gate_adds_no_warning(monkeypatch) -> None:
@@ -173,13 +183,41 @@ def test_every_visible_metric_is_traceable_and_unlocked_gate_adds_no_warning(mon
 def test_snapshot_and_fundamental_contracts_use_phase3_metrics_only() -> None:
     analysis = build_fundamental_analysis()
     rows = snapshot_rows(analysis)
+    valuation = build_valuation_analysis(fundamentals=analysis)
+    comparison = research_comparison_rows(analysis, valuation)
+    executive = executive_investment_rows(analysis, valuation)
 
-    assert rows
+    assert len(rows) == 14
+    assert len(comparison) == 8
+    assert len(executive) == 6
+    assert {row["Research lens"] for row in executive} == {
+        "Growth",
+        "Profitability",
+        "Cash generation",
+        "Balance sheet",
+        "Key watchpoint",
+        "Historical valuation",
+    }
     assert all("valuation" not in row["Metric"].lower() for row in rows)
     assert all("price" not in name for name in displayed_fundamental_metric_names())
     assert all("market" not in name for name in displayed_fundamental_metric_names())
     assert any(row["Bachem status"] == "reported" for row in rows)
     assert any(row["Bachem status"] == "calculated" for row in rows)
+
+
+def test_primary_monitoring_is_finance_first_without_losing_detail() -> None:
+    source_rows = build_monitoring_rows()
+    rows = primary_monitoring_rows(source_rows)
+
+    assert rows
+    assert set(rows[0]) == {
+        "Company",
+        "KPI",
+        "Latest value",
+        "Why it matters",
+        "Status",
+    }
+    assert {row["Status"] for row in rows} == {"Available", "To update"}
 
 
 def test_historical_valuation_scope_split_and_published_precedence() -> None:
@@ -245,55 +283,57 @@ def test_esg_scope_two_methods_and_provenance_remain_separate() -> None:
     }
 
 
-def test_research_note_admissible_status_sources_limitations_and_monitoring(
+def test_research_note_admissible_status_sources_and_limitations(
     monkeypatch,
 ) -> None:
     monkeypatch.setenv("APP_MODE", "demo")
     app = _equity_app()
 
     assert not app.exception
-    assert any("pending_human_review" in item.value for item in app.warning)
-    assert any("Automated validation: PASSED" in item.value for item in app.success)
+    assert any("Awaiting human review" in item.value for item in app.warning)
+    assert any("Automated validation passed" in item.value for item in app.success)
     assert not any("approved" in item.value.casefold() for item in app.success)
 
     subheaders = {item.value for item in app.subheader}
     assert {
-        "Company profiles and business models",
-        "Growth and profitability quality",
-        "Cash flow, balance sheet, and capital allocation",
-        "Relative and historical valuation",
-        "Sustainability and comparability limitations",
-        "Favorable arguments",
-        "Risks and attention points",
-        "Catalysts",
-        "Monitoring indicators",
-        "Comparative conclusion",
+        "Executive summary",
+        "Financial comparison",
+        "Investment case",
+        "Key risks",
+        "Catalysts / What to watch",
+        "Valuation context",
+        "Sustainability context",
         "Limitations",
-        "Authorized sources",
-        "FY2025 monitoring",
     } <= subheaders
     captions = "\n".join(item.value for item in app.caption)
-    assert "Type: `sourced_fact`" in captions
-    assert "Type: `calculated_metric`" in captions
-    assert "Type: `analyst_interpretation`" in captions
-    assert "does not calculate or make any final decision" in captions
+    assert "Reported fact" in captions
+    assert "Calculated metric" in captions
+    assert "Analyst interpretation" in captions
+    assert "does not make a final decision" in captions
+    assert "published P/E is unavailable" in captions
 
     sources = next(
         item.value
         for item in app.dataframe
-        if "Openable source" in item.value.columns
+        if set(item.value.columns) == {"Document", "Page", "Openable source"}
     )
     assert len(sources) == 3
     assert sources["Openable source"].str.len().gt(0).all()
     monitoring = next(
-        item.value for item in app.dataframe if "Freshness" in item.value.columns
+        item.value
+        for item in app.dataframe
+        if set(item.value.columns)
+        == {"Company", "KPI", "Latest value", "Why it matters", "Status"}
     )
-    assert {"available", "to_update"} == set(monitoring["Freshness"])
-    assert monitoring["Source"].str.len().gt(0).all()
+    assert {"Available", "To update"} == set(monitoring["Status"])
 
-    markdown = "\n".join(item.value for item in app.markdown)
-    assert "bachem-published-pe-unavailable" in markdown
-    assert "not invented" in markdown
+    limitations = next(
+        item.value
+        for item in app.dataframe
+        if "Limitation ID" in item.value.columns
+    )
+    assert "bachem-published-pe-unavailable" in set(limitations["Limitation ID"])
+    assert limitations["Required limitation"].str.contains("not invented").any()
 
 
 def test_research_note_blocked_scenario_never_appears_validated(monkeypatch) -> None:
@@ -306,9 +346,9 @@ def test_research_note_blocked_scenario_never_appears_validated(monkeypatch) -> 
     app = scenario.select("Blocked").run()
 
     assert not app.exception
-    assert any("BLOCKED" in item.value for item in app.error)
-    assert not any("Automated validation: PASSED" in item.value for item in app.success)
-    assert not any("pending_human_review" in item.value for item in app.warning)
+    assert any("Validation blocked" in item.value for item in app.error)
+    assert not any("Automated validation passed" in item.value for item in app.success)
+    assert not any("Awaiting human review" in item.value for item in app.warning)
     diagnostics = next(
         item.value for item in app.dataframe if "Diagnostic" in item.value.columns
     )
@@ -341,7 +381,8 @@ app = AppTest.from_file('app.py', default_timeout=20).run()
 assert not app.exception
 assert app.title[0].value == 'Equity Research'
 assert [tab.label for tab in app.tabs] == [
-    'Snapshot', 'Fundamentals', 'Valuation', 'ESG & sources', 'Research note'
+    'Snapshot', 'Research Note', 'Fundamentals', 'Valuation', 'Monitoring',
+    'ESG & Sources'
 ]
 for name in BLOCKED:
     assert not any(module == name or module.startswith(name + '.') for module in sys.modules)

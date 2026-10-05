@@ -8,40 +8,65 @@
 [![Streamlit Demo](https://img.shields.io/badge/Streamlit-Public_Demo-FF4B4B?logo=streamlit&logoColor=white)](https://ai-quant-research-assistant-2wpsobhnavfaznnp4pjmxt.streamlit.app/)
 ![License: MIT](https://img.shields.io/badge/License-MIT-lightgrey)
 
-A reproducible Equity Research case comparing **Bachem (BANB.SW)** and
-**Siegfried (SFZN.SW)** across FY2021–FY2025. Deterministic Python calculations,
-field-level provenance, structured AI assistance, independent trust controls, and explicit
-human review remain separate by design.
+A reproducible, finance-first Equity Research case comparing **Bachem (BANB.SW)** and
+**Siegfried (SFZN.SW)** across FY2021–FY2025.
 
 **[Open the public Streamlit demo](https://ai-quant-research-assistant-2wpsobhnavfaznnp4pjmxt.streamlit.app/)**
 
-The application keeps AI-assisted prose separate from authoritative calculations, source
-records, automated validation, and human approval. It does not issue investment
-recommendations, target prices, consensus estimates, or price predictions.
-
 ![Valid research scenario showing frozen inputs, pending-review state, automated routing, and no human decision](docs/screenshots/block-7/admissible-overview.jpg)
 
-## Equity Research case
+## What does the copilot do?
 
-### Business problem
+The copilot turns approved annual-report data into a readable comparison of growth,
+profitability, cash generation, balance-sheet strength, returns, historical valuation and
+sustainability disclosures. An Executive Investment View and structured Research Note surface
+the main differences first; the supporting calculations and sources remain available on demand.
 
-Annual reports contain the inputs needed for comparative research, but the route from a
-published figure to an analyst conclusion is easy to obscure. This project asks a narrower,
-testable question: what do the approved historical fundamentals, cash generation, balance
-sheets, valuation and sustainability disclosures show about Bachem and Siegfried, and can
-every quantitative statement remain traceable to an authorized record?
+It is decision support, not an investment recommendation. Python owns the calculations, AI
+structures already-authorized research content, independent validators check the claims, and
+the analyst remains responsible for the final view.
 
-The visible result is a five-tab Equity workflow:
+## Why Bachem and Siegfried?
 
-1. **Snapshot** — side-by-side FY2025 fundamentals;
-2. **Fundamentals** — FY2021–FY2025 growth, profitability, cash, capex and balance sheet;
-3. **Valuation** — historical fiscal-closing multiples, never presented as current prices;
-4. **ESG & sources** — climate metrics, method, assurance and provenance;
-5. **Research note** — comparative note, monitoring table, validation state and sources.
+Bachem and Siegfried are two Swiss CDMOs with different operating scale, margin, cash,
+leverage and historical valuation profiles. Comparing them creates a focused, testable case in
+which every quantitative statement can be traced back to an approved annual source. The
+universe is intentionally limited to these two issuers and FY2021–FY2025 annual data.
 
-The comparison is descriptive and bounded. Bachem and Siegfried are both treated as Swiss
-CDMOs under the approved scope; no third issuer, interim period, DCF, consensus or live market
-feed is added.
+## What can an analyst see?
+
+The Streamlit experience follows a six-tab finance workflow:
+
+1. **Snapshot** — eight headline FY2025 KPIs side by side;
+2. **Research Note** — executive summary, financial comparison, investment cases, risks,
+   catalysts, valuation context, sustainability and limitations;
+3. **Fundamentals** — five-year growth, profitability, cash generation, balance sheet and returns;
+4. **Valuation** — historical market value, trading multiples and yield metrics;
+5. **Monitoring** — latest authorized KPIs, why they matter and update status;
+6. **ESG & Sources** — comparable climate disclosures, targets, assurance and evidence.
+
+The top-level Executive Investment View highlights six existing metrics across growth,
+profitability, cash generation, balance sheet, returns and historical valuation. Detailed
+variants, formulas, IDs, hashes and source artifacts are placed in optional inspectors.
+
+## What is the output?
+
+The principal output is an AI-assisted comparative Research Note supported by a concise KPI
+table and a non-predictive monitoring watchlist. The admissible note can reach
+`pending_human_review`, but automation cannot approve it. A blocked scenario demonstrates that
+forbidden target-price language prevents reliable rendering.
+
+## What are the limitations?
+
+- The universe contains only Bachem and Siegfried and only annual FY2021–FY2025 data.
+- Valuation observations are historical fiscal-year-close values, not current market data.
+- No DCF, consensus, forecast, live market feed, target price or price prediction is included.
+- Bachem published P/E is unavailable; the calculated P/E remains visibly separate.
+- Sustainability evidence reflects issuer disclosures and differing assurance, not independent
+  physical verification or an ESG score.
+- The Research Note remains a proposal until an explicit human review is recorded.
+
+## Under the hood
 
 ### Finance, Data and AI workflow
 
@@ -314,11 +339,11 @@ uv sync --frozen --all-groups
 APP_MODE=demo uv run --frozen streamlit run app.py
 ```
 
-The demo opens **Equity research** by default. Its five offline tabs compare Bachem and
-Siegfried: the FY2025 snapshot, FY2021–FY2025 fundamentals, historical closing-date
-valuation, FY2025 ESG evidence with metric-level provenance, and the Research Note with
-monitoring. Historical market values are labelled by fiscal year; the dashboard does not fetch
-current prices. Select
+The demo opens **Equity research** by default. Its six offline tabs compare Bachem and
+Siegfried through the FY2025 snapshot, Research Note, FY2021–FY2025 fundamentals,
+historical closing-date valuation, monitoring and FY2025 ESG evidence. Historical market
+values are labelled by fiscal year; the dashboard does not fetch current prices. Source,
+calculation and technical provenance remain available in collapsed inspectors. Select
 **AI audit workbench** to open the existing validation and review workflow.
 
 For the persistent local workflow, the documented placeholder values are intentionally non-secret:
