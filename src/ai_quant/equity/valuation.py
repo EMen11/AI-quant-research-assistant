@@ -2,20 +2,171 @@
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 from decimal import Decimal
 
+from ai_quant.equity.analysis import build_fundamental_analysis
 from ai_quant.equity.fundamentals import _not_comparable
 from ai_quant.equity.models import (
     EquityValidationError,
+    FundamentalAnalysis,
     MetricValue,
     calculated_metric,
     merged_sources,
     require_compatible_inputs,
     unavailable_metric,
 )
+from ai_quant.equity.repository import (
+    COMPANY_IDS,
+    EXPECTED_TICKERS,
+    EXPECTED_YEARS,
+    EquityRepository,
+    load_equity_repository,
+)
 
 ONE_HUNDRED = Decimal("100")
 ONE_MILLION = Decimal("1000000")
+
+
+@dataclass(frozen=True, slots=True)
+class ValuationAnalysis:
+    """Historical valuation inputs and derived metrics for the approved period."""
+
+    metrics: tuple[MetricValue, ...]
+    periods: tuple[int, ...]
+
+    def __post_init__(self) -> None:
+        if self.periods != EXPECTED_YEARS:
+            raise EquityValidationError("Valuation periods must be exactly FY2021-FY2025.")
+        metric_ids = tuple(item.metric_id for item in self.metrics)
+        if len(metric_ids) != len(set(metric_ids)):
+            raise EquityValidationError("Valuation metric IDs must be unique.")
+
+    def metric(self, company_id: str, fiscal_year: int, name: str) -> MetricValue:
+        """Return one valuation metric by stable business coordinates."""
+
+        matches = tuple(
+            item
+            for item in self.metrics
+            if item.company_id == company_id
+            and item.fiscal_year == fiscal_year
+            and item.name == name
+        )
+        if len(matches) != 1:
+            raise KeyError(f"Metric not found: {company_id} FY{fiscal_year} {name}")
+        return matches[0]
+
+
+def build_valuation_analysis(
+    repository: EquityRepository | None = None,
+    fundamentals: FundamentalAnalysis | None = None,
+) -> ValuationAnalysis:
+    """Build historical closing-date valuation without substituting published values."""
+
+    repository = repository or load_equity_repository()
+    fundamentals = fundamentals or build_fundamental_analysis(repository)
+    displayed: list[MetricValue] = []
+
+    for ticker in EXPECTED_TICKERS:
+        company_id = COMPANY_IDS[ticker]
+        for year in EXPECTED_YEARS:
+            price = repository.metric(ticker, year, "year_end_share_price")
+            shares = repository.metric(ticker, year, "registered_shares")
+            published_market_cap = repository.metric(
+                ticker, year, "market_capitalization_published"
+            )
+            published_pe = repository.metric(
+                ticker, year, "price_to_earnings_published"
+            )
+            selected_market_cap = published_market_cap
+            indicative_market_cap = market_capitalization(
+                published=None,
+                year_end_share_price=price,
+                registered_shares=shares,
+            )
+            net_debt_metric = fundamentals.metric(company_id, year, "net_debt")
+            enterprise_value_metric = enterprise_value(
+                selected_market_cap,
+                net_debt_metric,
+            )
+            revenue = repository.metric(ticker, year, "revenue")
+            ebitda = repository.metric(ticker, year, "ebitda")
+            ebit = repository.metric(ticker, year, "ebit")
+            net_income = repository.metric(ticker, year, "net_income")
+            total_equity = repository.metric(ticker, year, "total_equity")
+            calculated_fcf = repository.metric(
+                ticker, year, "free_cash_flow_calculated"
+            )
+            dividend_per_share_metric = repository.metric(
+                ticker, year, "dividend_per_share"
+            )
+
+            if ticker == "SFZN.SW" and year < 2025:
+                dividend_yield_metric = unavailable_metric(
+                    metric_id=f"{company_id}-{year}-dividend-yield",
+                    company_id=company_id,
+                    fiscal_year=year,
+                    name="dividend_yield",
+                    unit="percent",
+                    status="not_comparable",
+                    note=(
+                        "SFZN dividend per share remains on the pre-2025 split basis, while "
+                        "the historical closing price is issuer-published on the post-split "
+                        "1:10 comparative basis. No silent adjustment is applied."
+                    ),
+                    sources=merged_sources((dividend_per_share_metric, price)),
+                    input_metric_ids=(dividend_per_share_metric.metric_id, price.metric_id),
+                    formula_id="dividend-yield",
+                    expression="dividend_per_share / year_end_share_price * 100",
+                )
+            else:
+                dividend_yield_metric = dividend_yield(
+                    dividend_per_share_metric,
+                    price,
+                )
+
+            displayed.extend(
+                (
+                    price,
+                    shares,
+                    published_market_cap,
+                    indicative_market_cap,
+                    enterprise_value_metric,
+                    valuation_multiple(
+                        enterprise_value_metric,
+                        revenue,
+                        name="enterprise_value_to_revenue",
+                    ),
+                    valuation_multiple(
+                        enterprise_value_metric,
+                        ebitda,
+                        name="enterprise_value_to_ebitda",
+                    ),
+                    valuation_multiple(
+                        enterprise_value_metric,
+                        ebit,
+                        name="enterprise_value_to_ebit",
+                    ),
+                    published_pe,
+                    valuation_multiple(
+                        selected_market_cap,
+                        net_income,
+                        name="price_to_earnings_calculated",
+                    ),
+                    valuation_multiple(
+                        selected_market_cap,
+                        total_equity,
+                        name="price_to_book",
+                    ),
+                    fcf_yield(calculated_fcf, selected_market_cap),
+                    dividend_yield_metric,
+                )
+            )
+
+    return ValuationAnalysis(
+        metrics=tuple(sorted(displayed, key=lambda item: item.metric_id)),
+        periods=EXPECTED_YEARS,
+    )
 
 
 def market_capitalization(
@@ -70,6 +221,20 @@ def market_capitalization(
     if year_end_share_price.unit != "CHF_per_share" or registered_shares.unit != "shares":
         raise EquityValidationError(
             "market cap fallback requires CHF_per_share and shares inputs."
+        )
+    if year_end_share_price.value <= 0 or registered_shares.value <= 0:
+        return _not_comparable(
+            (
+                f"{year_end_share_price.company_id}-{year_end_share_price.fiscal_year}"
+                "-market-capitalization-calculated"
+            ),
+            year_end_share_price,
+            "CHF_millions",
+            (year_end_share_price, registered_shares),
+            "Indicative market capitalization requires positive price and share inputs.",
+            name="market_capitalization_calculated",
+            formula_id="share-price-times-registered-shares",
+            expression="year_end_share_price * registered_shares / 1_000_000",
         )
     return calculated_metric(
         metric_id=(

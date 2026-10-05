@@ -229,6 +229,12 @@ uv sync --frozen --all-groups
 APP_MODE=demo uv run --frozen streamlit run app.py
 ```
 
+The demo opens **Equity research** by default. Its four offline tabs compare Bachem and
+Siegfried: the FY2025 snapshot, FY2021–FY2025 fundamentals, historical closing-date
+valuation, and FY2025 ESG evidence with metric-level provenance. Historical market values
+are labelled by fiscal year; the dashboard does not fetch current prices. Select
+**AI audit workbench** to open the existing validation and review workflow.
+
 For the persistent local workflow, the documented placeholder values are intentionally non-secret:
 
 ```bash

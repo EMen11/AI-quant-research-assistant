@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import FrozenInstanceError
+from dataclasses import FrozenInstanceError, replace
 from datetime import date
 from decimal import Decimal
 
@@ -212,6 +212,20 @@ def test_market_cap_fallback_is_clearly_calculated() -> None:
     assert "Fallback calculation" in result.note
 
 
+@pytest.mark.parametrize(("price", "shares"), (("0", "5000000"), ("20", "0")))
+def test_market_cap_fallback_abstains_on_invalid_bases(price: str, shares: str) -> None:
+    result = market_capitalization(
+        published=None,
+        year_end_share_price=metric(
+            "year_end_share_price", price, unit="CHF_per_share"
+        ),
+        registered_shares=metric("registered_shares", shares, unit="shares"),
+    )
+
+    assert result.status == "not_comparable"
+    assert result.value is None
+
+
 def test_enterprise_value_multiples_and_yields() -> None:
     market_cap = metric("market_capitalization", "1000")
     net_debt_metric = metric("net_debt", "200")
@@ -279,6 +293,22 @@ def test_climate_intensity_carries_metric_level_method_and_assurance() -> None:
     assert result.value == Decimal("2")
     assert result.scope2_method == "location_based"
     assert result.assurance == "limited"
+
+
+def test_climate_intensity_rejects_scope_two_method_mixing() -> None:
+    scope2 = replace(
+        metric("scope2", "500", unit="tCO2e"),
+        scope2_method="market_based",
+    )
+
+    with pytest.raises(EquityValidationError, match="does not match"):
+        climate_intensity(
+            metric("scope1", "1000", unit="tCO2e"),
+            scope2,
+            metric("revenue", "750"),
+            scope2_method="location_based",
+            assurance="limited",
+        )
 
 
 @pytest.mark.parametrize(

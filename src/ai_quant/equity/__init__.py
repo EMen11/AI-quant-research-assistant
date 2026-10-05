@@ -1,7 +1,11 @@
 """Deterministic, provenance-preserving Equity Research domain."""
 
 from ai_quant.equity.analysis import build_fundamental_analysis
-from ai_quant.equity.climate import climate_intensity, normalize_emissions
+from ai_quant.equity.climate import (
+    build_climate_metrics,
+    climate_intensity,
+    normalize_emissions,
+)
 from ai_quant.equity.formatting import format_metric
 from ai_quant.equity.fundamentals import (
     capex_to_revenue,
@@ -30,6 +34,8 @@ from ai_quant.equity.models import (
 )
 from ai_quant.equity.repository import EquityRepository, load_equity_repository
 from ai_quant.equity.valuation import (
+    ValuationAnalysis,
+    build_valuation_analysis,
     dividend_yield,
     enterprise_value,
     fcf_yield,
@@ -48,6 +54,9 @@ __all__ = [
     "FundamentalAnalysis",
     "MetricValue",
     "SourceReference",
+    "ValuationAnalysis",
+    "build_climate_metrics",
+    "build_valuation_analysis",
     "capex_to_revenue",
     "cash_conversion",
     "climate_intensity",
