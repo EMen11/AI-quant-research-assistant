@@ -1,4 +1,4 @@
-# AI Quant Research Workbench
+# AI Equity Research Copilot — Swiss CDMOs
 
 [![CI](https://github.com/EMen11/AI-quant-research-assistant/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/EMen11/AI-quant-research-assistant/actions/workflows/ci.yml?query=branch%3Amain)
 ![Python 3.12](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)
@@ -8,13 +8,98 @@
 [![Streamlit Demo](https://img.shields.io/badge/Streamlit-Public_Demo-FF4B4B?logo=streamlit&logoColor=white)](https://ai-quant-research-assistant-2wpsobhnavfaznnp4pjmxt.streamlit.app/)
 ![License: MIT](https://img.shields.io/badge/License-MIT-lightgrey)
 
-A concrete AI-assisted financial research workflow combining deterministic analytics, traceable climate evidence, evaluated retrieval, structured generation, Python validation, and explicit human review.
+A reproducible Equity Research case comparing **Bachem (BANB.SW)** and
+**Siegfried (SFZN.SW)** across FY2021–FY2025. Deterministic Python calculations,
+field-level provenance, structured AI assistance, independent trust controls, and explicit
+human review remain separate by design.
 
 **[Open the public Streamlit demo](https://ai-quant-research-assistant-2wpsobhnavfaznnp4pjmxt.streamlit.app/)**
 
-The workbench keeps model-generated prose separate from authoritative calculations, source records, and approval.
+The application keeps AI-assisted prose separate from authoritative calculations, source
+records, automated validation, and human approval. It does not issue investment
+recommendations, target prices, consensus estimates, or price predictions.
 
 ![Admissible research scenario showing frozen inputs, pending-review state, automated routing, and no human decision](docs/screenshots/block-7/admissible-overview.jpg)
+
+## Equity Research case
+
+### Business problem
+
+Annual reports contain the inputs needed for comparative research, but the route from a
+published figure to an analyst conclusion is easy to obscure. This project asks a narrower,
+testable question: what do the approved historical fundamentals, cash generation, balance
+sheets, valuation and sustainability disclosures show about Bachem and Siegfried, and can
+every quantitative statement remain traceable to an authorized record?
+
+The visible result is a five-tab Equity workflow:
+
+1. **Snapshot** — side-by-side FY2025 fundamentals;
+2. **Fondamentaux** — FY2021–FY2025 growth, profitability, cash, capex and balance sheet;
+3. **Valorisation** — historical fiscal-closing multiples, never presented as current prices;
+4. **ESG & sources** — climate metrics, method, assurance and provenance;
+5. **Research note** — comparative note, monitoring table, validation state and sources.
+
+The comparison is descriptive and bounded. Bachem and Siegfried are both treated as Swiss
+CDMOs under the approved scope; no third issuer, interim period, DCF, consensus or live market
+feed is added.
+
+### Finance, Data and AI workflow
+
+```mermaid
+flowchart LR
+    SED["SED / pdf.extractor"] --> F["Versioned Equity fixtures"]
+    F --> P["Deterministic Python calculations"]
+    P --> N["Research Note proposal"]
+    N --> V["Independent trust validation"]
+    V --> H["Explicit human review"]
+```
+
+- **Finance:** compare activity, growth, margins, cash conversion, capital intensity,
+  leverage, ROE, historical valuation and sustainability observations.
+- **Data engineering:** load only embedded, hash-checked fixtures; preserve source document,
+  fiscal year, unit, method, formula and input metric IDs.
+- **AI engineering:** expose a closed allowlist of `MetricRecord` and `EvidenceRecord` objects,
+  materialize a `GeneratedDraft`, then validate numbers, units, periods, citations, language
+  policy and run membership before any reliable rendering.
+
+The Equity manifest pins the upstream source to `SED/pdf.extractor` commit
+`bc1c54eefd663a257aab71e58fd7953a6239a1fc`. Runtime loading does not access that repository
+or the network: it verifies and consumes the committed fixtures only. Python owns every
+calculation. The deterministic offline note fixture structures already-authorized content; it
+does not calculate, select an investment, or approve itself.
+
+### Research Note and human-in-the-loop
+
+`analyst_note.v1` is a closed Pydantic contract with eleven mandatory sections. Statements are
+typed as `sourced_fact`, `calculated_metric`, `analyst_interpretation`, or `limitation`.
+Quantitative uses carry metric ID, value, unit and period; citations carry an Evidence ID and
+exact excerpt. Unknown fields, orphan numbers, unknown citations and missing mandatory
+limitations fail closed.
+
+The admissible path is:
+
+```text
+MetricRecord → GeneratedDraft → ValidationReport → AutomatedAssessment → HumanReview
+```
+
+Automation stops at `eligible_for_review`; the Equity UI presents that as
+`pending_human_review`. Only an explicit person can create a `HumanReview`. The blocked demo
+scenario includes a forbidden target-price statement, produces `review_required`, and emits no
+reliable note text.
+
+The monitoring table shows the latest authorized annual KPI, descriptive direction, rationale,
+source, update frequency, assurance where relevant, and freshness (`available` or `to_update`).
+It contains no forecast or invented consensus. See the
+[60–90 second demo script](docs/demo_equity_research.md).
+
+### Public demo and local components
+
+The repository's `demo` mode is fully offline and opens **Equity research** by default. The
+public Streamlit deployment is built from the released branch and may lag this working branch
+until it is merged and deployed. The existing **AI audit workbench** remains available locally
+and in releases as the deeper technical demonstration. Its optional `live` mode connects to the
+existing FastAPI/PostgreSQL stack; it is not required by the Equity workflow and does not turn
+the Equity fixtures into live market data.
 
 ## Why this project exists
 
@@ -171,7 +256,7 @@ In the public demo, the LLM proposal comes from a versioned historical fixture, 
 
 ### Public demo
 
-- Streamlit with six analyst views and versioned fixtures;
+- Streamlit with the Equity route plus the six-view AI audit workbench and versioned fixtures;
 - no provider call, market-data download, or PostgreSQL connection;
 - unauthenticated reviews stored only in the current Streamlit session.
 
@@ -229,10 +314,11 @@ uv sync --frozen --all-groups
 APP_MODE=demo uv run --frozen streamlit run app.py
 ```
 
-The demo opens **Equity research** by default. Its four offline tabs compare Bachem and
+The demo opens **Equity research** by default. Its five offline tabs compare Bachem and
 Siegfried: the FY2025 snapshot, FY2021–FY2025 fundamentals, historical closing-date
-valuation, and FY2025 ESG evidence with metric-level provenance. Historical market values
-are labelled by fiscal year; the dashboard does not fetch current prices. Select
+valuation, FY2025 ESG evidence with metric-level provenance, and the Research Note with
+monitoring. Historical market values are labelled by fiscal year; the dashboard does not fetch
+current prices. Select
 **AI audit workbench** to open the existing validation and review workflow.
 
 For the persistent local workflow, the documented placeholder values are intentionally non-secret:
@@ -254,6 +340,7 @@ Streamlit is available at `http://127.0.0.1:8501` and FastAPI at `http://127.0.0
 
 ```text
 src/ai_quant/quant/          deterministic finance calculations and optimization
+src/ai_quant/equity/         Equity records, formulas, note contract, trust adapter, monitoring
 src/ai_quant/retrieval/      filtered BM25, long-context baseline, and evaluation
 src/ai_quant/trust/          generation contracts, validation, assessment, and review
 src/ai_quant/api/            FastAPI boundary and transactional application service
@@ -267,6 +354,12 @@ This repository is available under the [MIT License](LICENSE).
 
 ## Limitations
 
+- The Equity case covers exactly two companies: Bachem and Siegfried.
+- Equity inputs are annual FY2021–FY2025 observations; H1 2026 is not integrated.
+- Valuation observations are historical fiscal-closing values, not current market data.
+- The Equity workflow contains no analyst consensus, target price or price prediction.
+- Bachem `price_to_earnings_published` is unavailable and remains visibly `to_update`; the
+  separately calculated P/E does not replace it.
 - Demo prices are synthetic historical observations over a short sample.
 - Metrics and optimization are descriptive; no strategy has received real-world validation, predictive backtesting, or transaction-cost analysis.
 - Outputs are neither forecasts nor recommendations.
