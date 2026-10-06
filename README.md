@@ -23,10 +23,10 @@ climate research outputs are retrieved, structured, checked, and reviewed.
 The public demo runs from committed offline artifacts. FastAPI, PostgreSQL, and Docker belong to
 an optional local stack; none is required to open the hosted Streamlit application.
 
-> **Deployment status — verified 6 October 2026:** the public endpoint is reachable, but its
-> current deployment exposes the AI Audit Workbench only. The two-view V4.1 router and Equity
-> Research Copilot documented below are present in this repository and available when the current
-> code is run locally; publishing that build requires a separate deployment action.
+> **Public V4.1 deployment — verified 6 October 2026:** the hosted application exposes both the
+> Equity Research Copilot and the AI Audit Workbench through the top-level **View** control. It runs
+> in `APP_MODE=demo` from committed offline artifacts and requires no provider key, database, or
+> adjacent SED checkout.
 
 ## Choose your reading path
 
@@ -417,13 +417,12 @@ generation, and it does not persist the public Equity Research Note.
 
 **[Launch the public workbench](https://ai-quant-research-assistant-2wpsobhnavfaznnp4pjmxt.streamlit.app/)**
 
-The hosted endpoint currently supports the Data / AI path below. To follow the Finance path, run
-the current repository locally until the V4.1 build is deployed publicly.
+Both demonstration paths below run on the public Streamlit endpoint.
 
 ### Finance path
 
-1. In the current local V4.1 build, keep **Equity research** selected in the top-level **View**
-   control.
+1. [Open the public demo](https://ai-quant-research-assistant-2wpsobhnavfaznnp4pjmxt.streamlit.app/)
+   and keep **Equity research** selected in the top-level **View** control.
 2. Read the **Executive Investment View** and **Snapshot**.
 3. Compare FY2021–FY2025 history in **Fundamentals** and **Valuation**.
 4. Open **Research Note**, then compare the **Valid** and **Blocked** scenarios.
@@ -432,7 +431,8 @@ the current repository locally until the V4.1 build is deployed publicly.
 
 ### Data / AI path
 
-1. Select **AI audit workbench** in the top-level **View** control.
+1. [Open the public demo](https://ai-quant-research-assistant-2wpsobhnavfaznnp4pjmxt.streamlit.app/)
+   and select **AI audit workbench** in the top-level **View** control.
 2. Compare the **Admissible** and **Blocked** demo scenarios.
 3. Inspect **Climate Evidence** and the response-origin metadata.
 4. Review findings and session-only decisions in **Validation & Review**.
@@ -460,12 +460,12 @@ Verification on the documentation branch before commit:
 | Ruff | `All checks passed!` |
 | Full pytest suite | `442 passed, 20 skipped, 2 warnings in 6.97s` |
 | Markdown paths, same-file anchors, and images | All resolved locally |
-| External destinations | SED, GitHub Actions, and uv returned HTTP 200; Streamlit loaded in-browser |
+| External destinations | SED, GitHub Actions, and uv returned HTTP 200; public Streamlit V4.1 passed desktop and 390×844 mobile smoke tests |
 
 The 20 skipped tests require `BLOCK8_LIVE_API_URL` or `BLOCK8_TEST_DATABASE_URL` for live Streamlit
 and PostgreSQL integration checks. The two warnings are dependency deprecations from the
-FastAPI/Starlette test client. The live browser check also found the deployment-version gap noted
-above; it is a deployment issue, not a documentation-link failure.
+FastAPI/Starlette test client. Public browser checks cover both top-level views, their admissible or
+valid and blocked scenarios, cross-view navigation, and the 390×844 mobile viewport.
 
 The versioned evidence for three concise project descriptions is easy to locate:
 
