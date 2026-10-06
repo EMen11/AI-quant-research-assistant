@@ -1,336 +1,288 @@
-# AI Equity Research Copilot — Swiss CDMOs
+# AI Equity Research Copilot
 
 [![CI](https://github.com/EMen11/AI-quant-research-assistant/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/EMen11/AI-quant-research-assistant/actions/workflows/ci.yml?query=branch%3Amain)
 ![Python 3.12](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)
-![FastAPI](https://img.shields.io/badge/FastAPI-009688?logo=fastapi&logoColor=white)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?logo=postgresql&logoColor=white)
-![Docker](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white)
 [![Streamlit Demo](https://img.shields.io/badge/Streamlit-Public_Demo-FF4B4B?logo=streamlit&logoColor=white)](https://ai-quant-research-assistant-2wpsobhnavfaznnp4pjmxt.streamlit.app/)
 ![License: MIT](https://img.shields.io/badge/License-MIT-lightgrey)
 
-A reproducible, finance-first Equity Research case comparing **Bachem (BANB.SW)** and
-**Siegfried (SFZN.SW)** across FY2021–FY2025.
+A traceable equity research workflow comparing **Bachem (BANB.SW)** and
+**Siegfried (SFZN.SW)** across FY2021–FY2025 fundamentals, cash generation, balance sheet,
+historical valuation and sustainability. Deterministic financial calculations, source-level
+traceability and controlled AI assistance remain separate from explicit human review.
 
 **[Open the public Streamlit demo](https://ai-quant-research-assistant-2wpsobhnavfaznnp4pjmxt.streamlit.app/)**
 
-![Valid research scenario showing frozen inputs, pending-review state, automated routing, and no human decision](docs/screenshots/block-7/admissible-overview.jpg)
+![Equity Research executive comparison for Bachem and Siegfried](docs/screenshots/equity/executive-snapshot.jpg)
 
-## What does the copilot do?
+## At a glance
 
-The copilot turns approved annual-report data into a readable comparison of growth,
-profitability, cash generation, balance-sheet strength, returns, historical valuation and
-sustainability disclosures. An Executive Investment View and structured Research Note surface
-the main differences first; the supporting calculations and sources remain available on demand.
+| Finance | Data | AI |
+|---|---|---|
+| Compare two Swiss CDMOs over FY2021–FY2025 | Start from validated annual-report inputs | Structure a comparative Research Note |
+| Analyze growth, margins, cash generation, capital intensity, leverage and returns | Freeze and version the approved source snapshot | Restrict generation to authorized metrics and evidence |
+| Review historical valuation, sustainability, risks and catalysts | Normalize fields, units and periods | Validate values, units, periods and citations independently |
+| Read a comparative Research Note and monitoring watchlist | Calculate metrics deterministically in Python | Block prohibited output and require human review |
 
-It is decision support, not an investment recommendation. Python owns the calculations, AI
-structures already-authorized research content, independent validators check the claims, and
-the analyst remains responsible for the final view.
+The default Streamlit experience is designed for an analyst first. Detailed formulas, raw
+values, source pages, internal IDs and hashes remain available in optional inspectors.
 
-## Why Bachem and Siegfried?
+## The research question
 
-Bachem and Siegfried are two Swiss CDMOs with different operating scale, margin, cash,
-leverage and historical valuation profiles. Comparing them creates a focused, testable case in
-which every quantitative statement can be traced back to an approved annual source. The
-universe is intentionally limited to these two issuers and FY2021–FY2025 annual data.
+> How do Bachem and Siegfried compare financially, and what should an analyst monitor next?
 
-## What can an analyst see?
+Bachem and Siegfried are Swiss contract development and manufacturing organizations (CDMOs).
+They are close enough in business context to support a focused comparison, while their growth,
+profitability, cash profile, capital intensity, balance sheet and historical valuation differ.
+The project examines those differences using approved annual data from FY2021 through FY2025.
 
-The Streamlit experience follows a six-tab finance workflow:
+The result is descriptive decision support. It is not a BUY, SELL or HOLD recommendation.
 
-1. **Snapshot** — eight headline FY2025 KPIs side by side;
-2. **Research Note** — executive summary, financial comparison, investment cases, risks,
-   catalysts, valuation context, sustainability and limitations;
-3. **Fundamentals** — five-year growth, profitability, cash generation, balance sheet and returns;
-4. **Valuation** — historical market value, trading multiples and yield metrics;
-5. **Monitoring** — latest authorized KPIs, why they matter and update status;
-6. **ESG & Sources** — comparable climate disclosures, targets, assurance and evidence.
+## Finance workflow
 
-The top-level Executive Investment View highlights six existing metrics across growth,
-profitability, cash generation, balance sheet, returns and historical valuation. Detailed
-variants, formulas, IDs, hashes and source artifacts are placed in optional inspectors.
+### Fundamentals
 
-## What is the output?
+The five-year fundamentals view follows the questions an analyst would normally ask.
 
-The principal output is an AI-assisted comparative Research Note supported by a concise KPI
-table and a non-predictive monitoring watchlist. The admissible note can reach
-`pending_human_review`, but automation cannot approve it. A blocked scenario demonstrates that
-forbidden target-price language prevents reliable rendering.
+| Area | Measures | What it helps assess |
+|---|---|---|
+| Growth | Revenue, year-on-year growth, FY2021–FY2025 CAGR | Scale and historical top-line momentum |
+| Profitability | EBITDA margin, EBIT margin, net margin | Operating economics at different profit levels |
+| Cash generation | Operating cash flow, capex, free cash flow, cash conversion | How accounting profitability translates into cash after investment |
+| Balance sheet & returns | Net debt, net debt / EBITDA, equity ratio, ROE, comparable distributions | Financial capacity, leverage and returns on capital |
 
-## What are the limitations?
+Reported, calculated and recomputed variants are never silently blended. The main tables show
+the preferred analytical metric; calculation details remain inspectable.
 
-- The universe contains only Bachem and Siegfried and only annual FY2021–FY2025 data.
-- Valuation observations are historical fiscal-year-close values, not current market data.
-- No DCF, consensus, forecast, live market feed, target price or price prediction is included.
-- Bachem published P/E is unavailable; the calculated P/E remains visibly separate.
-- Sustainability evidence reflects issuer disclosures and differing assurance, not independent
-  physical verification or an ESG score.
-- The Research Note remains a proposal until an explicit human review is recorded.
+### Valuation
 
-## Under the hood
+The valuation view covers:
 
-### Finance, Data and AI workflow
+- historical fiscal-year-end closing prices;
+- published market capitalization and Enterprise Value;
+- EV / Revenue, EV / EBITDA and EV / EBIT;
+- published or calculated P/E, plus P/B;
+- free-cash-flow yield and dividend yield.
 
-```mermaid
-flowchart LR
-    SED["SED / pdf.extractor"] --> F["Versioned Equity fixtures"]
-    F --> P["Deterministic Python calculations"]
-    P --> N["Research Note proposal"]
-    N --> V["Independent trust validation"]
-    V --> H["Explicit human review"]
-```
+These are **historical FY-end observations, not current market data**. Published and calculated
+values remain separate. Published market capitalization is preferred when available. The
+Siegfried 1:10 share split is handled explicitly, and non-comparable dividend periods remain
+marked as such. Bachem published P/E remains unavailable; calculated P/E is displayed as a
+different metric rather than used as a substitute.
 
-- **Finance:** compare activity, growth, margins, cash conversion, capital intensity,
-  leverage, ROE, historical valuation and sustainability observations.
-- **Data engineering:** load only embedded, hash-checked fixtures; preserve source document,
-  fiscal year, unit, method, formula and input metric IDs.
-- **AI engineering:** expose a closed allowlist of `MetricRecord` and `EvidenceRecord` objects,
-  materialize a `GeneratedDraft`, then validate numbers, units, periods, citations, language
-  policy and run membership before any reliable rendering.
+### Sustainability
 
-The Equity manifest pins the upstream source to `SED/pdf.extractor` commit
-`bc1c54eefd663a257aab71e58fd7953a6239a1fc`. Runtime loading does not access that repository
-or the network: it verifies and consumes the committed fixtures only. Python owns every
-calculation. The deterministic offline note fixture structures already-authorized content; it
-does not calculate, select an investment, or approve itself.
+The sustainability comparison uses only approved issuer disclosures:
 
-### Research Note and human-in-the-loop
+- Scope 1 emissions;
+- Scope 2 market-based and location-based emissions;
+- method-consistent carbon intensities;
+- published climate targets;
+- metric-level assurance and comparability caveats.
 
-`analyst_note.v1` is a closed Pydantic contract with eleven mandatory sections. Statements are
-typed as `sourced_fact`, `calculated_metric`, `analyst_interpretation`, or `limitation`.
-Quantitative uses carry metric ID, value, unit and period; citations carry an Evidence ID and
-exact excerpt. Unknown fields, orphan numbers, unknown citations and missing mandatory
-limitations fail closed.
+A sourced disclosure shows what an issuer published. It is not independent certification of
+physical reality, complete coverage or cross-company comparability.
 
-The admissible path is:
+### Research Note
+
+The analyst-facing output includes:
+
+- an Executive Investment View and concise financial comparison;
+- separate Bachem and Siegfried investment cases;
+- key risks and catalysts / what to watch;
+- historical valuation context;
+- sustainability considerations;
+- a non-predictive monitoring table;
+- explicit limitations and human-review status.
+
+The note contains no recommendation, target price, consensus estimate or price prediction.
+
+## Data workflow
 
 ```text
-MetricRecord → GeneratedDraft → ValidationReport → AutomatedAssessment → HumanReview
+Annual reports
+      ↓
+Validated source data
+      ↓
+Frozen versioned snapshot
+      ↓
+Normalized financial fields
+      ↓
+Deterministic Python calculations
+      ↓
+Field-level provenance
+      ↓
+Equity Research application
 ```
 
-Automation stops at `eligible_for_review`; the Equity UI presents that as
-`pending_human_review`. Only an explicit person can create a `HumanReview`. The blocked demo
-scenario includes a forbidden target-price statement, produces `review_required`, and emits no
-reliable note text.
+### Source data
 
-The monitoring table shows the latest authorized annual KPI, descriptive direction, rationale,
-source, update frequency, assurance where relevant, and freshness (`available` or `to_update`).
-It contains no forecast or invented consensus. See the
-[60–90 second demo script](docs/demo_equity_research.md).
+Equity inputs come from the validated `SED/pdf.extractor` pipeline. The committed manifest pins
+the source state to commit `bc1c54eefd663a257aab71e58fd7953a6239a1fc`. Source documents,
+fields, periods, units and extraction methods are retained in the snapshot. Individual file
+hashes live in the [Equity manifest](src/ai_quant/fixtures/equity/manifest.v1.json), not in the
+product introduction.
 
-### Public demo and local components
+### Frozen snapshot
 
-The repository's `demo` mode is fully offline and opens **Equity research** by default. The
-public Streamlit deployment is built from the released branch and may lag this working branch
-until it is merged and deployed. The existing **AI audit workbench** remains available locally
-and in releases as the deeper technical demonstration. Its optional `live` mode connects to the
-existing FastAPI/PostgreSQL stack; it is not required by the Equity workflow and does not turn
-the Equity fixtures into live market data.
+The application does not query SED or the network at runtime. It consumes committed,
+hash-checked fixtures so the demo is stable, auditable and reproducible even when the upstream
+system is unavailable.
 
-## Why this project exists
+### Normalization
 
-Generative models can produce fluent commentary while inventing a figure, citing the wrong source, or overstating historical evidence. Financial research instead needs explicit calculation conventions, document provenance, and a visible separation between automated suggestions and accountable decisions. This project makes that separation testable.
+Every financial observation has explicit company, fiscal year, metric and unit coordinates.
+Missing values remain missing. Reported and calculated metrics remain distinct. Share-split,
+denominator and comparability rules are encoded rather than inferred in the UI.
 
-## What the application produces
+### Deterministic calculations
 
-| Layer | Output | Authority |
-|---|---|---|
-| Market snapshot | Frozen adjusted prices, dates, missing values, and lineage | Versioned input |
-| Quant engine | Returns, risk metrics, matrices, and optimizer diagnostics | Deterministic Python |
-| Evidence layer | Issuer, document, page, excerpt, period, and source identity | Versioned evidence |
-| LLM boundary | `DraftProposal` with bounded claims and references | Untrusted proposal |
-| Validation | `ValidationReport`, reliable rendering, and routing status | Deterministic Python |
-| Review | Approve, correct, reject, or escalate | Explicit human decision |
+**Python owns the numbers.** The language model does not calculate financial ratios. Python
+calculates growth, margins, free cash flow, cash conversion, leverage, ROE and historical
+valuation multiples from the authorized inputs.
 
-## Quantitative finance
+Calculation conventions and tests are documented in the
+[V4.1 plan](docs/plans/PLAN_V4_1_EQUITY_RESEARCH_COPILOT.md) and focused
+[implementation notes](docs/implementation/equity_phase4_validation.md).
 
-The quant engine loads one immutable `MarketSnapshot` and builds one shared return matrix from adjusted closes. Daily simple returns are aligned across instruments; missing prices are not filled, and incomplete return rows are removed before calculation.
+### Provenance
 
-Annualization uses 252 trading days. Volatility and covariance use sample estimates with `ddof=1`. Weights are long-only and sum to one. VaR and Expected Shortfall are positive loss magnitudes.
+The inspection path is:
 
-### Return and risk conventions
+```text
+displayed metric → calculation → source field → document / page
+```
 
-For instrument $i$, the simple daily return is:
+At the technical layer, run-scoped `MetricRecord` and `EvidenceRecord` objects preserve stable
+identifiers and allowed references. Versioned manifests and SHA-256 checks protect fixture
+identity. Formula versions and input metric IDs make calculated values reproducible.
 
-$$r_{i,t}=\frac{P_{i,t}}{P_{i,t-1}}-1$$
+### Data quality and failure behavior
 
-The cumulative return over $T$ complete observations is:
+- Missing is not converted to zero.
+- Incompatible periods or bases are not forced into a comparison.
+- Invalid or missing denominators block the affected calculation.
+- Reported, calculated and recomputed differences stay visible.
+- Source limitations remain explicit in the UI and Research Note.
 
-$$R=\prod_{t=1}^{T}(1+r_t)-1$$
+## AI-assisted research and validation
 
-Historical performance is geometrically annualized:
+**AI structures the research; it does not own the financial facts.**
 
-$$R_{\mathrm{ann}}=(1+R)^{252/T}-1$$
+```text
+Authorized metrics + evidence
+        ↓
+Structured research draft
+        ↓
+Independent validation
+        ↓
+Automated assessment
+        ↓
+Human review
+```
 
-Annualized volatility is:
+Every quantitative claim must resolve to an authorized metric. Evidence references must belong
+to the closed evidence set. Deterministic validators check values, units, periods, citations,
+run membership and covered language rules before reliable text can be shown.
 
-$$\sigma_{\mathrm{ann}}=s(r)\sqrt{252}$$
+Investment recommendations, target prices, unsupported numbers, finance-climate causality and
+self-approval language are blocked. Automation can route a valid note to human review, but it
+cannot create human approval.
 
-where $s(r)$ is the sample standard deviation with `ddof=1`.
+### The blocked scenario
 
-For wealth and drawdown:
+The public demo includes an intentionally invalid scenario containing prohibited target-price
+language. Validation marks it as blocked, withholds reliable note text and exposes the relevant
+diagnostic. This makes the trust boundary observable rather than merely documented.
 
-$$W_t=\prod_{j\leq t}(1+r_j)$$
+### Under the hood
 
-$$D_t=\frac{W_t}{\max_{u\leq t}(W_u)}-1$$
+Closed Pydantic models define the boundary between trusted records and untrusted generation.
+The workflow materializes `MetricRecord`, `EvidenceRecord`, `GeneratedDraft`,
+`ValidationReport`, `AutomatedAssessment` and, only after a real decision, `HumanReview`.
+Unknown fields and orphan references fail closed.
 
-$$\mathrm{MDD}=-\min_t D_t$$
+See the [trust-boundary methodology](docs/methodology/trust_boundaries.md) and
+[retrieval and structured-generation methodology](docs/methodology/retrieval_and_llm.md).
 
-Parametric Gaussian VaR follows the exact implementation convention:
-
-$$\mathrm{VaR}_c=\max\left(0,-\left(\bar r+z_{1-c}s\right)\right)$$
-
-Here, $c$ is the confidence level, $z_{1-c}$ is the lower normal quantile, and the result is a positive one-day loss. Historical Expected Shortfall uses the empirical lower-tail average:
-
-$$\mathrm{ES}_c=\max\left(0,-E[r\mid r\leq Q_{1-c}(r)]\right)$$
-
-The historical Sharpe ratio is:
-
-$$\mathrm{Sharpe}=\frac{R_{\mathrm{ann,hist}}-r_f}{\sigma_{\mathrm{ann}}}$$
-
-### Constrained Markowitz scenario
-
-The optimizer maximizes an in-sample historical Sharpe ratio:
-
-$$\max_w \frac{w^\top(252\bar r)-r_f}{\sqrt{w^\top(252\Sigma)w}}$$
-
-subject to:
-
-$$\sum_i w_i=1,\qquad w_{\min}\leq w_i\leq w_{\max},\qquad 0\leq w_i\leq1$$
-
-Expected returns are historical daily arithmetic means multiplied by 252. SciPy SLSQP starts from equal weights and publishes weights only after solver, bound, and sum checks succeed; failure returns diagnostics without an equal-weight fallback.
-
-See the full [quantitative methodology](docs/methodology/quant_methodology.md).
-
-## Worked example from the demo
-
-The CHF snapshot contains `DEMO-ALPHA`, `DEMO-BETA`, and `DEMO-GAMMA` from 2026-08-31 through 2026-09-18: 45 price rows, one explicit missing price, and 12 complete returns after three dropped dates.
-
-Values are reproducible from [`demo_adjusted_prices.csv`](src/ai_quant/fixtures/demo_adjusted_prices.csv) with the current engine and its labelled 1.00% synthetic CHF risk-free assumption.
-
-The table below describes the equal-weight baseline portfolio, with 33.3333% allocated to each instrument. The optimized weights shown afterwards are a separate in-sample scenario.
-
-> **Interpretation warning:** the sample contains only 12 complete daily returns. Annualized return and Sharpe are therefore mechanically extreme and demonstrate the calculation pipeline rather than realistic investment expectations.
-
-| Metric | Demo value | Convention |
-|---|---:|---|
-| Cumulative return | 6.9821% | Full 12-observation period |
-| Geometric annualized return | 312.6056% | Short historical window annualized to 252 days |
-| Annualized volatility | 11.0170% | Daily sample volatility × √252 |
-| Maximum drawdown | 0.8336% | Positive loss magnitude |
-| 95% historical VaR | 0.3855% | Linear empirical quantile, one trading day |
-| 95% parametric VaR | 0.5753% | Gaussian estimate, one trading day |
-| 95% Expected Shortfall | 0.8336% | Historical tail average |
-| Historical Sharpe ratio | 28.2840 | In-sample annualized history and fixture rate |
-
-The optimization converges in seven iterations with successful solver, constraint, and bound checks. Its separate scenario weights are 74.9756% `DEMO-ALPHA`, 25.0244% `DEMO-BETA`, and effectively 0% `DEMO-GAMMA`.
-
-## AI workflow
-
-1. Python calculates metrics from the frozen snapshot.
-2. Retrieval selects typed passages while preserving provenance.
-3. Python creates run-scoped records and exact reference allowlists.
-4. The LLM receives a closed `SynthesisRequest` and proposes a structured `DraftProposal`.
-5. Python rechecks references, placeholders, numbers, run membership, and covered language rules.
-6. Trusted values are injected only after validation; blocked drafts emit no reliable final text.
-7. `AutomatedAssessment` routes the result to review.
-8. A person records the disposition separately.
-
-The LLM does not calculate metrics, create official evidence, mint trusted identifiers, or approve its output. The public demo uses a historical provider response that was normalized and reviewed for safe demo use, not analytically approved as investment research. That promotion review is distinct from a session `HumanReview` and from any investment approval.
-
-BM25 applies metadata filters and lexical ranking. The long-context baseline supplies filtered passages in canonical order, so its ranks are positions rather than learned relevance scores.
-
-See [retrieval and structured-generation methodology](docs/methodology/retrieval_and_llm.md).
-
-## Responsible AI and trust boundaries
-
-Core trust-boundary contracts use closed, immutable Pydantic models. Exact allowlists bind proposals to records from the active run. Validators cover unknown or cross-run references, placeholder mismatches, unsupported numbers, selected prompt-injection patterns, and self-approval language.
-
-Three automatic statuses are available:
-
-- `eligible_for_review`: no covered blocking finding was detected; human review is still required;
-- `review_required`: one or more deterministic blocking findings need attention;
-- `abstain`: trusted inputs are insufficient.
-
-`ValidationReport`, `AutomatedAssessment`, and `HumanReview` are separate records. A human can approve, correct, reject, or escalate. The blocked scenario exposes critical findings and withholds reliable text and approved export.
-
-Climate evidence preserves issuer, document, publication date, PDF and printed page, excerpt, source hash, period, coverage, and Scope 2 method. Assurance and comparability metadata remain explicit where available; disclosure is not independent verification of physical fact.
-
-Read the [trust-boundary methodology](docs/methodology/trust_boundaries.md) and [climate-corpus methodology](docs/methodology/sustainability_corpus.md).
-
-## Technical architecture
+## System flow
 
 ```mermaid
 flowchart TD
-    M["Frozen market snapshot"] --> Q["Deterministic quant engine"]
-    D["Versioned issuer evidence"] --> R["Evaluated retrieval"]
-    Q --> W["Trust workflow"]
-    R --> W
-    W --> L["Structured LLM proposal"]
-    L --> V["Python validation and rendering"]
-    V --> A["Automated assessment"]
-    A --> H["Explicit human review"]
-
-    PD["Public Streamlit demo"] --> W
-    LS["Local Streamlit"] --> API["FastAPI"]
-    API --> S["Transactional application service"]
-    S --> W
-    S --> DB["PostgreSQL"]
+    A["Annual reports"] --> S["SED / validated source data"]
+    S --> F["Versioned Equity fixtures"]
+    F --> P["Deterministic finance engine"]
+    P --> U["Equity Research UI"]
+    U --> N["Structured Research Note"]
+    N --> V["Independent validation"]
+    V --> H["Human review"]
 ```
 
-In the public demo, the LLM proposal comes from a versioned historical fixture, not from a provider call triggered by the visitor.
+The Streamlit `demo` mode is fully offline. The optional local persistent stack adds FastAPI and
+PostgreSQL without changing the authority of the frozen Equity inputs.
 
-### Public demo
+## Public demo
 
-- Streamlit with the Equity route plus the six-view AI audit workbench and versioned fixtures;
-- no provider call, market-data download, or PostgreSQL connection;
-- unauthenticated reviews stored only in the current Streamlit session.
+**[Launch the AI Equity Research Copilot](https://ai-quant-research-assistant-2wpsobhnavfaznnp4pjmxt.streamlit.app/)**
 
-### Local persistent stack
+A 60–90 second review path:
 
-- Streamlit → FastAPI → transactional application service;
-- SQLAlchemy 2, PostgreSQL, Alembic, and Docker Compose;
-- idempotent writes, rollback on failure, and concurrency checks.
+1. Open **Equity research**.
+2. Read the **Executive Investment View**.
+3. Compare the eight headline FY2025 metrics in **Snapshot**.
+4. Inspect FY2021–FY2025 growth, margins, cash and leverage in **Fundamentals**.
+5. Open **Valuation** and confirm that every observation is historical.
+6. Read **Key risks**, **Catalysts / What to watch** and **Monitoring**.
+7. Open one source and calculation inspector.
+8. Switch the Research Note scenario to **Blocked** and review the validation result.
 
-The local `live` mode activates API and database transport, but its current analysis input remains `frozen_offline_fixture`.
+The historical **AI audit workbench** remains available from the top-level view selector as a
+second experience focused on quantitative risk, retrieval, validation and review controls. See
+the [demo script](docs/demo_equity_research.md).
 
-Draft versions and reviews are append-only through the application APIs. Database constraints preserve identities and relationships, but the storage is not WORM or administrator-proof.
+## Verification
 
-| Layer | Technology | Role |
-|---|---|---|
-| UI | Streamlit | Analyst workflow |
-| API | FastAPI | HTTP boundary |
-| Domain | Pydantic and Python | Contracts, calculations, and validation |
-| Persistence | SQLAlchemy 2 + PostgreSQL | Versioned research records |
-| Runtime | Docker Compose | Reproducible local stack |
-| Quality | pytest, Ruff, GitHub Actions | Automated verification |
+The V4.1 publication gate was executed on the complete repository state:
 
-## Explore the public demo
+| Check | Verified result |
+|---|---|
+| Ruff | `All checks passed!` |
+| Full pytest suite | `442 passed, 20 skipped, 2 warnings` |
+| Equity runtime | Offline, no SED checkout or network dependency |
+| Financial calculations | Deterministic fixtures and Python formulas |
+| Trust workflow | Valid scenario remains pending human review; blocked scenario emits no reliable note |
+| Provenance | Raw value, formula, source field, document/page and hashes remain inspectable |
 
-**[Launch AI Quant Research Workbench](https://ai-quant-research-assistant-2wpsobhnavfaznnp4pjmxt.streamlit.app/)**
+The skipped tests require optional live API or PostgreSQL environment variables. The two
+warnings are dependency deprecations from the FastAPI/Starlette test client.
 
-The application has six views: **Overview**, **Quant**, **Climate Evidence**, **Validation & Review**, **Quality**, and **Methodology**.
+## Limitations
 
-1. Inspect the admissible scenario and its frozen input lineage.
-2. Review the quantitative calculations and optimizer diagnostics.
-3. Open the climate passages and examine their provenance.
-4. Confirm that validation, automated routing, and human review remain separate.
-5. Switch to the blocked scenario and observe that no reliable text or approved export is emitted.
+### Equity Research V4.1
 
-![Blocked scenario showing critical cross-run and unsupported-number findings with no reliable output](docs/screenshots/block-7/blocked-validation-findings.jpg)
+- The universe contains only Bachem and Siegfried.
+- Inputs are annual FY2021–FY2025 observations; interim periods are not included.
+- Valuation uses historical fiscal-year-end data, not current prices.
+- No analyst consensus, DCF, forecast or live market feed is included.
+- No BUY / SELL / HOLD output, target price or personalized investment advice is produced.
+- Bachem published P/E is unavailable; calculated P/E remains a separate metric.
+- Sustainability comparability is constrained by issuer boundaries, methods and assurance.
+- Human verification remains required before any analytical conclusion is accepted.
 
-## Evaluation
+### Historical workbench
 
-Across 10 retrieval questions—six filter-only and four ranking—BM25 reaches recall@1 **0.90** and recall@3 **1.00**; canonical long-context reaches **0.70** and **0.90**. Filter-only success primarily measures metadata filtering.
+- The market demo uses a short synthetic price sample and does not establish investment
+  performance or predictive validity.
+- Retrieval evaluation covers a small versioned question set and represented attack families.
+- Public reviews are unauthenticated and session-only; persistence is available only in the
+  optional local stack.
+- The climate corpus documents selected issuer disclosures without proving complete coverage or
+  physical truth.
 
-Workflow evaluation matches **24/24** expected outcomes across development, validation, and internal holdout splits. No critical case was incorrectly marked `eligible_for_review` (**0/18**).
-
-These small internal evaluations cover only the represented error and attack families; they do not establish general retrieval quality, financial validity, or universal prompt-injection protection.
-
-Detailed artifacts: [retrieval baselines](reports/evaluation/retrieval_baselines.v1.json) and [workflow evaluation](reports/evaluation/workflow_eval.v1.json).
+For research and educational use only. Not investment advice.
 
 ## Run locally
 
-Python 3.12 and [uv](https://docs.astral.sh/uv/) are required for the simplest demo path:
+Python 3.12 and [uv](https://docs.astral.sh/uv/) are required for the simplest path:
 
 ```bash
 git clone https://github.com/EMen11/AI-quant-research-assistant.git
@@ -339,14 +291,12 @@ uv sync --frozen --all-groups
 APP_MODE=demo uv run --frozen streamlit run app.py
 ```
 
-The demo opens **Equity research** by default. Its six offline tabs compare Bachem and
-Siegfried through the FY2025 snapshot, Research Note, FY2021–FY2025 fundamentals,
-historical closing-date valuation, monitoring and FY2025 ESG evidence. Historical market
-values are labelled by fiscal year; the dashboard does not fetch current prices. Source,
-calculation and technical provenance remain available in collapsed inspectors. Select
-**AI audit workbench** to open the existing validation and review workflow.
+The application opens **Equity research** by default at `http://127.0.0.1:8501`. No provider
+key, database, network data fetch or adjacent SED checkout is required.
 
-For the persistent local workflow, the documented placeholder values are intentionally non-secret:
+### Optional persistent local stack
+
+The separate live workflow uses the existing FastAPI/PostgreSQL stack:
 
 ```bash
 BLOCK8_POSTGRES_DB=ai_quant_local \
@@ -359,39 +309,71 @@ docker compose logs --no-color --tail=100
 docker compose down
 ```
 
-Streamlit is available at `http://127.0.0.1:8501` and FastAPI at `http://127.0.0.1:8000`. See the [deployment guide](docs/deployment.md) and [local persistent stack guide](docs/block8_local_stack.md).
+Streamlit runs at `http://127.0.0.1:8501` and FastAPI at `http://127.0.0.1:8000`. See the
+[deployment guide](docs/deployment.md) and
+[persistent stack guide](docs/block8_local_stack.md).
+
+## Additional Quant & AI Audit Workbench
+
+The repository also retains its earlier quantitative and trust-control workbench. It includes:
+
+- cumulative and annualized returns, volatility and drawdown;
+- historical and parametric VaR, Expected Shortfall and Sharpe ratio;
+- covariance and correlation analysis;
+- constrained long-only Markowitz optimization with solver diagnostics;
+- climate-evidence retrieval and source inspection;
+- BM25 and canonical long-context evaluation;
+- valid and blocked structured-generation scenarios;
+- optional FastAPI, SQLAlchemy and PostgreSQL persistence.
+
+The full formulas, annualization choices, loss-sign conventions and optimizer constraints are in
+the [quantitative methodology](docs/methodology/quant_methodology.md). The historical demo uses
+the versioned [`demo_adjusted_prices.csv`](src/ai_quant/fixtures/demo_adjusted_prices.csv)
+fixture and is intentionally separate from the Bachem/Siegfried Equity case.
+
+### Specialized evaluation
+
+Across 10 retrieval questions, BM25 reaches recall@1 **0.90** and recall@3 **1.00**; the
+canonical long-context baseline reaches **0.70** and **0.90**. Workflow evaluation matches
+**24/24** expected outcomes, with no represented critical case incorrectly marked
+`eligible_for_review` (**0/18**).
+
+These are small internal evaluations, not claims of universal retrieval or AI reliability.
+Versioned results are available in
+[retrieval baselines](reports/evaluation/retrieval_baselines.v1.json) and
+[workflow evaluation](reports/evaluation/workflow_eval.v1.json).
+
+![Blocked AI audit scenario with no reliable output](docs/screenshots/block-7/blocked-validation-findings.jpg)
+
+## Engineering architecture
+
+| Layer | Technology | Purpose |
+|---|---|---|
+| Research UI | Streamlit | Finance-first analyst workflow |
+| Finance engine | Python / pandas | Deterministic financial and quantitative metrics |
+| Contracts | Pydantic | Typed data, generation and trust boundaries |
+| API | FastAPI | Optional local service boundary |
+| Persistence | PostgreSQL / SQLAlchemy | Versioned local research records |
+| Runtime | Docker Compose | Reproducible optional local stack |
+| Quality | pytest / Ruff / GitHub Actions | Automated verification |
+
+Public `demo` mode reads committed fixtures directly. Local `live` mode adds API and database
+transport; its current analytical input remains a frozen offline fixture. Database constraints
+and application transactions protect record relationships, but storage is not WORM or
+administrator-proof.
 
 ## Repository guide
 
-```text
-src/ai_quant/quant/          deterministic finance calculations and optimization
-src/ai_quant/equity/         Equity records, formulas, note contract, trust adapter, monitoring
-src/ai_quant/retrieval/      filtered BM25, long-context baseline, and evaluation
-src/ai_quant/trust/          generation contracts, validation, assessment, and review
-src/ai_quant/api/            FastAPI boundary and transactional application service
-src/ai_quant/persistence/    SQLAlchemy models and repositories
-src/ai_quant/fixtures/       frozen market, climate, and generation inputs
-reports/evaluation/          versioned retrieval and workflow results
-docs/methodology/            assumptions, provenance rules, and trust boundaries
-```
+| Path | Purpose |
+|---|---|
+| `src/ai_quant/equity/` | Equity models, formulas, analysis, valuation, note contract and monitoring |
+| `src/ai_quant/trust/` | Generation validation, automated assessment and human-review boundaries |
+| `src/ai_quant/quant/` | Historical return, risk and optimization calculations |
+| `src/ai_quant/retrieval/` | Filtered BM25, long-context baseline and evaluation support |
+| `src/ai_quant/api/` | FastAPI routes and transactional application service |
+| `src/ai_quant/persistence/` | SQLAlchemy models, repositories and migration support |
+| `src/ai_quant/fixtures/` | Frozen Equity, market, climate and generation inputs |
+| `docs/` | Methodology, deployment, implementation evidence and demo guidance |
+| `reports/` | Versioned retrieval and workflow evaluation artifacts |
 
 This repository is available under the [MIT License](LICENSE).
-
-## Limitations
-
-- The Equity case covers exactly two companies: Bachem and Siegfried.
-- Equity inputs are annual FY2021–FY2025 observations; H1 2026 is not integrated.
-- Valuation observations are historical fiscal-closing values, not current market data.
-- The Equity workflow contains no analyst consensus, target price or price prediction.
-- Bachem `price_to_earnings_published` is unavailable and remains visibly `to_update`; the
-  separately calculated P/E does not replace it.
-- Demo prices are synthetic historical observations over a short sample.
-- Metrics and optimization are descriptive; no strategy has received real-world validation, predictive backtesting, or transaction-cost analysis.
-- Outputs are neither forecasts nor recommendations.
-- The climate corpus covers selected disclosures from two issuers, without proving complete coverage, physical truth, or comparability.
-- Retrieval uses 10 questions and an internal holdout; findings apply only to represented cases and attack families.
-- Public reviews are unauthenticated, session-only, and non-persistent.
-- PostgreSQL persistence is available only in the separate local stack.
-- Mobile behavior was checked with an emulated viewport, not on a physical phone.
-
-For research and educational use only. Independent human verification is required. Not investment advice.
